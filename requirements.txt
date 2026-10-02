@@ -1,4 +1,10 @@
-django
+Django==6.1.1
+django-jazzmin
+python-dotenv
+dj-database-url
+psycopg2-binary
+whitenoise[brotli]
+gunicorn
 numpy
 pandas
 pillow
