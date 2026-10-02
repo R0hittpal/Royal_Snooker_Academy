@@ -1,0 +1,2121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Home | Royal Snooker Academy
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* =========================================================
+       ROYAL SNOOKER ACADEMY
+       HOME PAGE — PREMIUM ROYAL DESIGN
+       ========================================================= */
+
+    :root {
+        --rsa-black: #07100D;
+        --rsa-black-soft: #0B1512;
+
+        --rsa-emerald: #06382D;
+        --rsa-green: #07513F;
+        --rsa-green-soft: #0C4A3A;
+
+        --rsa-gold: #D4AF37;
+        --rsa-gold-light: #E7CB70;
+        --rsa-gold-soft: #F2DFA0;
+
+        --rsa-ivory: #F7F5EF;
+        --rsa-ivory-dark: #EFEEE7;
+
+        --rsa-text: #18322B;
+        --rsa-muted: #66746F;
+    }
+
+
+    /* =========================================================
+       GENERAL
+       ========================================================= */
+
+    .rsa-home {
+        background: var(--rsa-ivory);
+        color: var(--rsa-text);
+    }
+
+
+    .rsa-gold-text {
+        background:
+            linear-gradient(
+                135deg,
+                #F7E8A9 0%,
+                #D4AF37 40%,
+                #E8CF78 65%,
+                #B98C22 100%
+            );
+
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+
+    .rsa-gold-line {
+        height: 1px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                rgba(212, 175, 55, 0.9),
+                transparent
+            );
+    }
+
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .rsa-gold-button {
+        background:
+            linear-gradient(
+                135deg,
+                #F2D77F 0%,
+                #D4AF37 48%,
+                #B98A1B 100%
+            );
+
+        color: #07100D;
+
+        box-shadow:
+            0 8px 20px rgba(180, 140, 30, 0.16);
+
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            filter 0.25s ease;
+    }
+
+
+    .rsa-gold-button:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 14px 28px rgba(180, 140, 30, 0.26);
+
+        filter: brightness(1.035);
+    }
+
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .rsa-home-hero {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(212, 175, 55, 0.10),
+                transparent 25%
+            ),
+
+            radial-gradient(
+                circle at 5% 100%,
+                rgba(7, 81, 63, 0.35),
+                transparent 35%
+            ),
+
+            linear-gradient(
+                135deg,
+                #050B09 0%,
+                #071713 48%,
+                #06382D 100%
+            );
+    }
+
+
+    .rsa-home-hero::before {
+        content: "";
+
+        position: absolute;
+
+        width: 520px;
+        height: 520px;
+
+        right: -270px;
+        top: -300px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.12);
+
+        box-shadow:
+            0 0 0 55px rgba(212, 175, 55, 0.025),
+            0 0 0 110px rgba(212, 175, 55, 0.018);
+    }
+
+
+    .rsa-home-hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 340px;
+        height: 340px;
+
+        left: -190px;
+        bottom: -220px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(212, 175, 55, 0.035);
+
+        filter: blur(50px);
+    }
+
+
+    .rsa-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .rsa-premium-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+
+        background:
+            rgba(7, 16, 13, 0.58);
+
+        border:
+            1px solid rgba(212, 175, 55, 0.36);
+    }
+
+
+    .rsa-hero-grid {
+        position: relative;
+
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1.15fr)
+            minmax(300px, 0.85fr);
+
+        align-items: center;
+
+        gap: 2.5rem;
+
+        min-height: 560px;
+    }
+
+
+    .rsa-hero-copy {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    /* =========================================================
+       HERO LOGO VISUAL
+       ========================================================= */
+
+    .rsa-hero-visual {
+        position: relative;
+
+        min-height: 420px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        isolation: isolate;
+    }
+
+
+    .rsa-hero-visual::before {
+        content: "";
+
+        position: absolute;
+
+        width: 430px;
+        height: 430px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.14);
+
+        box-shadow:
+            0 0 0 38px rgba(212, 175, 55, 0.025),
+            0 0 0 78px rgba(212, 175, 55, 0.018),
+            inset 0 0 70px rgba(212, 175, 55, 0.025);
+
+        z-index: -2;
+    }
+
+
+    .rsa-hero-visual::after {
+        content: "";
+
+        position: absolute;
+
+        width: 270px;
+        height: 270px;
+
+        border-radius: 50%;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(212, 175, 55, 0.11),
+                transparent 68%
+            );
+
+        filter: blur(8px);
+
+        z-index: -1;
+    }
+
+
+    .rsa-hero-visual-card {
+        position: relative;
+
+        width: min(100%, 380px);
+
+        aspect-ratio: 1 / 1;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.20);
+
+        border-radius: 2rem;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,255,255,0.045),
+                rgba(255,255,255,0.012)
+            ),
+            rgba(4, 13, 10, 0.42);
+
+        box-shadow:
+            0 28px 70px rgba(0,0,0,0.28);
+
+        backdrop-filter: blur(5px);
+
+        overflow: hidden;
+    }
+
+
+    .rsa-hero-visual-card::before {
+        content: "";
+
+        position: absolute;
+
+        inset: 16px;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.08);
+
+        border-radius: 1.5rem;
+    }
+
+
+    .rsa-hero-crest {
+        position: absolute;
+
+        top: 30px;
+        left: 50%;
+
+        transform:
+            translateX(-50%);
+
+        width: 72px;
+        height: 72px;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.35);
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        color: #E7CB70;
+
+        font-size: 1.3rem;
+
+        background:
+            rgba(7, 16, 13, 0.55);
+
+        box-shadow:
+            0 0 30px rgba(212, 175, 55, 0.08);
+    }
+
+
+    .rsa-hero-logo-wrap {
+        position: absolute;
+
+        left: 12%;
+        right: 12%;
+
+        top: 28%;
+        bottom: 19%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.18);
+
+        border-radius: 1.25rem;
+
+        background:
+            rgba(0, 0, 0, 0.30);
+
+        box-shadow:
+            inset 0 0 35px rgba(0,0,0,0.20),
+            0 18px 35px rgba(0,0,0,0.20);
+
+        overflow: hidden;
+    }
+
+
+    .rsa-hero-logo-wrap img {
+        width: 88%;
+        height: 88%;
+
+        object-fit: contain;
+    }
+
+
+    .rsa-hero-caption {
+        position: absolute;
+
+        left: 50%;
+
+        bottom: 28px;
+
+        transform:
+            translateX(-50%);
+
+        white-space: nowrap;
+
+        text-align: center;
+    }
+
+
+    .rsa-hero-caption-main {
+        color: #E7CB70;
+
+        font-size: 10px;
+
+        font-weight: 800;
+
+        letter-spacing: 0.24em;
+
+        text-transform: uppercase;
+    }
+
+
+    .rsa-hero-caption-sub {
+        color:
+            rgba(255,255,255,0.38);
+
+        font-size: 8px;
+
+        letter-spacing: 0.16em;
+
+        text-transform: uppercase;
+
+        margin-top: 6px;
+    }
+
+
+    /* =========================================================
+       STATISTICS
+       ========================================================= */
+
+    .rsa-stats {
+        background:
+            linear-gradient(
+                135deg,
+                #052D25,
+                #06382D,
+                #052D25
+            );
+    }
+
+
+    .rsa-stat {
+        position: relative;
+    }
+
+
+    .rsa-stat:not(:last-child)::after {
+        content: "";
+
+        position: absolute;
+
+        right: 0;
+        top: 22%;
+        bottom: 22%;
+
+        width: 1px;
+
+        background:
+            rgba(212, 175, 55, 0.16);
+    }
+
+
+    /* =========================================================
+       WHY PLAYERS CHOOSE ROYAL
+       ========================================================= */
+
+    .rsa-feature-card {
+        position: relative;
+        overflow: hidden;
+
+        background: #FFFFFF;
+
+        border:
+            1px solid rgba(24, 50, 43, 0.10);
+
+        box-shadow:
+            0 8px 25px rgba(20, 38, 31, 0.035);
+
+        transition:
+            transform 0.23s ease,
+            box-shadow 0.23s ease,
+            border-color 0.23s ease;
+    }
+
+
+    .rsa-feature-card::before {
+        content: "";
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 2px;
+
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(212, 175, 55, 0.80),
+            transparent
+        );
+    }
+
+
+    .rsa-feature-card:hover {
+        transform: translateY(-5px);
+
+        border-color:
+            rgba(212, 175, 55, 0.40);
+
+        box-shadow:
+            0 18px 38px rgba(20, 38, 31, 0.09);
+    }
+
+
+    .rsa-feature-icon {
+        background:
+            #07513F;
+
+        color:
+            #E7CB70;
+    }
+
+
+    /* =========================================================
+       TABLE SECTION
+       ========================================================= */
+
+    .rsa-table-section {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(212, 175, 55, 0.07),
+                transparent 25%
+            ),
+
+            linear-gradient(
+                135deg,
+                #052D25 0%,
+                #06382D 50%,
+                #052D25 100%
+            );
+    }
+
+
+    .rsa-table-section::after {
+        content: "";
+
+        position: absolute;
+
+        width: 520px;
+        height: 520px;
+
+        right: -270px;
+        bottom: -320px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.055);
+    }
+
+
+    .rsa-table-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .rsa-table-card {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            linear-gradient(
+                150deg,
+                rgba(16, 77, 62, 0.96),
+                rgba(5, 48, 39, 0.98)
+            );
+
+        border:
+            1px solid rgba(255, 255, 255, 0.08);
+
+        box-shadow:
+            0 12px 30px rgba(0, 0, 0, 0.14);
+
+        transition:
+            transform 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+
+    .rsa-table-card::before {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 2px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                rgba(212, 175, 55, 0.85),
+                transparent
+            );
+    }
+
+
+    .rsa-table-card:hover {
+        transform: translateY(-5px);
+
+        border-color:
+            rgba(212, 175, 55, 0.36);
+
+        box-shadow:
+            0 20px 42px rgba(0, 0, 0, 0.21);
+    }
+
+
+    /* =========================================================
+       PREMIUM FACILITIES
+       ========================================================= */
+
+    .rsa-premium-panel {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(212, 175, 55, 0.11),
+                transparent 28%
+            ),
+
+            linear-gradient(
+                135deg,
+                #06100D,
+                #08261F,
+                #06382D
+            );
+
+        border:
+            1px solid rgba(212, 175, 55, 0.22);
+
+        box-shadow:
+            0 22px 55px rgba(3, 31, 24, 0.17);
+    }
+
+
+    .rsa-equipment-card {
+        background:
+            rgba(255,255,255,0.045);
+
+        border:
+            1px solid rgba(255,255,255,0.09);
+
+        transition:
+            transform 0.22s ease,
+            background 0.22s ease,
+            border-color 0.22s ease;
+    }
+
+
+    .rsa-equipment-card:hover {
+        transform: translateY(-3px);
+
+        background:
+            rgba(255,255,255,0.065);
+
+        border-color:
+            rgba(212, 175, 55, 0.25);
+    }
+
+
+    /* =========================================================
+       MEMBERSHIP TEASER
+       ========================================================= */
+
+    .rsa-membership-teaser {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            linear-gradient(
+                135deg,
+                #07100D,
+                #06382D
+            );
+
+        border:
+            1px solid rgba(212, 175, 55, 0.20);
+
+        box-shadow:
+            0 20px 45px rgba(3, 31, 24, 0.14);
+    }
+
+
+    /* =========================================================
+       LOCATION
+       ========================================================= */
+
+    .rsa-location-panel {
+        background:
+            linear-gradient(
+                135deg,
+                #07100D,
+                #06382D
+            );
+
+        border:
+            1px solid rgba(212, 175, 55, 0.20);
+
+        box-shadow:
+            0 20px 45px rgba(3, 31, 24, 0.14);
+    }
+
+
+    /* =========================================================
+       FINAL CTA
+       ========================================================= */
+
+    .rsa-final-cta {
+        position: relative;
+        overflow: hidden;
+
+        background:
+            radial-gradient(
+                circle at 50% 0%,
+                rgba(212, 175, 55, 0.10),
+                transparent 32%
+            ),
+
+            linear-gradient(
+                135deg,
+                #050B09,
+                #06382D
+            );
+    }
+
+
+    .rsa-final-cta::before {
+        content: "";
+
+        position: absolute;
+
+        width: 480px;
+        height: 480px;
+
+        left: 50%;
+        top: -390px;
+
+        transform:
+            translateX(-50%);
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(212, 175, 55, 0.10);
+
+        box-shadow:
+            0 0 0 60px rgba(212, 175, 55, 0.02),
+            0 0 0 120px rgba(212, 175, 55, 0.015);
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 1023px) {
+
+        .rsa-hero-grid {
+            display: block;
+
+            min-height: 0;
+        }
+
+
+        .rsa-hero-visual {
+            display: none;
+        }
+
+    }
+
+
+    @media (max-width: 767px) {
+
+        .rsa-stat:not(:last-child)::after {
+            display: none;
+        }
+
+
+        .rsa-table-card:hover,
+        .rsa-feature-card:hover,
+        .rsa-equipment-card:hover {
+            transform: none;
+        }
+
+    }
+
+</style>
+
+
+<div class="rsa-home">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="rsa-home-hero text-white">
+
+        <div class="rsa-hero-content">
+
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+                <div class="rsa-hero-grid py-12 sm:py-16 lg:py-20">
+
+
+                    <!-- HERO COPY -->
+
+                    <div class="rsa-hero-copy">
+
+
+                        <div class="rsa-premium-badge rounded-full px-4 py-2">
+
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                            <span class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.20em]">
+
+                                Bengaluru's Premium Snooker Destination
+
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-[#D4AF37] text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] mt-8">
+
+                            Royal Snooker Academy
+
+                        </p>
+
+
+                        <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.03] mt-3 max-w-3xl">
+
+                            {% if home_settings %}
+
+                                {{ home_settings.hero_title }}
+
+                            {% else %}
+
+                                A Premium Snooker Experience
+
+                            {% endif %}
+
+                        </h1>
+
+
+                        <div class="rsa-gold-line w-28 mt-7"></div>
+
+
+                        {% if home_settings %}
+
+                            <p class="text-white/65 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 mt-6 max-w-2xl">
+
+                                {{ home_settings.hero_description }}
+
+                            </p>
+
+                        {% else %}
+
+                            <p class="text-white/65 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 mt-6 max-w-2xl">
+
+                                Experience premium Xing Pai tables, quality playing equipment,
+                                professional coaching and a fully air-conditioned environment
+                                designed for players who take the game seriously.
+
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- HERO FEATURES -->
+
+                        <div class="grid sm:grid-cols-3 gap-5 mt-8 max-w-3xl">
+
+
+                            <div class="flex items-start gap-3">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center shrink-0">
+
+                                    <i class="fa-solid fa-table-cells text-sm"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p class="text-sm font-bold text-white">
+
+                                        Xing Pai Tables
+
+                                    </p>
+
+
+                                    <p class="text-[11px] text-white/40 mt-1">
+
+                                        Premium table setup
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="flex items-start gap-3">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center shrink-0">
+
+                                    <i class="fa-solid fa-snowflake text-sm"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p class="text-sm font-bold text-white">
+
+                                        Fully Air Conditioned
+
+                                    </p>
+
+
+                                    <p class="text-[11px] text-white/40 mt-1">
+
+                                        Comfortable playing environment
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="flex items-start gap-3">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center shrink-0">
+
+                                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p class="text-sm font-bold text-white">
+
+                                        Certified Coaches
+
+                                    </p>
+
+
+                                    <p class="text-[11px] text-white/40 mt-1">
+
+                                        Improve your game
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- HERO BUTTONS -->
+
+                        <div class="flex flex-wrap gap-3 mt-8">
+
+                            <a
+                                href="{% url 'booking' %}"
+                                class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-6 sm:px-7 py-3.5 font-extrabold text-sm"
+                            >
+
+                                <i class="fa-solid fa-calendar-check"></i>
+
+                                Reserve Your Table
+
+                            </a>
+
+
+                            <a
+                                href="{% url 'tables' %}"
+                                class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 sm:px-7 py-3.5 font-bold text-sm text-white/90 hover:bg-white/[0.07] transition"
+                            >
+
+                                <i class="fa-solid fa-table-cells text-[#D4AF37]"></i>
+
+                                Explore Tables
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- HERO TRUST POINTS -->
+
+                        <div class="flex flex-wrap gap-x-7 gap-y-3 mt-7 text-[11px] text-white/50">
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+
+                                Premium Equipment
+
+                            </span>
+
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+
+                                Dedicated Smoking Zone
+
+                            </span>
+
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+
+                                Online Booking
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- RIGHT HERO LOGO -->
+
+                    <div class="rsa-hero-visual hidden lg:flex" aria-hidden="true">
+
+                        <div class="rsa-hero-visual-card">
+
+                            <div class="rsa-hero-crest">
+
+                                <i class="fa-solid fa-crown"></i>
+
+                            </div>
+
+
+                            <div class="rsa-hero-logo-wrap">
+
+                                <img
+                                    src="{% static 'images/RSA_logo.png' %}"
+                                    alt="Royal Snooker Academy Logo"
+                                >
+
+                            </div>
+
+
+                            <div class="rsa-hero-caption">
+
+                                <div class="rsa-hero-caption-main">
+
+                                    Royal Snooker Academy
+
+                                </div>
+
+
+                                <div class="rsa-hero-caption-sub">
+
+                                    Premium Cue Sports Experience
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-80"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         QUICK STATISTICS
+         ===================================================== -->
+
+    <section class="rsa-stats text-white">
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3">
+
+
+                <div class="rsa-stat text-center py-7 sm:py-8">
+
+                    <div class="text-3xl sm:text-4xl font-heading font-extrabold text-[#E7CB70]">
+
+                        {{ active_table_count }}
+
+                    </div>
+
+                    <p class="text-[9px] uppercase tracking-[0.20em] text-white/45 mt-2">
+
+                        Active Tables
+
+                    </p>
+
+                </div>
+
+
+                <div class="rsa-stat text-center py-7 sm:py-8">
+
+                    <div class="text-3xl sm:text-4xl font-heading font-extrabold text-[#E7CB70]">
+
+                        {{ active_coaching_count }}
+
+                    </div>
+
+                    <p class="text-[9px] uppercase tracking-[0.20em] text-white/45 mt-2">
+
+                        Coaching Programs
+
+                    </p>
+
+                </div>
+
+
+                <div class="rsa-stat text-center py-7 sm:py-8">
+
+                    <div class="text-3xl sm:text-4xl font-heading font-extrabold text-[#E7CB70]">
+
+                        {{ active_tournament_count }}
+
+                    </div>
+
+                    <p class="text-[9px] uppercase tracking-[0.20em] text-white/45 mt-2">
+
+                        Active Tournaments
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WHY PLAYERS CHOOSE ROYAL
+         ===================================================== -->
+
+    <section class="py-16 sm:py-20 lg:py-24 bg-[#F7F5EF]">
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="text-center max-w-3xl mx-auto">
+
+                <p class="text-[#D4AF37] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+
+                    The Royal Experience
+
+                </p>
+
+
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+
+                    Why Players Choose Royal
+
+                </h2>
+
+
+                <div class="rsa-gold-line w-28 mx-auto mt-5"></div>
+
+
+                <p class="text-[#66746F] text-sm sm:text-base leading-7 mt-6">
+
+                    A premium cue-sports environment built around quality equipment,
+                    comfort, coaching and a great playing experience.
+
+                </p>
+
+            </div>
+
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
+
+
+                <!-- XING PAI -->
+
+                <div class="rsa-feature-card rounded-xl p-6">
+
+                    <div class="rsa-feature-icon w-11 h-11 rounded-lg flex items-center justify-center">
+
+                        <i class="fa-solid fa-table-cells"></i>
+
+                    </div>
+
+
+                    <h3 class="font-heading font-bold text-[#18322B] text-lg mt-5">
+
+                        Xing Pai Tables
+
+                    </h3>
+
+
+                    <p class="text-[#66746F] text-sm leading-6 mt-2">
+
+                        Premium Xing Pai tables with carefully maintained playing
+                        surfaces for consistent sessions.
+
+                    </p>
+
+                </div>
+
+
+                <!-- EQUIPMENT -->
+
+                <div class="rsa-feature-card rounded-xl p-6">
+
+                    <div class="rsa-feature-icon w-11 h-11 rounded-lg flex items-center justify-center">
+
+                        <i class="fa-solid fa-circle-dot"></i>
+
+                    </div>
+
+
+                    <h3 class="font-heading font-bold text-[#18322B] text-lg mt-5">
+
+                        Premium Equipment
+
+                    </h3>
+
+
+                    <p class="text-[#66746F] text-sm leading-6 mt-2">
+
+                        Premium sticks, quality balls and table fabric selected
+                        for an enjoyable playing experience.
+
+                    </p>
+
+                </div>
+
+
+                <!-- AIR CONDITIONING -->
+
+                <div class="rsa-feature-card rounded-xl p-6">
+
+                    <div class="rsa-feature-icon w-11 h-11 rounded-lg flex items-center justify-center">
+
+                        <i class="fa-solid fa-snowflake"></i>
+
+                    </div>
+
+
+                    <h3 class="font-heading font-bold text-[#18322B] text-lg mt-5">
+
+                        Fully Air Conditioned
+
+                    </h3>
+
+
+                    <p class="text-[#66746F] text-sm leading-6 mt-2">
+
+                        A comfortable, climate-controlled environment designed
+                        for focused practice and longer sessions.
+
+                    </p>
+
+                </div>
+
+
+                <!-- COACHING -->
+
+                <div class="rsa-feature-card rounded-xl p-6">
+
+                    <div class="rsa-feature-icon w-11 h-11 rounded-lg flex items-center justify-center">
+
+                        <i class="fa-solid fa-graduation-cap"></i>
+
+                    </div>
+
+
+                    <h3 class="font-heading font-bold text-[#18322B] text-lg mt-5">
+
+                        Certified Coaching
+
+                    </h3>
+
+
+                    <p class="text-[#66746F] text-sm leading-6 mt-2">
+
+                        Professional coaching support for beginners,
+                        improving players and serious competitors.
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABLE SHOWCASE
+         ===================================================== -->
+
+    <section class="rsa-table-section py-20 sm:py-24 text-white">
+
+        <div class="rsa-table-content max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+
+
+                <div>
+
+                    <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+
+                        Tables & Slots
+
+                    </p>
+
+
+                    <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl mt-3">
+
+                        Choose Your Table
+
+                    </h2>
+
+
+                    <div class="rsa-gold-line w-28 mt-5"></div>
+
+
+                    <p class="text-white/55 text-sm sm:text-base leading-7 mt-6 max-w-2xl">
+
+                        Our Xing Pai table setup is maintained for players who
+                        want a premium and consistent playing experience.
+
+                        Select your preferred table and reserve your session online.
+
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{% url 'tables' %}"
+                    class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-5 py-3 font-bold text-sm hover:bg-white/[0.08] transition"
+                >
+
+                    View All Tables
+
+                    <i class="fa-solid fa-arrow-right text-[#E7CB70]"></i>
+
+                </a>
+
+
+            </div>
+
+
+            <div class="grid md:grid-cols-3 gap-5 mt-12">
+
+
+                {% for table in tables|slice:":3" %}
+
+
+                    <div class="rsa-table-card rounded-xl p-6">
+
+
+                        <div class="flex items-start justify-between gap-4">
+
+
+                            <div>
+
+                                <p class="text-[9px] uppercase tracking-[0.20em] text-white/40">
+
+                                    {{ table.table_type }}
+
+                                </p>
+
+
+                                <h3 class="font-heading font-bold text-xl mt-2">
+
+                                    {{ table.name }}
+
+                                </h3>
+
+                            </div>
+
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-table-cells"></i>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="mt-7">
+
+                            <span class="text-3xl font-heading font-extrabold text-[#E7CB70]">
+
+                                ₹{{ table.hourly_rate }}
+
+                            </span>
+
+
+                            <span class="text-white/40 text-xs">
+
+                                / hour
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="mt-3">
+
+                            <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-wider text-white/45">
+
+                                <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+
+                                Xing Pai Table
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="mt-6">
+
+                            <a
+                                href="{% url 'booking' %}"
+                                class="inline-flex items-center justify-center gap-2 w-full rounded-lg bg-[#D4AF37] text-[#07100D] py-3 font-extrabold text-sm hover:brightness-105 transition"
+                            >
+
+                                <i class="fa-solid fa-calendar-check"></i>
+
+                                Book This Table
+
+                            </a>
+
+                        </div>
+
+
+                    </div>
+
+
+                {% empty %}
+
+
+                    <div class="md:col-span-3 rounded-xl border border-white/10 bg-white/[0.03] p-8 text-center">
+
+                        <p class="text-white/55">
+
+                            Table information will be available soon.
+
+                        </p>
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PREMIUM FACILITIES
+         ===================================================== -->
+
+    <section class="py-20 sm:py-24 bg-[#F7F5EF]">
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="rsa-premium-panel rounded-2xl p-7 sm:p-10 lg:p-12 text-white">
+
+
+                <div class="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-center">
+
+
+                    <div>
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+
+                            Premium Facility
+
+                        </p>
+
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl mt-3 leading-tight">
+
+                            Designed for
+
+                            <span class="rsa-gold-text">
+
+                                Better Play.
+
+                            </span>
+
+                        </h2>
+
+
+                        <div class="rsa-gold-line w-28 mt-6"></div>
+
+
+                        <p class="text-white/55 text-sm sm:text-base leading-7 mt-6">
+
+                            Royal Snooker Academy combines premium playing equipment
+                            with a comfortable environment where players can practice,
+                            learn and enjoy the game.
+
+                        </p>
+
+
+                        <a
+                            href="{% url 'contact' %}"
+                            class="inline-flex items-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-6 py-3.5 font-extrabold text-sm mt-7"
+                        >
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            Visit the Academy
+
+                        </a>
+
+                    </div>
+
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+
+
+                        <!-- TABLES -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-table-cells text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Xing Pai Tables
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                Premium Xing Pai branded table setup with
+                                quality playing surfaces.
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- EQUIPMENT -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-circle-dot text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Premium Sticks & Balls
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                Premium sticks, quality balls and playing
+                                accessories for your sessions.
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- AC -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-snowflake text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Fully Air Conditioned
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                Enjoy your practice in a comfortable,
+                                fully air-conditioned facility.
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- SEATING -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-couch text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Comfortable Seating
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                Comfortable sofa seating for players,
+                                friends and accompanying guests.
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- SMOKING ZONE -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-smoking text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Dedicated Smoking Zone
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                A dedicated smoking area separate from
+                                the main playing environment.
+
+                            </p>
+
+                        </div>
+
+
+                        <!-- COACHING -->
+
+                        <div class="rsa-equipment-card rounded-xl p-6">
+
+                            <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+
+                                <i class="fa-solid fa-user-tie text-sm"></i>
+
+                            </div>
+
+
+                            <h3 class="font-heading font-bold text-white mt-5">
+
+                                Certified Coaches
+
+                            </h3>
+
+
+                            <p class="text-white/45 text-xs leading-6 mt-2">
+
+                                Coaching support available for players
+                                looking to improve their technique.
+
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MEMBERSHIP
+         ===================================================== -->
+
+    <section class="py-16 sm:py-20 bg-[#F7F5EF]">
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="rsa-membership-teaser rounded-2xl p-8 sm:p-10 text-white">
+
+
+                <div class="grid lg:grid-cols-[1fr_auto] gap-8 items-center">
+
+
+                    <div>
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+
+                            Membership
+
+                        </p>
+
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3">
+
+                            Make Royal Your Regular Game.
+
+                        </h2>
+
+
+                        <div class="rsa-gold-line w-28 mt-5"></div>
+
+
+                        <p class="text-white/55 text-sm sm:text-base leading-7 mt-5 max-w-2xl">
+
+                            Ask the academy about current membership options, member benefits
+                            and priority booking opportunities for regular players.
+
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-x-6 gap-y-3 mt-6 text-xs text-white/55">
+
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#E7CB70]"></i>
+
+                                Priority booking
+
+                            </span>
+
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#E7CB70]"></i>
+
+                                Member benefits
+
+                            </span>
+
+
+                            <span class="inline-flex items-center gap-2">
+
+                                <i class="fa-solid fa-circle-check text-[#E7CB70]"></i>
+
+                                Exclusive opportunities
+
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'membership' %}"
+                        class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 font-extrabold text-sm whitespace-nowrap"
+                    >
+
+                        <i class="fa-solid fa-crown"></i>
+
+                        Explore Membership
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         VISIT US
+         ===================================================== -->
+
+    <section class="py-20 sm:py-24 bg-[#F7F5EF]">
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="rsa-location-panel rounded-2xl p-8 sm:p-10 lg:p-12 text-white">
+
+
+                <div class="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+
+
+                    <div>
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+
+                            Visit Royal Snooker Academy
+
+                        </p>
+
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl mt-3">
+
+                            Come Play.
+
+                            <span class="rsa-gold-text">
+
+                                Stay Royal.
+
+                            </span>
+
+                        </h2>
+
+
+                        <div class="rsa-gold-line w-28 mt-5"></div>
+
+
+                        <div class="grid sm:grid-cols-2 gap-5 mt-7">
+
+
+                            <div class="flex items-start gap-3">
+
+
+                                <div class="w-10 h-10 rounded-lg bg-white/10 text-[#E7CB70] flex items-center justify-center shrink-0">
+
+                                    <i class="fa-solid fa-clock"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p class="font-bold text-sm">
+
+                                        Academy Hours
+
+                                    </p>
+
+
+                                    <p class="text-white/50 text-xs mt-1">
+
+                                        10:00 AM – 11:00 PM
+
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="flex items-start gap-3">
+
+
+                                <div class="w-10 h-10 rounded-lg bg-white/10 text-[#E7CB70] flex items-center justify-center shrink-0">
+
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p class="font-bold text-sm">
+
+                                        Bengaluru
+
+                                    </p>
+
+
+                                    <p class="text-white/50 text-xs mt-1">
+
+                                        BTM area
+
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="flex flex-col gap-3">
+
+
+                        <a
+                            href="https://maps.app.goo.gl/ENgCw8crvRY78sPJ7"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 font-extrabold text-sm whitespace-nowrap"
+                        >
+
+                            <i class="fa-solid fa-diamond-turn-right"></i>
+
+                            Get Directions
+
+                        </a>
+
+
+                        <a
+                            href="{% url 'booking' %}"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-7 py-3.5 font-bold text-sm hover:bg-white/[0.08] transition whitespace-nowrap"
+                        >
+
+                            <i class="fa-solid fa-calendar-check text-[#E7CB70]"></i>
+
+                            Book a Table
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
+
+    <section class="rsa-final-cta text-white">
+
+        <div class="relative z-10 max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+
+
+            <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.24em]">
+
+                Ready to Play?
+
+            </p>
+
+
+            <h2 class="font-heading font-extrabold text-3xl sm:text-4xl md:text-5xl mt-4">
+
+                Your Table.
+
+                <span class="rsa-gold-text">
+
+                    Your Game.
+
+                </span>
+
+            </h2>
+
+
+            <p class="text-white/48 leading-7 mt-5 max-w-2xl mx-auto text-sm sm:text-base">
+
+                Choose your table, select your preferred time and reserve
+                your session at Royal Snooker Academy.
+
+            </p>
+
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+
+
+                <a
+                    href="{% url 'booking' %}"
+                    class="rsa-gold-button inline-flex items-center justify-center gap-3 rounded-lg px-8 py-4 font-extrabold text-sm"
+                >
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    Book a Table
+
+                </a>
+
+
+                <a
+                    href="{% url 'contact' %}"
+                    class="inline-flex items-center justify-center gap-3 rounded-lg border border-white/15 bg-white/[0.03] px-8 py-4 font-bold text-sm hover:bg-white/[0.07] transition"
+                >
+
+                    <i class="fa-solid fa-location-dot text-[#E7CB70]"></i>
+
+                    Contact Academy
+
+                </a>
+
+
+            </div>
+
+
+            <div class="rsa-gold-line max-w-xs mx-auto mt-9 opacity-25"></div>
+
+
+            <p class="text-white/20 text-[8px] uppercase tracking-[0.28em] mt-5">
+
+                Royal Snooker Academy • Bengaluru
+
+            </p>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

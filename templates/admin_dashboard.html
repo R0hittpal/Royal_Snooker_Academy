@@ -1,0 +1,4420 @@
+{% extends "base.html" %}
+
+{% block title %}Operations Center | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<style>
+    /* =========================================================
+       ROYAL SNOOKER ACADEMY
+       OPERATIONS CENTER
+       ========================================================= */
+
+    .rsa-admin-dashboard {
+        --rsa-black: #07100D;
+        --rsa-deep: #06382D;
+        --rsa-green: #07513F;
+        --rsa-green-dark: #043A2D;
+        --rsa-green-soft: #EAF5F0;
+        --rsa-gold: #D4AF37;
+        --rsa-gold-light: #E7CB70;
+        --rsa-ivory: #F7F5EF;
+        --rsa-ivory-dark: #EFEEE7;
+        --rsa-text: #18322B;
+        --rsa-muted: #66746F;
+        --rsa-line: rgba(7, 81, 63, 0.11);
+
+        padding-top: 1.75rem;
+        padding-bottom: 3rem;
+    }
+
+    /* =========================================================
+       BASE VISUAL NORMALIZATION
+       ========================================================= */
+
+    .rsa-admin-dashboard .bg-white {
+        background: #FFFFFF !important;
+    }
+
+    .rsa-admin-dashboard .bg-slate-50 {
+        background: var(--rsa-ivory) !important;
+    }
+
+    .rsa-admin-dashboard .text-slate-900,
+    .rsa-admin-dashboard .text-slate-800,
+    .rsa-admin-dashboard .text-slate-700 {
+        color: var(--rsa-text) !important;
+    }
+
+    .rsa-admin-dashboard .text-slate-600,
+    .rsa-admin-dashboard .text-slate-500 {
+        color: var(--rsa-muted) !important;
+    }
+
+    .rsa-admin-dashboard .text-slate-400 {
+        color: #7C8883 !important;
+    }
+
+    .rsa-admin-dashboard .border-slate-200,
+    .rsa-admin-dashboard .border-slate-100 {
+        border-color: var(--rsa-line) !important;
+    }
+
+    .rsa-admin-dashboard .shadow-sm {
+        box-shadow: 0 8px 28px rgba(7, 16, 13, 0.055) !important;
+    }
+
+    .rsa-admin-dashboard .rounded-2xl {
+        border-radius: 1.15rem;
+    }
+
+    .rsa-admin-dashboard h1,
+    .rsa-admin-dashboard h2,
+    .rsa-admin-dashboard h3 {
+        letter-spacing: -0.02em;
+    }
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .rsa-ops-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.35rem;
+        padding: 1.55rem;
+        background:
+            radial-gradient(
+                circle at 92% 10%,
+                rgba(212,175,55,0.18),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 70% 120%,
+                rgba(5,150,105,0.13),
+                transparent 35%
+            ),
+            linear-gradient(
+                135deg,
+                #07100D 0%,
+                #06382D 58%,
+                #07513F 100%
+            );
+        border: 1px solid rgba(212,175,55,0.24);
+        box-shadow: 0 18px 45px rgba(7,16,13,0.13);
+    }
+
+    .rsa-ops-hero::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        right: -100px;
+        bottom: -130px;
+        border: 1px solid rgba(212,175,55,0.12);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .rsa-hero-eyebrow {
+        color: var(--rsa-gold-light);
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+    }
+
+    .rsa-hero-title {
+        color: #FFFFFF !important;
+        font-size: clamp(1.8rem, 4vw, 2.65rem);
+        line-height: 1.05;
+        font-weight: 900;
+        margin-top: 0.35rem;
+    }
+
+    .rsa-hero-description {
+        color: rgba(255,255,255,0.66);
+        font-size: 0.82rem;
+        line-height: 1.55;
+        max-width: 620px;
+        margin-top: 0.55rem;
+    }
+
+    .rsa-live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.36rem 0.65rem;
+        border-radius: 999px;
+        color: #D9F4E8;
+        background: rgba(255,255,255,0.075);
+        border: 1px solid rgba(255,255,255,0.12);
+        font-size: 0.66rem;
+        font-weight: 800;
+    }
+
+    .rsa-live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #52D49A;
+        box-shadow: 0 0 0 4px rgba(82,212,154,0.12);
+    }
+
+    .rsa-clock {
+        color: rgba(255,255,255,0.88);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+    .rsa-hero-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .rsa-hero-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border-radius: 0.75rem;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        transition: 0.2s ease;
+    }
+
+    .rsa-hero-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .rsa-hero-btn-primary {
+        background: linear-gradient(
+            135deg,
+            #F2D77F,
+            #D4AF37
+        );
+        color: #07100D;
+        box-shadow: 0 8px 18px rgba(180,140,30,0.18);
+    }
+
+    .rsa-hero-btn-secondary {
+        color: #FFFFFF;
+        background: rgba(255,255,255,0.075);
+        border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .rsa-hero-btn-secondary:hover {
+        background: rgba(255,255,255,0.13);
+    }
+
+    /* =========================================================
+       SECTION LABEL
+       ========================================================= */
+
+    .rsa-section-kicker {
+        font-size: 0.62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--rsa-gold);
+    }
+
+    .rsa-section-title {
+        margin-top: 0.2rem;
+        font-size: 1.18rem;
+        font-weight: 900;
+        color: var(--rsa-text);
+    }
+
+    .rsa-section-description {
+        margin-top: 0.2rem;
+        font-size: 0.7rem;
+        color: var(--rsa-muted);
+    }
+
+    /* =========================================================
+       KPI CARDS
+       ========================================================= */
+
+    .rsa-kpi-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 145px;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .rsa-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(7,16,13,0.08) !important;
+        border-color: rgba(212,175,55,0.3) !important;
+    }
+
+    .rsa-kpi-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background: var(--rsa-green-soft);
+        color: var(--rsa-green);
+        font-size: 1rem;
+        border: 1px solid rgba(7,81,63,0.08);
+    }
+
+    .rsa-kpi-label {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--rsa-muted);
+    }
+
+    .rsa-kpi-value {
+        margin-top: 0.35rem;
+        color: var(--rsa-text);
+        font-size: 1.7rem;
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    .rsa-kpi-note {
+        margin-top: 0.65rem;
+        color: #7C8883;
+        font-size: 0.63rem;
+    }
+
+    /* =========================================================
+       NEXT SESSION
+       ========================================================= */
+
+    .rsa-next-card {
+        border: 1px solid rgba(212,175,55,0.27);
+        background:
+            radial-gradient(
+                circle at 90% 0%,
+                rgba(212,175,55,0.10),
+                transparent 28%
+            ),
+            linear-gradient(
+                110deg,
+                #F7F5EF,
+                #FFFFFF 70%
+            );
+    }
+
+    .rsa-next-icon {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.9rem;
+        background: rgba(212,175,55,0.13);
+        border: 1px solid rgba(212,175,55,0.2);
+        color: #A47B10;
+        font-size: 1.15rem;
+    }
+
+    .rsa-countdown {
+        white-space: nowrap;
+        border-radius: 0.75rem;
+        padding: 0.55rem 0.75rem;
+        background: #FFFFFF;
+        border: 1px solid rgba(212,175,55,0.28);
+        color: #A47B10;
+        font-size: 0.68rem;
+        font-weight: 900;
+    }
+
+    /* =========================================================
+       STATUS STRIP
+       ========================================================= */
+
+    .rsa-status-box {
+        border-radius: 0.9rem;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid var(--rsa-line);
+        background: #FFFFFF;
+    }
+
+    .rsa-status-label {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--rsa-muted);
+    }
+
+    .rsa-status-value {
+        margin-top: 0.2rem;
+        font-size: 1.3rem;
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    /* =========================================================
+       TABLE FLOOR
+       ========================================================= */
+
+    .rsa-table-card {
+        position: relative;
+        border: 1px solid var(--rsa-line);
+        border-radius: 0.9rem;
+        padding: 0.8rem;
+        background: #FFFFFF;
+        transition: 0.2s ease;
+    }
+
+    .rsa-table-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(7,16,13,0.055);
+    }
+
+    .rsa-table-card.available {
+        border-color: rgba(5,150,105,0.18);
+        background: linear-gradient(
+            135deg,
+            #FFFFFF,
+            #F5FBF8
+        );
+    }
+
+    .rsa-table-card.occupied {
+        border-color: rgba(220,38,38,0.18);
+        background: linear-gradient(
+            135deg,
+            #FFFFFF,
+            #FFF7F7
+        );
+    }
+
+    .rsa-table-card.later {
+        border-color: rgba(212,175,55,0.22);
+        background: linear-gradient(
+            135deg,
+            #FFFFFF,
+            #FFFCF1
+        );
+    }
+
+    .rsa-table-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border-radius: 999px;
+        padding: 0.25rem 0.48rem;
+        font-size: 0.57rem;
+        font-weight: 900;
+    }
+
+    .rsa-table-status.available {
+        background: #EAF7F0;
+        color: #087443;
+    }
+
+    .rsa-table-status.occupied {
+        background: #FFF0F0;
+        color: #B42323;
+    }
+
+    .rsa-table-status.later {
+        background: #FBF5DE;
+        color: #9A7510;
+    }
+
+    .rsa-table-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .rsa-table-dot.available {
+        background: #16A66A;
+    }
+
+    .rsa-table-dot.occupied {
+        background: #DC3C3C;
+    }
+
+    .rsa-table-dot.later {
+        background: #D4AF37;
+    }
+
+    /* =========================================================
+       TABLES
+       ========================================================= */
+
+    .rsa-data-table {
+        min-width: 760px;
+    }
+
+    .rsa-data-table th {
+        background: var(--rsa-ivory) !important;
+        color: var(--rsa-muted) !important;
+        font-size: 0.57rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+    }
+
+    .rsa-data-table td {
+        font-size: 0.68rem;
+        vertical-align: middle;
+    }
+
+    .rsa-data-table tbody tr {
+        border-color: rgba(7,81,63,0.07) !important;
+        transition: background 0.15s ease;
+    }
+
+    .rsa-data-table tbody tr:hover {
+        background: #FAF9F4 !important;
+    }
+
+    .rsa-data-table .current-row {
+        background: #F0F8F3 !important;
+        box-shadow: inset 3px 0 0 var(--rsa-green);
+    }
+
+    .rsa-now-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.25rem;
+        border-radius: 999px;
+        padding: 0.18rem 0.38rem;
+        background: #E5F6ED;
+        color: #087443;
+        font-size: 0.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .rsa-now-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #16A66A;
+    }
+
+    /* Never show a NOW badge until JavaScript confirms the session is live. */
+    .rsa-now-badge.hidden {
+        display: none !important;
+    }
+
+    /* =========================================================
+       ACTION BUTTONS
+       ========================================================= */
+
+    .rsa-manage-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.55rem;
+        padding: 0.38rem 0.55rem;
+        background: var(--rsa-green);
+        color: #FFFFFF !important;
+        font-size: 0.58rem;
+        font-weight: 900;
+        transition: 0.15s ease;
+    }
+
+    .rsa-manage-btn:hover {
+        background: var(--rsa-green-dark);
+    }
+
+    .rsa-complete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.55rem;
+        padding: 0.38rem 0.55rem;
+        background: #EAF3FA;
+        color: #17618A;
+        font-size: 0.58rem;
+        font-weight: 900;
+    }
+
+    .rsa-cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.55rem;
+        padding: 0.38rem 0.55rem;
+        background: #FFF0F0;
+        color: #B42323;
+        font-size: 0.58rem;
+        font-weight: 900;
+    }
+
+    /* =========================================================
+       FILTERS
+       ========================================================= */
+
+    .rsa-filter-panel {
+        background: var(--rsa-ivory);
+        border-top: 1px solid var(--rsa-line);
+        border-bottom: 1px solid var(--rsa-line);
+    }
+
+    .rsa-filter-panel input,
+    .rsa-filter-panel select {
+        border-color: rgba(7,81,63,0.14) !important;
+        color: var(--rsa-text) !important;
+        background: #FFFFFF !important;
+    }
+
+    .rsa-filter-panel input:focus,
+    .rsa-filter-panel select:focus {
+        border-color: var(--rsa-gold) !important;
+        box-shadow: 0 0 0 3px rgba(212,175,55,0.12) !important;
+    }
+
+    /* =========================================================
+       COLLAPSIBLE MANAGEMENT
+       ========================================================= */
+
+    .rsa-management-summary {
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .rsa-management-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .rsa-management-summary:hover {
+        background: #FCFBF7;
+    }
+
+    .rsa-chevron {
+        transition: transform 0.2s ease;
+    }
+
+    details[open] .rsa-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* =========================================================
+       EMPTY STATES
+       ========================================================= */
+
+    .rsa-empty {
+        padding: 2.5rem 1rem;
+        text-align: center;
+    }
+
+    .rsa-empty-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.7;
+    }
+
+    /* =========================================================
+       MANAGER NAVIGATION
+       ========================================================= */
+
+    .rsa-manager-booking-link,
+    .rsa-manager-manage-link {
+        cursor: pointer;
+    }
+
+    .rsa-manager-booking-link:focus-visible,
+    .rsa-manager-manage-link:focus-visible {
+        outline: 2px solid var(--rsa-gold);
+        outline-offset: 2px;
+    }
+
+    /* =========================================================
+       MANAGER BOOKING DETAIL PANEL
+       ========================================================= */
+
+    .rsa-booking-detail-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(7,16,13,0.58);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .rsa-booking-detail-overlay.hidden {
+        display: none !important;
+    }
+
+    .rsa-booking-detail-panel {
+        width: min(100%, 620px);
+        max-height: min(90vh, 760px);
+        overflow-y: auto;
+        border-radius: 1.25rem;
+        background: #FFFFFF;
+        border: 1px solid rgba(212,175,55,0.28);
+        box-shadow: 0 30px 80px rgba(7,16,13,0.25);
+    }
+
+    .rsa-booking-detail-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.1rem 1.2rem;
+        background: linear-gradient(135deg, #07100D, #06382D);
+        border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .rsa-booking-detail-close {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.7rem;
+        color: #FFFFFF;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.13);
+        transition: 0.15s ease;
+    }
+
+    .rsa-booking-detail-close:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    .rsa-booking-detail-body {
+        padding: 1.2rem;
+    }
+
+    .rsa-booking-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .rsa-booking-detail-item {
+        border: 1px solid var(--rsa-line);
+        border-radius: 0.85rem;
+        padding: 0.75rem;
+        background: #FAFAF7;
+    }
+
+    .rsa-booking-detail-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .rsa-booking-detail-label {
+        color: var(--rsa-muted);
+        font-size: 0.55rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+    }
+
+    .rsa-booking-detail-value {
+        margin-top: 0.25rem;
+        color: var(--rsa-text);
+        font-size: 0.78rem;
+        font-weight: 800;
+        word-break: break-word;
+    }
+
+    .rsa-booking-detail-value a {
+        color: var(--rsa-green);
+    }
+
+    .rsa-booking-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--rsa-line);
+    }
+
+    .rsa-booking-detail-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        min-height: 38px;
+        border-radius: 0.7rem;
+        padding: 0.55rem 0.8rem;
+        font-size: 0.64rem;
+        font-weight: 900;
+    }
+
+    .rsa-booking-detail-action.complete {
+        background: #EAF3FA;
+        color: #17618A;
+    }
+
+    .rsa-booking-detail-action.cancel {
+        background: #FFF0F0;
+        color: #B42323;
+    }
+
+    .rsa-booking-detail-action.call {
+        background: var(--rsa-green);
+        color: #FFFFFF !important;
+        text-decoration: none;
+        border: 1px solid var(--rsa-green);
+    }
+
+    .rsa-booking-detail-action.call:hover {
+        background: var(--rsa-green-dark);
+        color: #FFFFFF !important;
+    }
+
+    .rsa-booking-detail-action.call i {
+        color: #FFFFFF !important;
+    }
+
+    .rsa-booking-detail-note {
+        margin-top: 0.7rem;
+        color: var(--rsa-muted);
+        font-size: 0.61rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 520px) {
+
+        .rsa-booking-detail-overlay {
+            align-items: flex-end;
+            padding: 0;
+        }
+
+        .rsa-booking-detail-panel {
+            width: 100%;
+            max-height: 92vh;
+            border-radius: 1.15rem 1.15rem 0 0;
+        }
+
+        .rsa-booking-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .rsa-booking-detail-item.full {
+            grid-column: auto;
+        }
+
+        .rsa-booking-detail-action {
+            flex: 1 1 140px;
+        }
+
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 767px) {
+
+        .rsa-admin-dashboard {
+            padding-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        .rsa-ops-hero {
+            padding: 1.1rem;
+            border-radius: 1rem;
+        }
+
+        .rsa-hero-title {
+            font-size: 1.75rem;
+        }
+
+        .rsa-hero-actions {
+            width: 100%;
+        }
+
+        .rsa-hero-btn {
+            flex: 1;
+        }
+
+        .rsa-kpi-card {
+            min-height: 125px;
+        }
+
+        .rsa-kpi-value {
+            font-size: 1.45rem;
+        }
+
+        .rsa-next-card .rsa-countdown {
+            width: 100%;
+            text-align: center;
+        }
+
+        .rsa-table-card {
+            padding: 0.7rem;
+        }
+    }
+</style>
+
+
+<div class="rsa-admin-dashboard max-w-7xl mx-auto">
+
+
+    <!-- =====================================================
+         HERO / OPERATIONS HEADER
+         ===================================================== -->
+
+    <section class="rsa-ops-hero mb-6">
+
+        <div class="relative z-10">
+
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+
+                <div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+
+                        <span class="rsa-hero-eyebrow">
+                            Royal Snooker Academy
+                        </span>
+
+                        <span class="rsa-live-pill">
+                            <span class="rsa-live-dot"></span>
+                            LIVE OPERATIONS
+                        </span>
+
+                    </div>
+
+
+                    <h1 class="rsa-hero-title">
+                        Operations Center
+                    </h1>
+
+
+                    <p class="rsa-hero-description">
+                        Monitor today's sessions, table availability,
+                        upcoming reservations and academy activity from one place.
+                    </p>
+
+
+                    <div class="flex flex-wrap items-center gap-3 mt-4">
+
+                        <span class="rsa-clock">
+                            {{ today|date:"l, d M Y" }}
+                        </span>
+
+                        <span class="text-white/30 text-xs">
+                            •
+                        </span>
+
+                        <span
+                            id="rsaLiveClock"
+                            class="rsa-clock"
+                        >
+                            --:--:--
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex flex-col sm:items-end gap-3">
+
+                    <div
+                        class="flex items-center gap-3 rounded-xl px-3 py-2"
+                        style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);"
+                    >
+                        <div
+                            class="flex items-center justify-center rounded-full"
+                            style="width:32px; height:32px; background:rgba(212,175,55,0.16); color:#E7CB70;"
+                        >
+                            <i class="fa-solid fa-user-tie text-xs"></i>
+                        </div>
+
+                        <div>
+                            <div
+                                style="color:rgba(255,255,255,0.52); font-size:0.55rem; font-weight:800; text-transform:uppercase; letter-spacing:0.12em;"
+                            >
+                                Signed in as
+                            </div>
+
+                            <div
+                                style="color:#FFFFFF; font-size:0.72rem; font-weight:800; margin-top:0.1rem;"
+                            >
+                                {% if request.user.get_full_name %}
+                                    {{ request.user.get_full_name }}
+                                {% else %}
+                                    {{ request.user.username }}
+                                {% endif %}
+                            </div>
+
+                            <div
+                                style="color:#E7CB70; font-size:0.52rem; font-weight:800; margin-top:0.08rem; text-transform:uppercase; letter-spacing:0.08em;"
+                            >
+                                RSA Manager
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rsa-hero-actions">
+
+                    <a
+                        href="/book/"
+                        class="rsa-hero-btn rsa-hero-btn-primary"
+                    >
+                        + New Booking
+                    </a>
+
+                    <a
+                        href="#bookingManagementDetails"
+                        class="rsa-hero-btn rsa-hero-btn-secondary rsa-manager-manage-link"
+                    >
+                        Manage Bookings
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'manager_logout' %}"
+                        class="inline-flex"
+                    >
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="rsa-hero-btn rsa-hero-btn-secondary"
+                            title="Sign out of the Operations Center"
+                        >
+                            Sign Out
+                        </button>
+                    </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MESSAGES
+         ===================================================== -->
+
+    {% if messages %}
+
+        <div class="mb-6 space-y-2">
+
+            {% for message in messages %}
+
+                <div
+                    class="rounded-xl border px-4 py-3 text-xs font-semibold
+                    {% if message.tags == 'success' %}
+                        border-green-200 bg-green-50 text-green-700
+                    {% elif message.tags == 'warning' %}
+                        border-amber-200 bg-amber-50 text-amber-700
+                    {% else %}
+                        border-red-200 bg-red-50 text-red-700
+                    {% endif %}"
+                >
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         TODAY AT A GLANCE
+         ===================================================== -->
+
+    <section class="mb-6">
+
+        <div class="flex items-end justify-between gap-4 mb-3">
+
+            <div>
+                <div class="rsa-section-kicker">
+                    Today at a glance
+                </div>
+
+                <div class="rsa-section-title">
+                    Academy performance
+                </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400">
+                Live from booking records
+            </div>
+
+        </div>
+
+
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-3">
+
+
+            <!-- CONFIRMED -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Confirmed today
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ today_booking_count }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        📅
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Active reservations for today
+                </div>
+
+            </div>
+
+
+            <!-- REVENUE -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Today's revenue
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            ₹{{ today_revenue|floatformat:0 }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        ₹
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Confirmed booking value
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE TABLES -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Active tables
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ active_tables|length }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        🎱
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Tables currently enabled
+                </div>
+
+            </div>
+
+
+            <!-- UPCOMING -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Upcoming
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ upcoming_booking_count }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        →
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Confirmed future reservations
+                </div>
+
+            </div>
+
+
+            <!-- OCCUPIED TABLES -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Occupied now
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ occupied_table_count }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        ●
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Tables currently in session
+                </div>
+
+            </div>
+
+
+            <!-- COMPLETED -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Completed
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ today_status_counts.Completed }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    {{ completed_today_revenue|floatformat:0 }} revenue from completed sessions
+                </div>
+
+            </div>
+
+
+            <!-- CANCELLED -->
+
+            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+                        <div class="rsa-kpi-label">
+                            Cancelled
+                        </div>
+
+                        <div class="rsa-kpi-value">
+                            {{ today_status_counts.Cancelled }}
+                        </div>
+                    </div>
+
+                    <div class="rsa-kpi-icon">
+                        ×
+                    </div>
+
+                </div>
+
+                <div class="rsa-kpi-note">
+                    Cancelled sessions today
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         NEXT SESSION
+         ===================================================== -->
+
+    <section
+        id="nextBookingCard"
+        class="rsa-next-card rounded-2xl shadow-sm overflow-hidden mb-6"
+    >
+
+        <div class="p-5">
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+                <div class="flex items-start gap-3">
+
+                    <div class="rsa-next-icon">
+                        →
+                    </div>
+
+                    <div>
+
+                        <div class="rsa-section-kicker">
+                            Next confirmed session
+                        </div>
+
+                        <h2
+                            id="nextBookingTitle"
+                            class="text-xl font-extrabold text-slate-900 mt-1"
+                        >
+                            Checking schedule...
+                        </h2>
+
+                        <p
+                            id="nextBookingDetails"
+                            class="text-xs text-slate-500 mt-1"
+                        >
+                            Finding the next confirmed reservation.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="nextBookingCountdown"
+                    class="rsa-countdown"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HIDDEN NEXT BOOKING DATA
+         ===================================================== -->
+
+    <div id="nextBookingData" class="hidden">
+
+        {% for booking in upcoming_bookings %}
+
+            <div
+                class="next-booking-data"
+                data-date="{{ booking.booking_date|date:'Y-m-d' }}"
+                data-start="{{ booking.start_time|time:'H:i' }}"
+                data-table="{{ booking.table.name }}"
+                data-customer="{{ booking.customer_name }}"
+                data-reference="{{ booking.booking_reference }}"
+                data-duration="{{ booking.duration_hours }}"
+            ></div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         TODAY'S STATUS
+         ===================================================== -->
+
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+
+            <div>
+
+                <div class="rsa-section-kicker">
+                    Booking status
+                </div>
+
+                <div class="text-base font-extrabold text-slate-900 mt-1">
+                    Today's booking mix
+                </div>
+
+            </div>
+
+            <a
+                href="#bookingManagementDetails"
+                class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700 rsa-manager-manage-link"
+            >
+                Open today's bookings →
+            </a>
+
+        </div>
+
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+
+
+            <div class="rsa-status-box">
+
+                <div class="rsa-status-label">
+                    Total
+                </div>
+
+                <div class="rsa-status-value">
+                    {{ today_status_counts.Total }}
+                </div>
+
+            </div>
+
+
+            <div class="rsa-status-box bg-green-50">
+
+                <div class="rsa-status-label text-green-700">
+                    Confirmed
+                </div>
+
+                <div class="rsa-status-value text-green-700">
+                    {{ today_status_counts.Confirmed }}
+                </div>
+
+            </div>
+
+
+            <div class="rsa-status-box bg-red-50">
+
+                <div class="rsa-status-label text-red-700">
+                    Cancelled
+                </div>
+
+                <div class="rsa-status-value text-red-700">
+                    {{ today_status_counts.Cancelled }}
+                </div>
+
+            </div>
+
+
+            <div class="rsa-status-box bg-blue-50">
+
+                <div class="rsa-status-label text-blue-700">
+                    Completed
+                </div>
+
+                <div class="rsa-status-value text-blue-700">
+                    {{ today_status_counts.Completed }}
+                </div>
+
+            </div>
+
+
+            <div class="rsa-status-box bg-amber-50">
+
+                <div class="rsa-status-label text-amber-700">
+                    Pending
+                </div>
+
+                <div class="rsa-status-value text-amber-700">
+                    {{ today_status_counts.Pending }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         QUICK OPERATIONAL INSIGHTS
+         ===================================================== -->
+
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+
+        <div class="rsa-status-box">
+            <div class="rsa-status-label">Available tables</div>
+            <div class="rsa-status-value text-green-700">{{ available_table_count }}</div>
+        </div>
+
+        <div class="rsa-status-box">
+            <div class="rsa-status-label">Booked later</div>
+            <div class="rsa-status-value text-amber-700">{{ booked_later_table_count }}</div>
+        </div>
+
+        <div class="rsa-status-box">
+            <div class="rsa-status-label">Completed revenue</div>
+            <div class="rsa-status-value text-blue-700">₹{{ completed_today_revenue|floatformat:0 }}</div>
+        </div>
+
+        <div class="rsa-status-box">
+            <div class="rsa-status-label">Cancelled today</div>
+            <div class="rsa-status-value text-red-700">{{ cancelled_today_count }}</div>
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TODAY'S OPERATIONS
+         ===================================================== -->
+
+    <section class="mb-6">
+
+        <div class="flex items-end justify-between gap-4 mb-3">
+
+            <div>
+
+                <div class="rsa-section-kicker">
+                    Today's operations
+                </div>
+
+                <div class="rsa-section-title">
+                    Schedule & table floor
+                </div>
+
+                <div class="rsa-section-description">
+                    See what is happening now and what is coming up today.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid lg:grid-cols-3 gap-4">
+
+
+            <!-- =================================================
+                 TODAY'S SCHEDULE
+                 ================================================= -->
+
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                <div class="p-4 border-b border-slate-100">
+
+                    <div class="flex items-center justify-between gap-3">
+
+                        <div>
+
+                            <h2 class="text-base font-extrabold text-slate-900">
+                                Today's Schedule
+                            </h2>
+
+                            <p class="text-[10px] text-slate-400 mt-1">
+                                {{ today|date:"d M Y" }}
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="#bookingManagementDetails"
+                            class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700 rsa-manager-manage-link"
+                        >
+                            Manage bookings →
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overflow-x-auto">
+
+                    <table class="rsa-data-table w-full text-left">
+
+                        <thead class="border-b border-slate-100">
+
+                            <tr>
+
+                                <th class="px-4 py-3">
+                                    Time
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Table
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Customer
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Duration
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Amount
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Status
+                                </th>
+
+                                <th class="px-4 py-3">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody class="divide-y divide-slate-100">
+
+                            {% for booking in today_bookings %}
+
+                                <tr
+                                    class="today-booking-row"
+                                    data-booking-date="{{ booking.booking_date|date:'Y-m-d' }}"
+                                    data-booking-start="{{ booking.start_time|time:'H:i' }}"
+                                    data-booking-duration="{{ booking.duration_hours }}"
+                                    data-booking-status="{{ booking.status }}"
+                                >
+
+                                    <td class="px-4 py-3 whitespace-nowrap">
+
+                                        <div class="font-extrabold text-slate-900">
+                                            {{ booking.start_time|time:"g:i A" }}
+                                        </div>
+
+                                        <span class="rsa-now-badge hidden" style="display:none;">
+
+                                            <span class="rsa-now-dot"></span>
+
+                                            NOW
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3">
+
+                                        <div class="font-bold text-slate-900">
+                                            {{ booking.table.name }}
+                                        </div>
+
+                                        <div class="text-[9px] text-slate-400">
+                                            {{ booking.table.table_type }}
+                                        </div>
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3">
+
+                                        <div class="font-bold text-slate-900">
+                                            {{ booking.customer_name }}
+                                        </div>
+
+                                        <div class="text-[9px] text-slate-400">
+                                            {{ booking.phone }}
+                                        </div>
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3 whitespace-nowrap text-slate-600">
+
+                                        {{ booking.duration_hours }}
+                                        hr{% if booking.duration_hours != 1 %}s{% endif %}
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3 whitespace-nowrap font-extrabold text-slate-900">
+
+                                        ₹{{ booking.amount|floatformat:0 }}
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3">
+
+                                        {% if booking.status == "Confirmed" %}
+
+                                            <span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-[9px] font-extrabold text-green-700">
+                                                Confirmed
+                                            </span>
+
+                                        {% elif booking.status == "Cancelled" %}
+
+                                            <span class="inline-flex rounded-full bg-red-100 px-2 py-1 text-[9px] font-extrabold text-red-700">
+                                                Cancelled
+                                            </span>
+
+                                        {% elif booking.status == "Completed" %}
+
+                                            <span class="inline-flex rounded-full bg-blue-100 px-2 py-1 text-[9px] font-extrabold text-blue-700">
+                                                Completed
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="inline-flex rounded-full bg-amber-100 px-2 py-1 text-[9px] font-extrabold text-amber-700">
+                                                {{ booking.status }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td class="px-4 py-3">
+
+                                        <a
+                                            href="#bookingManagementDetails"
+                                            class="rsa-manage-btn rsa-manager-booking-link"
+                                            data-booking-reference="{{ booking.booking_reference }}"
+                                        >
+                                            Manage
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td colspan="7">
+
+                                        <div class="rsa-empty">
+
+                                            <div class="rsa-empty-icon">
+                                                📅
+                                            </div>
+
+                                            <div class="font-bold text-slate-700 text-sm">
+                                                No bookings for today
+                                            </div>
+
+                                            <div class="text-[10px] text-slate-400 mt-1">
+                                                New confirmed sessions will appear here.
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TABLE FLOOR
+                 ================================================= -->
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                <div class="p-4 border-b border-slate-100">
+
+                    <div class="flex items-center justify-between">
+
+                        <div>
+
+                            <h2 class="text-base font-extrabold text-slate-900">
+                                Live Table Floor
+                            </h2>
+
+                            <p class="text-[10px] text-slate-400 mt-1">
+                                Current table availability
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="#bookingManagementDetails"
+                            class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700 rsa-manager-manage-link"
+                        >
+                            Booking controls →
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="p-3">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+
+                        {% for item in table_statuses %}
+
+                            {% if item.status == "Available" %}
+
+                                <div class="rsa-table-card available">
+
+                            {% elif item.status == "Occupied" %}
+
+                                <div class="rsa-table-card occupied">
+
+                            {% else %}
+
+                                <div class="rsa-table-card later">
+
+                            {% endif %}
+
+
+                                <div class="flex items-center justify-between gap-2">
+
+                                    <div>
+
+                                        <div class="font-extrabold text-slate-900 text-xs">
+                                            {{ item.table.name }}
+                                        </div>
+
+                                        <div class="text-[9px] text-slate-400">
+                                            {{ item.table.table_type }}
+                                        </div>
+
+                                    </div>
+
+
+                                    {% if item.status == "Available" %}
+
+                                        <span class="rsa-table-status available">
+
+                                            <span class="rsa-table-dot available"></span>
+
+                                            Available
+
+                                        </span>
+
+                                    {% elif item.status == "Occupied" %}
+
+                                        <span class="rsa-table-status occupied">
+
+                                            <span class="rsa-table-dot occupied"></span>
+
+                                            Occupied
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="rsa-table-status later">
+
+                                            <span class="rsa-table-dot later"></span>
+
+                                            Booked Later
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if item.booking %}
+
+                                    <div class="mt-2 pt-2 border-t border-slate-100">
+
+                                        <div class="flex items-center justify-between gap-2">
+
+                                            <div>
+
+                                                <div class="text-[9px] text-slate-400">
+                                                    Customer
+                                                </div>
+
+                                                <div class="text-[10px] font-bold text-slate-800">
+                                                    {{ item.customer_name }}
+                                                </div>
+
+                                            </div>
+
+                                            <a
+                                                href="#bookingManagementDetails"
+                                                class="text-[9px] font-extrabold text-amber-600 rsa-manager-booking-link"
+                                                data-booking-reference="{{ item.booking.booking_reference }}"
+                                            >
+                                                Manage →
+                                            </a>
+
+                                        </div>
+
+
+                                        <div class="grid grid-cols-2 gap-2 mt-2">
+
+                                            <div class="rounded-lg bg-slate-50 px-2 py-1.5">
+
+                                                <div class="text-[8px] text-slate-400">
+                                                    Starts
+                                                </div>
+
+                                                <div class="text-[10px] font-extrabold text-slate-800">
+                                                    {{ item.start_time|time:"g:i A" }}
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="rounded-lg bg-slate-50 px-2 py-1.5">
+
+                                                <div class="text-[8px] text-slate-400">
+                                                    Ends
+                                                </div>
+
+                                                <div class="text-[10px] font-extrabold text-slate-800">
+                                                    {{ item.end_time|time:"g:i A" }}
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="mt-2 pt-2 border-t border-slate-100">
+
+                                        <div class="text-[9px] text-slate-400">
+                                            No confirmed booking currently scheduled.
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% empty %}
+
+                            <div class="rsa-empty">
+
+                                <div class="text-sm font-bold text-slate-700">
+                                    No active tables
+                                </div>
+
+                                <div class="text-[10px] text-slate-400 mt-1">
+                                    No active tables are configured for this branch.
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         UPCOMING RESERVATIONS
+         ===================================================== -->
+
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+
+        <div class="p-4 border-b border-slate-100">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div>
+
+                    <div class="rsa-section-kicker">
+                        Upcoming reservations
+                    </div>
+
+                    <h2 class="text-base font-extrabold text-slate-900 mt-1">
+                        What's coming next
+                    </h2>
+
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Confirmed reservations after the current time.
+                    </p>
+
+                </div>
+
+                <a
+                    href="#bookingManagementDetails"
+                    class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700 rsa-manager-manage-link"
+                >
+                    Manage bookings →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+            <table class="rsa-data-table w-full text-left">
+
+                <thead class="border-b border-slate-100">
+
+                    <tr>
+
+                        <th class="px-4 py-3">
+                            Date
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Time
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Table
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Customer
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Duration
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Amount
+                        </th>
+
+                        <th class="px-4 py-3">
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody class="divide-y divide-slate-100">
+
+                    {% for booking in upcoming_bookings %}
+
+                        <tr>
+
+                            <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
+
+                                {{ booking.booking_date|date:"d M Y" }}
+
+                            </td>
+
+
+                            <td class="px-4 py-3 font-bold text-slate-800 whitespace-nowrap">
+
+                                {{ booking.start_time|time:"g:i A" }}
+
+                            </td>
+
+
+                            <td class="px-4 py-3">
+
+                                <div class="font-bold text-slate-900">
+                                    {{ booking.table.name }}
+                                </div>
+
+                                <div class="text-[9px] text-slate-400">
+                                    {{ booking.table.table_type }}
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-4 py-3">
+
+                                <div class="font-bold text-slate-900">
+                                    {{ booking.customer_name }}
+                                </div>
+
+                                <div class="text-[9px] text-slate-400">
+                                    {{ booking.phone }}
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-4 py-3 whitespace-nowrap text-slate-600">
+
+                                {{ booking.duration_hours }}
+                                hr{% if booking.duration_hours != 1 %}s{% endif %}
+
+                            </td>
+
+
+                            <td class="px-4 py-3 whitespace-nowrap font-extrabold text-slate-900">
+
+                                ₹{{ booking.amount|floatformat:0 }}
+
+                            </td>
+
+
+                            <td class="px-4 py-3">
+
+                                <a
+                                    href="#bookingManagementDetails"
+                                    class="rsa-manage-btn rsa-manager-booking-link"
+                                    data-booking-reference="{{ booking.booking_reference }}"
+                                >
+                                    Manage
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="rsa-empty">
+
+                                    <div class="rsa-empty-icon">
+                                        🗓️
+                                    </div>
+
+                                    <div class="font-bold text-slate-700 text-sm">
+                                        No upcoming reservations
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-400 mt-1">
+                                        The schedule is clear after the current time.
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         BOOKING MANAGEMENT
+         COLLAPSIBLE
+         ===================================================== -->
+
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+
+        <details id="bookingManagementDetails">
+
+            <summary class="rsa-management-summary p-4">
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center text-sm">
+                            ☷
+                        </div>
+
+                        <div>
+
+                            <div class="rsa-section-kicker">
+                                Administration
+                            </div>
+
+                            <h2 class="text-base font-extrabold text-slate-900 mt-1">
+                                Booking Management
+                            </h2>
+
+                            <p class="text-[10px] text-slate-400 mt-1">
+                                Search, filter and manage historical or future bookings.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex items-center gap-3">
+
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-extrabold text-slate-600">
+
+                            {{ all_bookings|length }} bookings
+
+                        </span>
+
+                        <span class="rsa-chevron text-slate-400">
+                            ▼
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </summary>
+
+
+            <div class="rsa-filter-panel px-4 py-4">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+
+                    <div>
+
+                        <label
+                            for="allBookingSearch"
+                            class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5"
+                        >
+                            Search
+                        </label>
+
+                        <input
+                            id="allBookingSearch"
+                            type="text"
+                            placeholder="Customer, phone, email, reference or table"
+                            class="w-full rounded-lg border px-3 py-2.5 text-xs outline-none"
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            for="allBookingStatusFilter"
+                            class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5"
+                        >
+                            Status
+                        </label>
+
+                        <select
+                            id="allBookingStatusFilter"
+                            class="w-full rounded-lg border px-3 py-2.5 text-xs outline-none"
+                        >
+
+                            <option value="all">
+                                All statuses
+                            </option>
+
+                            <option value="Confirmed">
+                                Confirmed
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            for="allBookingDateFilter"
+                            class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5"
+                        >
+                            Date
+                        </label>
+
+                        <input
+                            id="allBookingDateFilter"
+                            type="date"
+                            class="w-full rounded-lg border px-3 py-2.5 text-xs outline-none"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex flex-wrap items-center justify-between gap-3 mt-3">
+
+                    <p
+                        id="allBookingFilterResult"
+                        class="text-[10px] text-slate-400"
+                    >
+                        Showing all bookings.
+                    </p>
+
+
+                    <button
+                        type="button"
+                        id="clearAllBookingFilters"
+                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-[10px] font-extrabold text-slate-700 hover:bg-slate-50"
+                    >
+                        Clear Filters
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ALL BOOKINGS TABLE
+                 ================================================= -->
+
+            <div class="overflow-x-auto">
+
+                <table class="rsa-data-table w-full text-left">
+
+                    <thead class="border-b border-slate-100">
+
+                        <tr>
+
+                            <th class="px-4 py-3">
+                                Date
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Time
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Reference
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Table
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Customer
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Duration
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Amount
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Status
+                            </th>
+
+                            <th class="px-4 py-3">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="allBookingsTableBody"
+                        class="divide-y divide-slate-100"
+                    >
+
+                        {% for booking in all_bookings %}
+
+                            <tr
+                                class="all-booking-row"
+                                data-booking-search="{{ booking.booking_reference }} {{ booking.customer_name }} {{ booking.phone }} {{ booking.email }} {{ booking.table.name }} {{ booking.table.table_type }}"
+                                data-booking-status="{{ booking.status }}"
+                                data-booking-date="{{ booking.booking_date|date:'Y-m-d' }}"
+                                data-booking-id="{{ booking.id }}"
+                                data-booking-reference="{{ booking.booking_reference }}"
+                                data-booking-customer="{{ booking.customer_name }}"
+                                data-booking-phone="{{ booking.phone }}"
+                                data-booking-email="{{ booking.email }}"
+                                data-booking-table="{{ booking.table.name }}"
+                                data-booking-table-type="{{ booking.table.table_type }}"
+                                data-booking-start="{{ booking.start_time|time:'H:i' }}"
+                                data-booking-duration="{{ booking.duration_hours }}"
+                                data-booking-amount="{{ booking.amount|floatformat:0 }}"
+                                data-booking-can-complete="{% if booking.can_complete %}true{% else %}false{% endif %}"
+                            >
+
+                                <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
+
+                                    {{ booking.booking_date|date:"d M Y" }}
+
+                                </td>
+
+
+                                <td class="px-4 py-3 font-bold text-slate-800 whitespace-nowrap">
+
+                                    {{ booking.start_time|time:"g:i A" }}
+
+                                </td>
+
+
+                                <td class="px-4 py-3">
+
+                                    <span class="text-[9px] font-extrabold text-amber-700">
+
+                                        {{ booking.booking_reference }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td class="px-4 py-3">
+
+                                    <div class="font-bold text-slate-900">
+                                        {{ booking.table.name }}
+                                    </div>
+
+                                    <div class="text-[9px] text-slate-400">
+                                        {{ booking.table.table_type }}
+                                    </div>
+
+                                </td>
+
+
+                                <td class="px-4 py-3">
+
+                                    <div class="font-bold text-slate-900">
+                                        {{ booking.customer_name }}
+                                    </div>
+
+                                    <div class="text-[9px] text-slate-400">
+                                        {{ booking.phone }}
+                                    </div>
+
+                                </td>
+
+
+                                <td class="px-4 py-3 whitespace-nowrap text-slate-600">
+
+                                    {{ booking.duration_hours }}
+                                    hr{% if booking.duration_hours != 1 %}s{% endif %}
+
+                                </td>
+
+
+                                <td class="px-4 py-3 whitespace-nowrap font-extrabold text-slate-900">
+
+                                    ₹{{ booking.amount|floatformat:0 }}
+
+                                </td>
+
+
+                                <td class="px-4 py-3">
+
+                                    {% if booking.status == "Confirmed" %}
+
+                                        <span class="inline-flex rounded-full bg-green-100 px-2 py-1 text-[9px] font-extrabold text-green-700">
+                                            Confirmed
+                                        </span>
+
+                                    {% elif booking.status == "Cancelled" %}
+
+                                        <span class="inline-flex rounded-full bg-red-100 px-2 py-1 text-[9px] font-extrabold text-red-700">
+                                            Cancelled
+                                        </span>
+
+                                    {% elif booking.status == "Completed" %}
+
+                                        <span class="inline-flex rounded-full bg-blue-100 px-2 py-1 text-[9px] font-extrabold text-blue-700">
+                                            Completed
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="inline-flex rounded-full bg-amber-100 px-2 py-1 text-[9px] font-extrabold text-amber-700">
+                                            {{ booking.status }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="px-4 py-3">
+
+                                    <div class="flex flex-wrap gap-1.5">
+
+                                        <a
+                                            href="#rsaBookingDetailOverlay"
+                                            class="rsa-manage-btn rsa-manager-booking-link"
+                                            data-booking-reference="{{ booking.booking_reference }}"
+                                            aria-label="Manage booking {{ booking.booking_reference }}"
+                                        >
+                                            Manage
+                                        </a>
+
+
+                                        {% if booking.status == "Confirmed" %}
+
+                                            {% if booking.can_complete %}
+
+                                                <form
+                                                    method="post"
+                                                    action="{% url 'complete_booking' booking.id %}"
+                                                    onsubmit="return confirm('Are you sure you want to mark booking {{ booking.booking_reference }} as completed?');"
+                                                >
+
+                                                    {% csrf_token %}
+
+                                                    <button
+                                                        type="submit"
+                                                        class="rsa-complete-btn"
+                                                        title="The scheduled session has ended."
+                                                    >
+                                                        Complete
+                                                    </button>
+
+                                                </form>
+
+                                            {% else %}
+
+                                                <span
+                                                    class="inline-flex items-center justify-center rounded-lg bg-slate-100 px-2 py-1.5 text-[8px] font-extrabold text-slate-400 cursor-not-allowed"
+                                                    title="This booking can be completed only after its scheduled end time."
+                                                >
+                                                    Active / Future
+                                                </span>
+
+                                            {% endif %}
+
+                                            <form
+                                                method="post"
+                                                action="{% url 'cancel_booking' booking.id %}"
+                                                onsubmit="return confirm('Are you sure you want to cancel booking {{ booking.booking_reference }}?');"
+                                            >
+
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="rsa-cancel-btn"
+                                                >
+                                                    Cancel
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                        <tr
+                            id="noMatchingBookingsRow"
+                            style="display:none;"
+                        >
+
+                            <td colspan="9">
+
+                                <div class="rsa-empty">
+
+                                    <div class="rsa-empty-icon">
+                                        🔎
+                                    </div>
+
+                                    <div class="font-bold text-slate-700 text-sm">
+                                        No matching bookings
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-400 mt-1">
+                                        Try changing your search, date or status filter.
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAGINATION
+                 ================================================= -->
+
+            <div
+                id="bookingPagination"
+                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-t border-slate-100"
+            >
+
+                <div
+                    id="bookingPaginationInfo"
+                    class="text-[10px] text-slate-400"
+                >
+                    Showing 0 bookings
+                </div>
+
+
+                <div
+                    id="bookingPaginationControls"
+                    class="flex items-center gap-1"
+                >
+                </div>
+
+            </div>
+
+        </details>
+
+    </section>
+
+
+    <!-- =====================================================
+         ACADEMY HOURS
+         ===================================================== -->
+
+    {% if academy_settings %}
+
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+                <div>
+
+                    <div class="rsa-section-kicker">
+                        Academy operations
+                    </div>
+
+                    <h2 class="text-base font-extrabold text-slate-900 mt-1">
+                        Operating Hours
+                    </h2>
+
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Current hours are configured by the academy owner.
+                    </p>
+
+                </div>
+
+
+                <div class="flex items-center gap-2">
+
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5">
+
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                            Opens
+                        </div>
+
+                        <div class="text-sm font-extrabold text-slate-900 mt-0.5">
+                            {{ academy_settings.opening_time|time:"g:i A" }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="text-slate-300">
+                        →
+                    </div>
+
+
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5">
+
+                        <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                            Closes
+                        </div>
+
+                        <div class="text-sm font-extrabold text-slate-900 mt-0.5">
+                            {{ academy_settings.closing_time|time:"g:i A" }}
+                        </div>
+
+                    </div>
+
+
+                    <span
+                        class="hidden sm:inline-flex items-center justify-center rounded-lg bg-green-50 px-3 py-2 text-[9px] font-extrabold text-green-700"
+                    >
+                        Owner controlled
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =========================================================
+     MANAGER BOOKING DETAIL PANEL
+     ========================================================= -->
+
+<div
+    id="rsaBookingDetailOverlay"
+    class="rsa-booking-detail-overlay hidden"
+    aria-hidden="true"
+>
+
+    <div
+        id="rsaBookingDetailPanel"
+        class="rsa-booking-detail-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rsaBookingDetailTitle"
+    >
+
+        <div class="rsa-booking-detail-header">
+
+            <div>
+
+                <div class="rsa-section-kicker" style="color:#E7CB70;">
+                    Booking details
+                </div>
+
+                <h2
+                    id="rsaBookingDetailTitle"
+                    class="text-lg font-extrabold text-white mt-1"
+                >
+                    Booking
+                </h2>
+
+                <p
+                    id="rsaBookingDetailStatus"
+                    class="text-[10px] text-white/60 mt-1"
+                >
+                    —
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                id="rsaBookingDetailClose"
+                class="rsa-booking-detail-close"
+                aria-label="Close booking details"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div class="rsa-booking-detail-body">
+
+            <div class="rsa-booking-detail-grid">
+
+                <div class="rsa-booking-detail-item full">
+                    <div class="rsa-booking-detail-label">Customer</div>
+                    <div id="rsaDetailCustomer" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Phone</div>
+                    <div id="rsaDetailPhone" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Email</div>
+                    <div id="rsaDetailEmail" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Table</div>
+                    <div id="rsaDetailTable" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Booking reference</div>
+                    <div id="rsaDetailReference" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Date</div>
+                    <div id="rsaDetailDate" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Session</div>
+                    <div id="rsaDetailSession" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Duration</div>
+                    <div id="rsaDetailDuration" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Amount</div>
+                    <div id="rsaDetailAmount" class="rsa-booking-detail-value">—</div>
+                </div>
+
+            </div>
+
+            <div class="rsa-booking-detail-actions">
+
+                <a
+                    id="rsaDetailCallButton"
+                    href="#"
+                    class="rsa-booking-detail-action call"
+                >
+                    <i class="fa-solid fa-phone"></i>
+                    Call customer
+                </a>
+
+                <form
+                    id="rsaDetailCompleteForm"
+                    method="post"
+                    class="inline-flex"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        id="rsaDetailCompleteButton"
+                        class="rsa-booking-detail-action complete"
+                    >
+                        <i class="fa-solid fa-check"></i>
+                        Complete session
+                    </button>
+                </form>
+
+                <form
+                    id="rsaDetailCancelForm"
+                    method="post"
+                    class="inline-flex"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        id="rsaDetailCancelButton"
+                        class="rsa-booking-detail-action cancel"
+                    >
+                        <i class="fa-solid fa-ban"></i>
+                        Cancel booking
+                    </button>
+                </form>
+
+            </div>
+
+            <div
+                id="rsaBookingDetailNote"
+                class="rsa-booking-detail-note"
+            ></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       LIVE CLOCK
+       ========================================================= */
+
+    const liveClock =
+        document.getElementById("rsaLiveClock");
+
+
+    function updateLiveClock() {
+
+        if (!liveClock) {
+            return;
+        }
+
+        const now = new Date();
+
+        liveClock.textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                }
+            );
+
+    }
+
+
+    updateLiveClock();
+
+    setInterval(
+        updateLiveClock,
+        1000
+    );
+
+
+    /* =========================================================
+       NEXT BOOKING
+       ========================================================= */
+
+    const nextBookingTitle =
+        document.getElementById("nextBookingTitle");
+
+    const nextBookingDetails =
+        document.getElementById("nextBookingDetails");
+
+    const nextBookingCountdown =
+        document.getElementById("nextBookingCountdown");
+
+    const bookingData =
+        document.querySelectorAll(".next-booking-data");
+
+
+    function updateNextBooking() {
+
+        if (
+            !nextBookingTitle ||
+            !nextBookingDetails ||
+            !nextBookingCountdown
+        ) {
+            return;
+        }
+
+
+        const now = new Date();
+
+
+        const todayString =
+            now.getFullYear() +
+            "-" +
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0") +
+            "-" +
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+
+        const currentMinutes =
+            now.getHours() * 60 +
+            now.getMinutes();
+
+
+        let nextBooking = null;
+
+
+        bookingData.forEach(function (item) {
+
+            const bookingDate =
+                item.dataset.date || "";
+
+
+            const startTime =
+                item.dataset.start || "";
+
+
+            if (
+                !bookingDate ||
+                !startTime
+            ) {
+                return;
+            }
+
+
+            const parts =
+                startTime.split(":");
+
+
+            const startHour =
+                parseInt(
+                    parts[0],
+                    10
+                );
+
+
+            const startMinute =
+                parseInt(
+                    parts[1],
+                    10
+                );
+
+
+            const startMinutes =
+                startHour * 60 +
+                startMinute;
+
+
+            let isNext = false;
+
+
+            if (
+                bookingDate >
+                todayString
+            ) {
+
+                isNext = true;
+
+            } else if (
+                bookingDate ===
+                    todayString &&
+                startMinutes >
+                    currentMinutes
+            ) {
+
+                isNext = true;
+
+            }
+
+
+            if (!isNext) {
+                return;
+            }
+
+
+            if (
+                !nextBooking ||
+                bookingDate <
+                    nextBooking.date ||
+                (
+                    bookingDate ===
+                        nextBooking.date &&
+                    startMinutes <
+                        nextBooking.startMinutes
+                )
+            ) {
+
+                nextBooking = {
+
+                    date:
+                        bookingDate,
+
+                    startMinutes:
+                        startMinutes,
+
+                    startTime:
+                        startTime,
+
+                    table:
+                        item.dataset.table ||
+                        "",
+
+                    customer:
+                        item.dataset.customer ||
+                        "",
+
+                    reference:
+                        item.dataset.reference ||
+                        "",
+
+                    duration:
+                        item.dataset.duration ||
+                        ""
+
+                };
+
+            }
+
+        });
+
+
+        if (!nextBooking) {
+
+            nextBookingTitle.textContent =
+                "No upcoming booking";
+
+            nextBookingDetails.textContent =
+                "There are no confirmed reservations scheduled after now.";
+
+            nextBookingCountdown.textContent =
+                "Schedule clear";
+
+            return;
+        }
+
+
+        const bookingDate =
+            new Date(
+                nextBooking.date +
+                "T" +
+                nextBooking.startTime +
+                ":00"
+            );
+
+
+        const diffMs =
+            bookingDate.getTime() -
+            now.getTime();
+
+
+        const diffMinutes =
+            Math.max(
+                0,
+                Math.floor(
+                    diffMs / 60000
+                )
+            );
+
+
+        const hoursUntil =
+            Math.floor(
+                diffMinutes / 60
+            );
+
+
+        const minutesUntil =
+            diffMinutes % 60;
+
+
+        let countdownText;
+
+
+        if (hoursUntil > 0) {
+
+            countdownText =
+                "Starts in " +
+                hoursUntil +
+                "h " +
+                minutesUntil +
+                "m";
+
+        } else {
+
+            countdownText =
+                "Starts in " +
+                minutesUntil +
+                " min";
+
+        }
+
+
+        const displayDate =
+            bookingDate.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+
+        const displayTime =
+            bookingDate.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            );
+
+
+        nextBookingTitle.textContent =
+            displayTime +
+            " · " +
+            nextBooking.table;
+
+
+        nextBookingDetails.textContent =
+            displayDate +
+            " · " +
+            nextBooking.customer +
+            " · " +
+            nextBooking.duration +
+            (
+                Number(
+                    nextBooking.duration
+                ) === 1
+                    ? " hour"
+                    : " hours"
+            ) +
+            " · " +
+            nextBooking.reference;
+
+
+        nextBookingCountdown.textContent =
+            countdownText;
+
+    }
+
+
+    updateNextBooking();
+
+    setInterval(
+        updateNextBooking,
+        30000
+    );
+
+
+    /* =========================================================
+       CURRENT / NOW BOOKING
+       ========================================================= */
+
+    function updateCurrentBooking() {
+
+        const now = new Date();
+
+        const todayString =
+            now.getFullYear() +
+            "-" +
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(now.getDate()).padStart(2, "0");
+
+        const currentMinutes =
+            now.getHours() * 60 +
+            now.getMinutes();
+
+        const rows =
+            document.querySelectorAll(
+                ".today-booking-row"
+            );
+
+        rows.forEach(function (row) {
+
+            const status =
+                String(row.dataset.bookingStatus || "")
+                    .trim()
+                    .toLowerCase();
+
+            const bookingDate =
+                row.dataset.bookingDate || "";
+
+            const startTime =
+                row.dataset.bookingStart || "";
+
+            const duration =
+                parseFloat(
+                    row.dataset.bookingDuration || "0"
+                );
+
+            const badge =
+                row.querySelector(
+                    ".rsa-now-badge"
+                );
+
+            if (!badge) {
+                return;
+            }
+
+            /*
+             * A booking can be NOW only when:
+             * 1. It belongs to today.
+             * 2. Its status is Confirmed.
+             * 3. It has a valid start time and duration.
+             * 4. The current time is inside its session window.
+             *
+             * This deliberately prevents cancelled, completed, future,
+             * and previous-day bookings from receiving a NOW badge.
+             */
+            let isCurrent = false;
+
+            if (
+                bookingDate === todayString &&
+                status === "confirmed" &&
+                startTime &&
+                duration > 0
+            ) {
+
+                const parts = startTime.split(":");
+
+                const startHour =
+                    parseInt(parts[0], 10);
+
+                const startMinute =
+                    parseInt(parts[1], 10);
+
+                if (
+                    Number.isFinite(startHour) &&
+                    Number.isFinite(startMinute)
+                ) {
+
+                    const startMinutes =
+                        startHour * 60 +
+                        startMinute;
+
+                    const endMinutes =
+                        startMinutes +
+                        duration * 60;
+
+                    isCurrent =
+                        currentMinutes >= startMinutes &&
+                        currentMinutes < endMinutes;
+                }
+            }
+
+            if (isCurrent) {
+
+                badge.classList.remove("hidden");
+                badge.style.display = "inline-flex";
+
+                row.classList.add("current-row");
+
+            } else {
+
+                badge.classList.add("hidden");
+                badge.style.display = "none";
+
+                row.classList.remove("current-row");
+            }
+
+        });
+
+    }
+
+
+    updateCurrentBooking();
+
+    setInterval(
+        updateCurrentBooking,
+        30000
+    );
+
+
+    /* =========================================================
+       BOOKING MANAGEMENT
+       SEARCH + FILTER + PAGINATION
+       ========================================================= */
+
+    const searchInput =
+        document.getElementById(
+            "allBookingSearch"
+        );
+
+
+    const statusFilter =
+        document.getElementById(
+            "allBookingStatusFilter"
+        );
+
+
+    const dateFilter =
+        document.getElementById(
+            "allBookingDateFilter"
+        );
+
+
+    const clearButton =
+        document.getElementById(
+            "clearAllBookingFilters"
+        );
+
+
+    const resultText =
+        document.getElementById(
+            "allBookingFilterResult"
+        );
+
+
+    const paginationInfo =
+        document.getElementById(
+            "bookingPaginationInfo"
+        );
+
+
+    const paginationControls =
+        document.getElementById(
+            "bookingPaginationControls"
+        );
+
+
+    const noMatchingRow =
+        document.getElementById(
+            "noMatchingBookingsRow"
+        );
+
+
+    const allBookingRows =
+        Array.from(
+            document.querySelectorAll(
+                ".all-booking-row"
+            )
+        );
+
+
+    const pageSize = 10;
+
+    let currentPage = 1;
+
+    let filteredRows = [];
+
+
+    function getFilteredRows() {
+
+        const searchValue =
+            searchInput
+                ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+                : "";
+
+
+        const selectedStatus =
+            statusFilter
+                ? statusFilter.value
+                : "all";
+
+
+        const selectedDate =
+            dateFilter
+                ? dateFilter.value
+                : "";
+
+
+        return allBookingRows.filter(
+            function (row) {
+
+                const searchableText =
+                    (
+                        row.dataset.bookingSearch ||
+                        ""
+                    ).toLowerCase();
+
+
+                const bookingStatus =
+                    row.dataset.bookingStatus ||
+                    "";
+
+
+                const bookingDate =
+                    row.dataset.bookingDate ||
+                    "";
+
+
+                const matchesSearch =
+                    searchValue === "" ||
+                    searchableText.includes(
+                        searchValue
+                    );
+
+
+                const matchesStatus =
+                    selectedStatus === "all" ||
+                    bookingStatus ===
+                        selectedStatus;
+
+
+                const matchesDate =
+                    selectedDate === "" ||
+                    bookingDate ===
+                        selectedDate;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus &&
+                    matchesDate
+                );
+
+            }
+        );
+
+    }
+
+
+    function renderPagination() {
+
+        if (!paginationControls) {
+            return;
+        }
+
+
+        paginationControls.innerHTML = "";
+
+
+        const totalPages =
+            Math.ceil(
+                filteredRows.length /
+                pageSize
+            );
+
+
+        if (
+            filteredRows.length === 0
+        ) {
+
+            paginationControls.innerHTML =
+                "";
+
+            return;
+
+        }
+
+
+        function createButton(
+            label,
+            page,
+            disabled,
+            active
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.textContent =
+                label;
+
+
+            button.disabled =
+                disabled;
+
+
+            button.className =
+                "min-w-[30px] h-[30px] rounded-lg px-2 text-[9px] font-extrabold transition";
+
+
+            if (active) {
+
+                button.style.background =
+                    "#07513F";
+
+                button.style.color =
+                    "#FFFFFF";
+
+            } else {
+
+                button.style.background =
+                    "#F3F4F0";
+
+                button.style.color =
+                    "#18322B";
+
+            }
+
+
+            if (!disabled) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        currentPage =
+                            page;
+
+                        renderBookingRows();
+
+                    }
+                );
+
+            }
+
+
+            paginationControls.appendChild(
+                button
+            );
+
+        }
+
+
+        createButton(
+            "‹",
+            currentPage - 1,
+            currentPage === 1,
+            false
+        );
+
+
+        let startPage =
+            Math.max(
+                1,
+                currentPage - 2
+            );
+
+
+        let endPage =
+            Math.min(
+                totalPages,
+                startPage + 4
+            );
+
+
+        if (
+            endPage - startPage <
+            4
+        ) {
+
+            startPage =
+                Math.max(
+                    1,
+                    endPage - 4
+                );
+
+        }
+
+
+        for (
+            let page = startPage;
+            page <= endPage;
+            page++
+        ) {
+
+            createButton(
+                String(page),
+                page,
+                false,
+                page === currentPage
+            );
+
+        }
+
+
+        createButton(
+            "›",
+            currentPage + 1,
+            currentPage === totalPages,
+            false
+        );
+
+    }
+
+
+    function renderBookingRows() {
+
+        filteredRows =
+            getFilteredRows();
+
+
+        const total =
+            filteredRows.length;
+
+
+        const totalPages =
+            Math.ceil(
+                total /
+                pageSize
+            );
+
+
+        if (
+            totalPages > 0 &&
+            currentPage > totalPages
+        ) {
+
+            currentPage =
+                totalPages;
+
+        }
+
+
+        if (
+            total === 0
+        ) {
+
+            currentPage = 1;
+
+        }
+
+
+        allBookingRows.forEach(
+            function (row) {
+
+                row.style.display =
+                    "none";
+
+            }
+        );
+
+
+        if (
+            noMatchingRow
+        ) {
+
+            noMatchingRow.style.display =
+                total === 0
+                    ? ""
+                    : "none";
+
+        }
+
+
+        const startIndex =
+            (
+                currentPage - 1
+            ) * pageSize;
+
+
+        const pageRows =
+            filteredRows.slice(
+                startIndex,
+                startIndex +
+                pageSize
+            );
+
+
+        pageRows.forEach(
+            function (row) {
+
+                row.style.display =
+                    "";
+
+            }
+        );
+
+
+        if (
+            total === 0
+        ) {
+
+            if (resultText) {
+
+                resultText.textContent =
+                    "No matching bookings.";
+
+            }
+
+            if (paginationInfo) {
+
+                paginationInfo.textContent =
+                    "Showing 0 bookings";
+
+            }
+
+        } else {
+
+            const first =
+                startIndex + 1;
+
+
+            const last =
+                Math.min(
+                    startIndex +
+                    pageSize,
+                    total
+                );
+
+
+            if (resultText) {
+
+                resultText.textContent =
+                    "Showing " +
+                    first +
+                    "–" +
+                    last +
+                    " of " +
+                    total +
+                    " matching booking" +
+                    (
+                        total === 1
+                            ? ""
+                            : "s"
+                    ) +
+                    ".";
+
+            }
+
+
+            if (paginationInfo) {
+
+                paginationInfo.textContent =
+                    "Showing " +
+                    first +
+                    "–" +
+                    last +
+                    " of " +
+                    total;
+
+            }
+
+        }
+
+
+        renderPagination();
+
+    }
+
+
+    function applyFilters() {
+
+        currentPage = 1;
+
+        renderBookingRows();
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            applyFilters
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (dateFilter) {
+
+        dateFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (clearButton) {
+
+        clearButton.addEventListener(
+            "click",
+            function () {
+
+                if (searchInput) {
+                    searchInput.value = "";
+                }
+
+                if (statusFilter) {
+                    statusFilter.value = "all";
+                }
+
+                if (dateFilter) {
+                    dateFilter.value = "";
+                }
+
+                applyFilters();
+
+                if (searchInput) {
+                    searchInput.focus();
+                }
+
+            }
+        );
+
+    }
+
+
+    renderBookingRows();
+
+
+    /* =========================================================
+       OPEN BOOKING MANAGEMENT WHEN FILTERING
+       ========================================================= */
+
+    const managementDetails =
+        document.getElementById(
+            "bookingManagementDetails"
+        );
+
+
+    function openManagementIfNeeded() {
+
+        if (!managementDetails) {
+            return;
+        }
+
+
+        const hasSearch =
+            searchInput &&
+            searchInput.value.trim() !== "";
+
+
+        const hasStatus =
+            statusFilter &&
+            statusFilter.value !== "all";
+
+
+        const hasDate =
+            dateFilter &&
+            dateFilter.value !== "";
+
+
+        if (
+            hasSearch ||
+            hasStatus ||
+            hasDate
+        ) {
+
+            managementDetails.open =
+                true;
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            openManagementIfNeeded
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            openManagementIfNeeded
+        );
+
+    }
+
+
+    if (dateFilter) {
+
+        dateFilter.addEventListener(
+            "change",
+            openManagementIfNeeded
+        );
+
+    }
+
+
+    /* =========================================================
+       MANAGER-FRIENDLY BOOKING DETAILS
+       ========================================================= */
+
+    const managementSection =
+        document.getElementById("bookingManagementDetails");
+
+    const managerBookingLinks =
+        document.querySelectorAll(
+            ".rsa-manager-booking-link"
+        );
+
+    const managerSectionLinks =
+        document.querySelectorAll(
+            ".rsa-manager-manage-link"
+        );
+
+    const bookingDetailOverlay =
+        document.getElementById("rsaBookingDetailOverlay");
+
+    const bookingDetailClose =
+        document.getElementById("rsaBookingDetailClose");
+
+    const bookingDetailPanel =
+        document.getElementById("rsaBookingDetailPanel");
+
+    const detailTitle =
+        document.getElementById("rsaBookingDetailTitle");
+
+    const detailStatus =
+        document.getElementById("rsaBookingDetailStatus");
+
+    const detailCustomer =
+        document.getElementById("rsaDetailCustomer");
+
+    const detailPhone =
+        document.getElementById("rsaDetailPhone");
+
+    const detailEmail =
+        document.getElementById("rsaDetailEmail");
+
+    const detailTable =
+        document.getElementById("rsaDetailTable");
+
+    const detailReference =
+        document.getElementById("rsaDetailReference");
+
+    const detailDate =
+        document.getElementById("rsaDetailDate");
+
+    const detailSession =
+        document.getElementById("rsaDetailSession");
+
+    const detailDuration =
+        document.getElementById("rsaDetailDuration");
+
+    const detailAmount =
+        document.getElementById("rsaDetailAmount");
+
+    const detailCallButton =
+        document.getElementById("rsaDetailCallButton");
+
+    const detailCompleteForm =
+        document.getElementById("rsaDetailCompleteForm");
+
+    const detailCancelForm =
+        document.getElementById("rsaDetailCancelForm");
+
+    const detailNote =
+        document.getElementById("rsaBookingDetailNote");
+
+
+    function formatDetailDate(dateValue) {
+
+        if (!dateValue) {
+            return "—";
+        }
+
+        const parts = dateValue.split("-");
+
+        if (parts.length !== 3) {
+            return dateValue;
+        }
+
+        const date = new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    function formatDetailTime(timeValue) {
+
+        if (!timeValue) {
+            return "—";
+        }
+
+        const parts = timeValue.split(":");
+
+        if (parts.length < 2) {
+            return timeValue;
+        }
+
+        const date = new Date();
+
+        date.setHours(
+            Number(parts[0]),
+            Number(parts[1]),
+            0,
+            0
+        );
+
+        return date.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "numeric",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    function getDetailEndTime(startTime, duration) {
+
+        if (!startTime || !duration) {
+            return "—";
+        }
+
+        const parts = startTime.split(":");
+
+        if (parts.length < 2) {
+            return "—";
+        }
+
+        const date = new Date();
+
+        date.setHours(
+            Number(parts[0]),
+            Number(parts[1]),
+            0,
+            0
+        );
+
+        date.setMinutes(
+            date.getMinutes() +
+            Number(duration) * 60
+        );
+
+        return date.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "numeric",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    function getBookingRowByReference(reference) {
+
+        if (!reference) {
+            return null;
+        }
+
+        const rows =
+            document.querySelectorAll(
+                ".all-booking-row"
+            );
+
+        for (const row of rows) {
+
+            if (
+                row.dataset.bookingReference ===
+                reference
+            ) {
+                return row;
+            }
+
+        }
+
+        return null;
+
+    }
+
+
+    function setDetailStatus(status) {
+
+        const normalized =
+            String(status || "").trim().toLowerCase();
+
+        let label = status || "—";
+        let color = "#E7CB70";
+
+        if (normalized === "confirmed") {
+            label = "Confirmed";
+            color = "#52D49A";
+        } else if (normalized === "cancelled") {
+            label = "Cancelled";
+            color = "#FF8C8C";
+        } else if (normalized === "completed") {
+            label = "Completed";
+            color = "#7FC5F1";
+        } else if (normalized === "pending") {
+            label = "Pending";
+            color = "#E7CB70";
+        }
+
+        detailStatus.textContent = label;
+        detailStatus.style.color = color;
+
+    }
+
+
+    function openBookingDetail(reference) {
+
+        if (!bookingDetailOverlay) {
+            return;
+        }
+
+        const row =
+            getBookingRowByReference(reference);
+
+        if (!row) {
+            return;
+        }
+
+        const data = row.dataset;
+
+        const status =
+            String(data.bookingStatus || "").trim();
+
+        const duration =
+            Number(data.bookingDuration || 0);
+
+        const startTime =
+            data.bookingStart || "";
+
+        const endTime =
+            getDetailEndTime(
+                startTime,
+                duration
+            );
+
+        detailTitle.textContent =
+            data.bookingReference || "Booking details";
+
+        setDetailStatus(status);
+
+        detailCustomer.textContent =
+            data.bookingCustomer || "—";
+
+        detailPhone.innerHTML =
+            data.bookingPhone
+                ? `<a href="tel:${data.bookingPhone}">${data.bookingPhone}</a>`
+                : "—";
+
+        detailEmail.innerHTML =
+            data.bookingEmail
+                ? `<a href="mailto:${data.bookingEmail}">${data.bookingEmail}</a>`
+                : "—";
+
+        detailTable.textContent =
+            data.bookingTableType
+                ? `${data.bookingTable} · ${data.bookingTableType}`
+                : (data.bookingTable || "—");
+
+        detailReference.textContent =
+            data.bookingReference || "—";
+
+        detailDate.textContent =
+            formatDetailDate(data.bookingDate);
+
+        detailSession.textContent =
+            `${formatDetailTime(startTime)} – ${endTime}`;
+
+        detailDuration.textContent =
+            duration === 1
+                ? "1 hour"
+                : `${duration} hours`;
+
+        detailAmount.textContent =
+            data.bookingAmount
+                ? `₹${data.bookingAmount}`
+                : "—";
+
+        if (data.bookingPhone) {
+            detailCallButton.href =
+                `tel:${data.bookingPhone}`;
+            detailCallButton.classList.remove("hidden");
+        } else {
+            detailCallButton.classList.add("hidden");
+        }
+
+        detailCompleteForm.action =
+            `/admin-dashboard/bookings/${data.bookingId}/complete/`;
+
+        detailCancelForm.action =
+            `/admin-dashboard/bookings/${data.bookingId}/cancel/`;
+
+        const canComplete =
+            data.bookingCanComplete === "true";
+
+        detailCompleteForm.classList.toggle(
+            "hidden",
+            status !== "Confirmed" || !canComplete
+        );
+
+        detailCancelForm.classList.toggle(
+            "hidden",
+            status !== "Confirmed"
+        );
+
+        if (status === "Confirmed" && !canComplete) {
+            detailNote.textContent =
+                "This session can be completed only after its scheduled end time.";
+        } else if (status === "Confirmed" && canComplete) {
+            detailNote.textContent =
+                "The scheduled session has ended and is ready to be marked as completed.";
+        } else if (status === "Cancelled") {
+            detailNote.textContent =
+                "This booking has been cancelled. No further manager action is available.";
+        } else if (status === "Completed") {
+            detailNote.textContent =
+                "This booking has already been completed.";
+        } else if (status === "Pending") {
+            detailNote.textContent =
+                "This booking is pending. No manager action is configured for pending bookings yet.";
+        } else {
+            detailNote.textContent = "";
+        }
+
+        bookingDetailOverlay.classList.remove("hidden");
+        bookingDetailOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+
+        setTimeout(function () {
+            bookingDetailClose.focus();
+        }, 50);
+
+    }
+
+
+    function closeBookingDetail() {
+
+        if (!bookingDetailOverlay) {
+            return;
+        }
+
+        bookingDetailOverlay.classList.add("hidden");
+        bookingDetailOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+
+    }
+
+
+    managerBookingLinks.forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            openBookingDetail(
+                link.dataset.bookingReference || ""
+            );
+
+        });
+
+    });
+
+
+    managerSectionLinks.forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            if (managementSection) {
+                managementSection.open = true;
+                setTimeout(function () {
+                    managementSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }, 60);
+            }
+
+        });
+
+    });
+
+
+    if (bookingDetailClose) {
+
+        bookingDetailClose.addEventListener(
+            "click",
+            closeBookingDetail
+        );
+
+    }
+
+
+    if (bookingDetailOverlay) {
+
+        bookingDetailOverlay.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === bookingDetailOverlay) {
+                    closeBookingDetail();
+                }
+
+            }
+        );
+
+    }
+
+
+    if (bookingDetailPanel) {
+
+        bookingDetailPanel.addEventListener(
+            "click",
+            function (event) {
+                event.stopPropagation();
+            }
+        );
+
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                bookingDetailOverlay &&
+                !bookingDetailOverlay.classList.contains("hidden")
+            ) {
+                closeBookingDetail();
+            }
+
+        }
+    );
+
+
+    if (detailCompleteForm) {
+
+        detailCompleteForm.addEventListener(
+            "submit",
+            function (event) {
+                if (!confirm(
+                    "Are you sure you want to mark this booking as completed?"
+                )) {
+                    event.preventDefault();
+                }
+            }
+        );
+
+    }
+
+
+    if (detailCancelForm) {
+
+        detailCancelForm.addEventListener(
+            "submit",
+            function (event) {
+                if (!confirm(
+                    "Are you sure you want to cancel this booking?"
+                )) {
+                    event.preventDefault();
+                }
+            }
+        );
+
+    }
+
+
+});
+
+</script>
+
+{% endblock %}

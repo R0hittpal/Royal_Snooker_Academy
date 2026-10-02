@@ -1,0 +1,819 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<style>
+    .rsa-contact-page {
+        background: #F7F5EF;
+        color: #18322B;
+    }
+
+    .rsa-contact-hero {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 90% 15%,
+                rgba(212, 175, 55, 0.10),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 8% 100%,
+                rgba(7, 81, 63, 0.30),
+                transparent 34%
+            ),
+            linear-gradient(
+                135deg,
+                #050B09 0%,
+                #071713 50%,
+                #06382D 100%
+            );
+    }
+
+    .rsa-contact-hero::before {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        right: -270px;
+        top: -300px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.12);
+        box-shadow:
+            0 0 0 55px rgba(212, 175, 55, 0.025),
+            0 0 0 110px rgba(212, 175, 55, 0.018);
+    }
+
+    .rsa-contact-hero::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        left: -160px;
+        bottom: -190px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.045);
+        filter: blur(50px);
+    }
+
+    .rsa-contact-hero-inner {
+        position: relative;
+        z-index: 2;
+    }
+
+    .rsa-contact-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        background: rgba(7, 16, 13, 0.60);
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+    }
+
+    .rsa-gold-line {
+        height: 2px;
+        background:
+            linear-gradient(
+                90deg,
+                #D4AF37,
+                #E7CB70,
+                transparent
+            );
+    }
+
+    .rsa-contact-card {
+        background: #FFFFFF;
+        border: 1px solid #E5E2D8;
+        box-shadow: 0 12px 35px rgba(20, 38, 31, 0.055);
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease,
+            border-color 0.22s ease;
+    }
+
+    .rsa-contact-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212, 175, 55, 0.38);
+        box-shadow: 0 18px 40px rgba(20, 38, 31, 0.09);
+    }
+
+    .rsa-contact-icon {
+        background: #07513F;
+        color: #E7CB70;
+    }
+
+    .rsa-contact-dark-card {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(212, 175, 55, 0.10),
+                transparent 27%
+            ),
+            linear-gradient(
+                135deg,
+                #07100D 0%,
+                #08261F 55%,
+                #06382D 100%
+            );
+        border: 1px solid rgba(212, 175, 55, 0.20);
+        box-shadow: 0 22px 50px rgba(3, 31, 24, 0.13);
+    }
+
+    .rsa-contact-dark-card::before {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        right: -160px;
+        bottom: -180px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.08);
+    }
+
+    .rsa-contact-detail {
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.08);
+        transition:
+            background 0.22s ease,
+            border-color 0.22s ease;
+    }
+
+    .rsa-contact-detail:hover {
+        background: rgba(255,255,255,0.065);
+        border-color: rgba(212, 175, 55, 0.22);
+    }
+
+    .rsa-contact-cta {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 90% 0%,
+                rgba(212, 175, 55, 0.10),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #07100D,
+                #052D25,
+                #07100D
+            );
+    }
+
+    .rsa-contact-cta::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                rgba(212, 175, 55, 0.025),
+                transparent
+            );
+    }
+
+    .rsa-gold-button {
+        background:
+            linear-gradient(
+                135deg,
+                #F2D77F 0%,
+                #D4AF37 48%,
+                #B98A1B 100%
+            );
+        color: #07100D;
+        box-shadow: 0 8px 20px rgba(180, 140, 30, 0.16);
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease,
+            filter 0.22s ease;
+    }
+
+    .rsa-gold-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(180, 140, 30, 0.24);
+        filter: brightness(1.035);
+    }
+
+    /* ==================================================
+       CONTACT PAGE INTERACTION POLISH
+       ================================================== */
+
+    .rsa-contact-card a:focus-visible,
+    .rsa-contact-hero a:focus-visible,
+    .rsa-contact-dark-card a:focus-visible,
+    .rsa-contact-cta a:focus-visible {
+        outline: 3px solid rgba(231, 203, 112, 0.95);
+        outline-offset: 4px;
+        border-radius: 10px;
+    }
+
+    .rsa-contact-card .rsa-contact-icon {
+        transition:
+            transform 0.22s ease,
+            background-color 0.22s ease,
+            color 0.22s ease;
+    }
+
+    .rsa-contact-card:hover .rsa-contact-icon {
+        transform: translateY(-2px);
+        background: #18322B;
+        color: #F2DFA0;
+    }
+
+    .rsa-contact-detail .w-10 {
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease;
+    }
+
+    .rsa-contact-detail:hover .w-10 {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 16px rgba(212, 175, 55, 0.16);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rsa-contact-card,
+        .rsa-contact-card .rsa-contact-icon,
+        .rsa-contact-detail .w-10,
+        .rsa-gold-button {
+            transition: none !important;
+        }
+
+        .rsa-contact-card:hover,
+        .rsa-gold-button:hover {
+            transform: none;
+        }
+    }
+
+
+    @media (max-width: 768px) {
+        .rsa-contact-hero::before {
+            width: 340px;
+            height: 340px;
+        }
+
+        .rsa-contact-card:hover {
+            transform: none;
+        }
+    }
+</style>
+
+
+<div class="rsa-contact-page">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="rsa-contact-hero text-white">
+
+        <div class="rsa-contact-hero-inner">
+
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+                <div class="max-w-4xl py-16 sm:py-20 lg:py-24">
+
+                    <div class="rsa-contact-badge rounded-full px-4 py-2">
+
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                        <span class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.20em]">
+                            Royal Snooker Academy
+                        </span>
+
+                    </div>
+
+
+                    <p class="text-[#D4AF37] text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] mt-8">
+                        Contact Us
+                    </p>
+
+
+                    <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.03] mt-3">
+                        Get In
+                        <span class="text-[#E7CB70]">
+                            Touch.
+                        </span>
+                    </h1>
+
+
+                    <div class="rsa-gold-line w-28 mt-7"></div>
+
+
+                    {% if site_settings.contact_intro %}
+
+                        <p class="text-white/60 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 mt-6 max-w-2xl">
+                            {{ site_settings.contact_intro }}
+                        </p>
+
+                    {% else %}
+
+                        <p class="text-white/60 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 mt-6 max-w-2xl">
+                            Have a question about table bookings, coaching, memberships
+                            or tournaments? Get in touch with Royal Snooker Academy.
+                        </p>
+
+                    {% endif %}
+
+
+                    <div class="flex flex-wrap gap-3 mt-8">
+
+                        <a
+                            href="{% url 'booking' %}"
+                            class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-6 sm:px-7 py-3.5 font-extrabold text-sm"
+                        >
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Book a Table
+                        </a>
+
+
+                        {% if site_settings.whatsapp_number %}
+
+                            <a
+                                href="https://wa.me/{{ site_settings.whatsapp_number }}"
+                                target="_blank"
+                                aria-label="Contact Royal Snooker Academy on WhatsApp"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 sm:px-7 py-3.5 font-bold text-sm text-white/90 hover:bg-white/[0.07] transition"
+                            >
+                                <i class="fa-brands fa-whatsapp text-[#E7CB70]"></i>
+                                WhatsApp Us
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-6">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                            <i class="fa-solid fa-calendar-check text-[#E7CB70]"></i>
+                            Online Booking
+                        </span>
+
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                            <i class="fa-solid fa-message text-[#E7CB70]"></i>
+                            Quick Enquiries
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-80"></div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTACT INFORMATION
+         ===================================================== -->
+
+    <section class="bg-[#F7F5EF] py-16 sm:py-20 lg:py-24">
+
+        <div class="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <div class="text-center max-w-3xl mx-auto">
+
+                <p class="text-[#B38B20] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                    Reach Royal
+                </p>
+
+
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+                    We're Here To
+                    <span class="text-[#B38B20]">
+                        Help.
+                    </span>
+                </h2>
+
+
+                <div class="rsa-gold-line w-28 mx-auto mt-5"></div>
+
+
+                <p class="text-[#7A8581] leading-7 mt-5 text-sm sm:text-base">
+                    Connect with Royal Snooker Academy for bookings, coaching,
+                    memberships, tournaments and academy enquiries.
+                </p>
+
+            </div>
+
+
+
+            <div class="flex items-center justify-center gap-3 mt-10">
+                <span class="h-px w-10 bg-[#D4AF37]/50"></span>
+                <span class="text-[9px] font-bold uppercase tracking-[0.22em] text-[#8A938F]">
+                    Choose How To Reach Us
+                </span>
+                <span class="h-px w-10 bg-[#D4AF37]/50"></span>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 lg:gap-7 mt-7">
+
+
+                <!-- PHONE -->
+
+                {% if site_settings.phone %}
+
+                    <div class="rsa-contact-card rounded-2xl p-7 sm:p-8">
+
+                        <div class="flex items-start gap-5">
+
+                            <div class="rsa-contact-icon w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+
+
+                            <div>
+
+                                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                                    Call Academy
+                                </p>
+
+                                <h3 class="font-heading font-bold text-xl text-[#18322B] mt-2">
+                                    Phone
+                                </h3>
+
+
+                                <a
+                                    href="tel:{{ site_settings.phone }}"
+                                    aria-label="Call Royal Snooker Academy"
+                                    class="inline-block text-[#66746F] font-semibold mt-2 hover:text-[#B38B20] transition"
+                                >
+                                    {{ site_settings.phone }}
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- EMAIL -->
+
+                {% if site_settings.email %}
+
+                    <div class="rsa-contact-card rounded-2xl p-7 sm:p-8">
+
+                        <div class="flex items-start gap-5">
+
+                            <div class="rsa-contact-icon w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+
+
+                            <div>
+
+                                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                                    Write To Us
+                                </p>
+
+                                <h3 class="font-heading font-bold text-xl text-[#18322B] mt-2">
+                                    Email
+                                </h3>
+
+
+                                <a
+                                    href="mailto:{{ site_settings.email }}"
+                                    aria-label="Email Royal Snooker Academy"
+                                    class="inline-block text-[#66746F] font-semibold mt-2 break-all hover:text-[#B38B20] transition"
+                                >
+                                    {{ site_settings.email }}
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- WHATSAPP -->
+
+                {% if site_settings.whatsapp_number %}
+
+                    <div class="rsa-contact-card rounded-2xl p-7 sm:p-8">
+
+                        <div class="flex items-start gap-5">
+
+                            <div class="rsa-contact-icon w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+
+
+                            <div>
+
+                                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                                    Quick Enquiry
+                                </p>
+
+                                <h3 class="font-heading font-bold text-xl text-[#18322B] mt-2">
+                                    WhatsApp
+                                </h3>
+
+
+                                <a
+                                    href="https://wa.me/{{ site_settings.whatsapp_number }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-block text-[#66746F] font-semibold mt-2 hover:text-[#B38B20] transition"
+                                >
+                                    {{ site_settings.whatsapp_number }}
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- ADDRESS -->
+
+                {% if site_settings.address %}
+
+                    <div class="rsa-contact-card rounded-2xl p-7 sm:p-8">
+
+                        <div class="flex items-start gap-5">
+
+                            <div class="rsa-contact-icon w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+
+
+                            <div>
+
+                                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                                    Find Us
+                                </p>
+
+                                <h3 class="font-heading font-bold text-xl text-[#18322B] mt-2">
+                                    Address
+                                </h3>
+
+
+                                <p class="text-[#66746F] font-semibold leading-6 mt-2 whitespace-pre-line">
+                                    {{ site_settings.address }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ACADEMY INFORMATION
+         ===================================================== -->
+
+    <section class="bg-white py-16 sm:py-20">
+
+        <div class="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            <div class="rsa-contact-dark-card rounded-2xl overflow-hidden">
+
+                <div class="grid lg:grid-cols-[1fr_0.8fr]">
+
+                    <div class="p-8 sm:p-10 lg:p-14">
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                            Royal Snooker Academy
+                        </p>
+
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl text-white mt-4 leading-tight">
+                            Visit The
+                            <span class="text-[#E7CB70]">
+                                Academy.
+                            </span>
+                        </h2>
+
+
+                        <div class="rsa-gold-line w-28 mt-6"></div>
+
+
+                        {% if site_settings.description %}
+
+                            <p class="text-white/55 leading-7 mt-6 text-sm sm:text-base max-w-2xl">
+                                {{ site_settings.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="text-white/55 leading-7 mt-6 text-sm sm:text-base max-w-2xl">
+                                Visit Royal Snooker Academy for premium snooker tables,
+                                professional coaching and a focused playing environment
+                                in Bengaluru.
+                            </p>
+
+                        {% endif %}
+
+
+                        <div class="flex flex-wrap gap-3 mt-8">
+
+                            <a
+                                href="{% url 'booking' %}"
+                                class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 font-extrabold text-sm"
+                            >
+                                <i class="fa-solid fa-calendar-check"></i>
+                                Book a Table
+                            </a>
+
+
+                            <a
+                                href="{% url 'tables' %}"
+                                class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-7 py-3.5 font-bold text-sm text-white hover:bg-white/[0.07] transition"
+                            >
+                                <i class="fa-solid fa-table-cells text-[#E7CB70]"></i>
+                                View Tables
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="p-7 sm:p-9 lg:p-12 flex items-center">
+
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-1 gap-4 w-full">
+
+
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+                                    <i class="fa-solid fa-table-cells"></i>
+                                </div>
+
+                                <h3 class="font-heading font-bold text-white mt-4">
+                                    Premium Tables
+                                </h3>
+
+                                <p class="text-white/45 text-xs leading-6 mt-2">
+                                    Choose from the academy's available table options
+                                    and reserve your preferred session.
+                                </p>
+
+                            </div>
+
+
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+
+                                <h3 class="font-heading font-bold text-white mt-4">
+                                    Coaching
+                                </h3>
+
+                                <p class="text-white/45 text-xs leading-6 mt-2">
+                                    Ask the academy about current coaching programs
+                                    and training availability.
+                                </p>
+
+                            </div>
+
+
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
+
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                </div>
+
+                                <h3 class="font-heading font-bold text-white mt-4">
+                                    Online Booking
+                                </h3>
+
+                                <p class="text-white/45 text-xs leading-6 mt-2">
+                                    Select your date, time, duration and table
+                                    through the online booking system.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
+
+    <section class="bg-[#F7F5EF] py-16 sm:py-20">
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            <div class="rsa-contact-cta rounded-2xl text-white">
+
+                <div class="relative z-10 p-8 sm:p-10 lg:p-12">
+
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+
+                        <div>
+
+                            <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.24em]">
+                                Ready To Play?
+                            </p>
+
+
+                            <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3">
+                                Your Table.
+                                <span class="text-[#E7CB70]">
+                                    Your Game.
+                                </span>
+                            </h2>
+
+
+                            <p class="text-white/50 text-sm leading-6 mt-3 max-w-2xl">
+                                Choose your table, select your preferred time and
+                                reserve your session at Royal Snooker Academy.
+                            </p>
+
+                        </div>
+
+
+                        <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
+
+                            <a
+                                href="{% url 'booking' %}"
+                                class="rsa-gold-button inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 font-extrabold text-sm"
+                            >
+                                <i class="fa-solid fa-calendar-check"></i>
+                                Book a Table
+                            </a>
+
+
+                            {% if site_settings.whatsapp_number %}
+
+                                <a
+                                    href="https://wa.me/{{ site_settings.whatsapp_number }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-7 py-3.5 font-bold text-sm text-white hover:bg-white/[0.07] transition"
+                                >
+                                    <i class="fa-brands fa-whatsapp text-[#E7CB70]"></i>
+                                    WhatsApp Academy
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

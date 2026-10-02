@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+
+{% block title %}Coaching | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<style>
+    /* =========================================================
+       RSA COACHING — SHARED VISUAL SYSTEM
+       ========================================================= */
+
+    .rsa-coaching-page {
+        background: #F7F5EF;
+        color: #18322B;
+    }
+
+    .rsa-coaching-hero {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 90% 15%, rgba(212, 175, 55, 0.10), transparent 25%),
+            radial-gradient(circle at 8% 100%, rgba(7, 81, 63, 0.30), transparent 34%),
+            linear-gradient(135deg, #050B09 0%, #071713 50%, #06382D 100%);
+    }
+
+    .rsa-coaching-hero::before {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        right: -270px;
+        top: -300px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.12);
+        box-shadow:
+            0 0 0 55px rgba(212, 175, 55, 0.025),
+            0 0 0 110px rgba(212, 175, 55, 0.018);
+        pointer-events: none;
+    }
+
+    .rsa-coaching-hero::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        left: -160px;
+        bottom: -190px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.045);
+        filter: blur(50px);
+        pointer-events: none;
+    }
+
+    .rsa-coaching-hero-inner {
+        position: relative;
+        z-index: 2;
+    }
+
+    .rsa-coaching-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        background: rgba(7, 16, 13, 0.60);
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    .rsa-coaching-section {
+        background: #F7F5EF;
+    }
+
+    .rsa-coaching-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: #FFFFFF;
+        border: 1px solid #E5E2D8;
+        border-radius: 16px;
+        box-shadow: 0 12px 35px rgba(20, 38, 31, 0.055);
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease,
+            border-color 0.22s ease;
+    }
+
+    .rsa-coaching-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(212, 175, 55, 0.38);
+        box-shadow: 0 18px 42px rgba(20, 38, 31, 0.10);
+    }
+
+    .rsa-coaching-icon {
+        background: #EAF1EE;
+        color: #07513F;
+        border: 1px solid rgba(7, 81, 63, 0.08);
+        transition:
+            transform 0.22s ease,
+            background 0.22s ease,
+            color 0.22s ease;
+    }
+
+    .rsa-coaching-card:hover .rsa-coaching-icon {
+        transform: translateY(-2px);
+        background: #07513F;
+        color: #E7CB70;
+    }
+
+    .rsa-coaching-price {
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        background: #FBF7EA;
+    }
+
+    .rsa-coaching-price-muted {
+        border: 1px solid rgba(24, 50, 43, 0.10);
+        background: #F7F5EF;
+    }
+
+    .rsa-coaching-cta {
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease,
+            filter 0.2s ease;
+    }
+
+    .rsa-coaching-cta:hover {
+        transform: translateY(-1px);
+    }
+
+    .rsa-coaching-link:focus-visible,
+    .rsa-coaching-cta:focus-visible {
+        outline: 3px solid rgba(212, 175, 55, 0.35);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rsa-coaching-card,
+        .rsa-coaching-icon,
+        .rsa-coaching-cta {
+            transition: none !important;
+        }
+
+        .rsa-coaching-card:hover,
+        .rsa-coaching-card:hover .rsa-coaching-icon,
+        .rsa-coaching-cta:hover {
+            transform: none !important;
+        }
+    }
+</style>
+
+<div class="rsa-coaching-page">
+
+    <!-- =========================================================
+         COACHING HERO
+         ========================================================= -->
+    <section class="rsa-coaching-hero text-white">
+
+        <div class="rsa-coaching-hero-inner max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+
+            <div class="max-w-4xl">
+
+                <div class="rsa-coaching-badge rounded-full px-4 py-2">
+
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                    <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                        Academy Coaching
+                    </p>
+
+                </div>
+
+                <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mt-6">
+                    Improve Your
+                    <span class="text-[#E7CB70]">Game.</span>
+                </h1>
+
+                <div class="w-24 h-1 bg-[#D4AF37] mt-6"></div>
+
+                <p class="text-white/65 text-sm sm:text-base leading-7 max-w-2xl mt-6">
+                    Structured training for beginners, intermediate players and
+                    competitive players looking to develop their snooker game.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 mt-8">
+
+                    <a
+                        href="#coaching-programs"
+                        class="rsa-coaching-cta inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-6 py-3.5 font-extrabold text-sm shadow-[0_10px_24px_rgba(212,175,55,0.12)] hover:brightness-105"
+                    >
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        Explore Coaching
+                    </a>
+
+                    <a
+                        href="{% url 'contact' %}"
+                        class="rsa-coaching-cta rsa-coaching-link inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] text-white px-6 py-3.5 font-bold text-sm hover:bg-white/[0.08]"
+                    >
+                        <i class="fa-solid fa-message text-[#E7CB70]"></i>
+                        Contact Academy
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         COACHING PROGRAMS
+         ========================================================= -->
+    <section
+        id="coaching-programs"
+        class="rsa-coaching-section py-16 sm:py-20 lg:py-24"
+    >
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            {% if coaching_content %}
+
+            <!-- Section heading -->
+            <div class="text-center max-w-3xl mx-auto">
+
+                <p class="text-[#D4AF37] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                    Training Programs
+                </p>
+
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+                    Train With Purpose.
+                </h2>
+
+                <div class="w-24 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+                <p class="text-[#66746F] text-sm sm:text-base leading-7 mt-5">
+                    Explore the coaching programs currently offered by Royal Snooker
+                    Academy and choose the training that suits your level and goals.
+                </p>
+
+            </div>
+
+
+            <!-- Coaching cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mt-10 sm:mt-12">
+
+                {% for program in coaching_content %}
+
+                <article class="rsa-coaching-card overflow-hidden">
+
+                    <!-- Top accent -->
+                    <div class="h-1 bg-gradient-to-r from-[#B98C22] via-[#D4AF37] to-[#E7CB70]"></div>
+
+                    <div class="p-6 sm:p-7 lg:p-8 flex flex-col flex-1">
+
+                        <!-- Program icon -->
+                        <div class="rsa-coaching-icon w-12 h-12 rounded-xl flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-person-chalkboard"></i>
+                        </div>
+
+                        <!-- Program label -->
+                        <p class="text-[#D4AF37] text-[9px] font-bold uppercase tracking-[0.20em] mt-6">
+                            Academy Program
+                        </p>
+
+                        <!-- Program title -->
+                        <h3 class="font-heading font-extrabold text-2xl text-[#18322B] mt-2 leading-tight">
+                            {{ program.title }}
+                        </h3>
+
+                        <div class="w-16 h-1 bg-[#D4AF37] mt-5"></div>
+
+                        <!-- Description -->
+                        <div class="mt-5 min-h-[132px]">
+                            <p class="text-[#66746F] text-sm leading-7">
+                                {{ program.description }}
+                            </p>
+                        </div>
+
+                        <!-- Coaching fee -->
+                        {% if program.price %}
+                        <div class="rsa-coaching-price rounded-xl px-5 py-4 mt-5">
+
+                            <div class="flex items-center justify-between gap-4">
+
+                                <div>
+                                    <p class="text-[#66746F] text-[9px] font-bold uppercase tracking-[0.18em]">
+                                        Coaching Fee
+                                    </p>
+
+                                    <p class="font-heading font-extrabold text-2xl text-[#18322B] mt-1">
+                                        ₹{{ program.price|floatformat:0 }}
+                                    </p>
+                                </div>
+
+                                <div class="w-9 h-9 rounded-lg bg-white/80 border border-[#D4AF37]/20 flex items-center justify-center text-[#B98C22] shrink-0">
+                                    <i class="fa-solid fa-indian-rupee-sign text-sm"></i>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        {% else %}
+                        <div class="rsa-coaching-price-muted rounded-xl px-5 py-4 mt-5">
+
+                            <p class="text-[#66746F] text-[9px] font-bold uppercase tracking-[0.18em]">
+                                Coaching Fee
+                            </p>
+
+                            <p class="text-[#18322B] text-sm font-bold mt-1">
+                                Contact Academy
+                            </p>
+
+                        </div>
+                        {% endif %}
+
+
+                        <!-- Enquiry -->
+                        <a
+                            href="{% url 'contact' %}"
+                            class="rsa-coaching-cta mt-6 inline-flex items-center justify-center gap-2 w-full rounded-lg bg-[#18322B] text-white py-3.5 px-5 text-sm font-extrabold hover:bg-[#0C4A3B]"
+                        >
+                            <i class="fa-solid fa-message text-[#E7CB70]"></i>
+                            Enquire About Coaching
+                        </a>
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- Academy note -->
+            <div class="max-w-3xl mx-auto mt-10 text-center">
+
+                <p class="text-[#66746F] text-xs leading-6">
+                    Coaching programs and availability are managed by Royal Snooker
+                    Academy and may be updated by the academy.
+                </p>
+
+            </div>
+
+
+            {% else %}
+
+            <!-- =====================================================
+                 NO COACHING PROGRAMS
+                 ===================================================== -->
+            <div class="max-w-3xl mx-auto">
+
+                <div class="bg-white border border-[#E5E2D8] rounded-2xl p-8 sm:p-12 text-center shadow-[0_12px_35px_rgba(20,38,31,0.055)]">
+
+                    <div class="w-16 h-16 rounded-2xl bg-[#EAF1EE] text-[#07513F] flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+
+                    <p class="text-[#D4AF37] text-[9px] font-bold uppercase tracking-[0.22em] mt-6">
+                        Academy Coaching
+                    </p>
+
+                    <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-[#18322B] mt-3">
+                        Coaching Programs Coming Soon
+                    </h2>
+
+                    <div class="w-20 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+                    <p class="text-[#66746F] text-sm leading-7 mt-5 max-w-xl mx-auto">
+                        Our coaching programs will be available here soon.
+                        Please contact Royal Snooker Academy for current coaching
+                        information and availability.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 mt-7">
+
+                        <a
+                            href="{% url 'contact' %}"
+                            class="rsa-coaching-cta inline-flex items-center justify-center gap-2 rounded-lg bg-[#18322B] text-white px-6 py-3.5 font-extrabold text-sm hover:bg-[#0C4A3B]"
+                        >
+                            <i class="fa-solid fa-message text-[#E7CB70]"></i>
+                            Contact Academy
+                        </a>
+
+                        <a
+                            href="{% url 'booking' %}"
+                            class="rsa-coaching-cta rsa-coaching-link inline-flex items-center justify-center gap-2 rounded-lg border border-[#18322B]/15 bg-white text-[#18322B] px-6 py-3.5 font-bold text-sm hover:bg-[#F7F5EF]"
+                        >
+                            <i class="fa-solid fa-calendar-check text-[#0C4A3B]"></i>
+                            Book a Table
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         COACHING CTA
+         ========================================================= -->
+    <section class="bg-white py-16 sm:py-20">
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            <div class="relative overflow-hidden rounded-2xl bg-[#06120F] text-white p-8 sm:p-10 lg:p-12">
+
+                <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-[#07513F]/25 blur-3xl pointer-events-none"></div>
+
+                <div class="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">
+
+                    <div>
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                            Ready To Improve?
+                        </p>
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3 leading-tight">
+                            Practice.
+                            <span class="text-[#E7CB70]">Learn. Improve.</span>
+                        </h2>
+
+                        <p class="text-white/55 text-sm leading-7 mt-4 max-w-2xl">
+                            Contact Royal Snooker Academy to ask about current coaching
+                            programs and availability.
+                        </p>
+
+                    </div>
+
+
+                    <div class="flex flex-col gap-3 w-full lg:w-auto">
+
+                        <a
+                            href="{% url 'contact' %}"
+                            class="rsa-coaching-cta inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-7 py-3.5 font-extrabold text-sm whitespace-nowrap hover:brightness-105"
+                        >
+                            <i class="fa-solid fa-message"></i>
+                            Contact Academy
+                        </a>
+
+                        <a
+                            href="{% url 'booking' %}"
+                            class="rsa-coaching-cta rsa-coaching-link inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-7 py-3.5 font-bold text-sm whitespace-nowrap hover:bg-white/[0.08]"
+                        >
+                            <i class="fa-solid fa-calendar-check text-[#E7CB70]"></i>
+                            Book a Table
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
