@@ -373,3 +373,24 @@ JAZZMIN_UI_TWEAKS = {
 
     "actions_sticky_top": False,
 }
+# ============================================================
+# TEMPORARY PRODUCTION ERROR LOGGING
+# ============================================================
+# Sends Django request exceptions to the Render application log
+# so production 500 errors can be diagnosed.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
