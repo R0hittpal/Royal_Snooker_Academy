@@ -636,6 +636,190 @@
     }
 
     /* =========================================================
+       MANAGER BOOKING DETAIL PANEL
+       ========================================================= */
+
+    .rsa-booking-detail-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(7,16,13,0.58);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .rsa-booking-detail-overlay.hidden {
+        display: none !important;
+    }
+
+    .rsa-booking-detail-panel {
+        width: min(100%, 620px);
+        max-height: min(90vh, 760px);
+        overflow-y: auto;
+        border-radius: 1.25rem;
+        background: #FFFFFF;
+        border: 1px solid rgba(212,175,55,0.28);
+        box-shadow: 0 30px 80px rgba(7,16,13,0.25);
+    }
+
+    .rsa-booking-detail-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.1rem 1.2rem;
+        background: linear-gradient(135deg, #07100D, #06382D);
+        border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .rsa-booking-detail-close {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.7rem;
+        color: #FFFFFF;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.13);
+        transition: 0.15s ease;
+    }
+
+    .rsa-booking-detail-close:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    .rsa-booking-detail-body {
+        padding: 1.2rem;
+    }
+
+    .rsa-booking-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .rsa-booking-detail-item {
+        border: 1px solid var(--rsa-line);
+        border-radius: 0.85rem;
+        padding: 0.75rem;
+        background: #FAFAF7;
+    }
+
+    .rsa-booking-detail-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .rsa-booking-detail-label {
+        color: var(--rsa-muted);
+        font-size: 0.55rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+    }
+
+    .rsa-booking-detail-value {
+        margin-top: 0.25rem;
+        color: var(--rsa-text);
+        font-size: 0.78rem;
+        font-weight: 800;
+        word-break: break-word;
+    }
+
+    .rsa-booking-detail-value a {
+        color: var(--rsa-green);
+    }
+
+    .rsa-booking-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--rsa-line);
+    }
+
+    .rsa-booking-detail-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        min-height: 38px;
+        border-radius: 0.7rem;
+        padding: 0.55rem 0.8rem;
+        font-size: 0.64rem;
+        font-weight: 900;
+    }
+
+    .rsa-booking-detail-action.complete {
+        background: #EAF3FA;
+        color: #17618A;
+    }
+
+    .rsa-booking-detail-action.cancel {
+        background: #FFF0F0;
+        color: #B42323;
+    }
+
+    .rsa-booking-detail-action.call {
+        background: var(--rsa-green);
+        color: #FFFFFF !important;
+        text-decoration: none;
+        border: 1px solid var(--rsa-green);
+    }
+
+    .rsa-booking-detail-action.call:hover {
+        background: var(--rsa-green-dark);
+        color: #FFFFFF !important;
+    }
+
+    .rsa-booking-detail-action.call i {
+        color: #FFFFFF !important;
+    }
+
+    .rsa-booking-detail-note {
+        margin-top: 0.7rem;
+        color: var(--rsa-muted);
+        font-size: 0.61rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 520px) {
+
+        .rsa-booking-detail-overlay {
+            align-items: flex-end;
+            padding: 0;
+        }
+
+        .rsa-booking-detail-panel {
+            width: 100%;
+            max-height: 92vh;
+            border-radius: 1.15rem 1.15rem 0 0;
+        }
+
+        .rsa-booking-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .rsa-booking-detail-item.full {
+            grid-column: auto;
+        }
+
+        .rsa-booking-detail-action {
+            flex: 1 1 140px;
+        }
+
+    }
+
+    /* =========================================================
        MOBILE
        ========================================================= */
 
@@ -1192,8 +1376,8 @@
             </div>
 
             <a
-                href="/admin/bookings/booking/?booking_date={{ today|date:'Y-m-d' }}"
-                class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700"
+                href="#bookingManagementDetails"
+                class="text-[10px] font-extrabold text-amber-600 hover:text-amber-700 rsa-manager-manage-link"
             >
                 Open today's bookings →
             </a>
@@ -2186,6 +2370,17 @@
                                 data-booking-search="{{ booking.booking_reference }} {{ booking.customer_name }} {{ booking.phone }} {{ booking.email }} {{ booking.table.name }} {{ booking.table.table_type }}"
                                 data-booking-status="{{ booking.status }}"
                                 data-booking-date="{{ booking.booking_date|date:'Y-m-d' }}"
+                                data-booking-id="{{ booking.id }}"
+                                data-booking-reference="{{ booking.booking_reference }}"
+                                data-booking-customer="{{ booking.customer_name }}"
+                                data-booking-phone="{{ booking.phone }}"
+                                data-booking-email="{{ booking.email }}"
+                                data-booking-table="{{ booking.table.name }}"
+                                data-booking-table-type="{{ booking.table.table_type }}"
+                                data-booking-start="{{ booking.start_time|time:'H:i' }}"
+                                data-booking-duration="{{ booking.duration_hours }}"
+                                data-booking-amount="{{ booking.amount|floatformat:0 }}"
+                                data-booking-can-complete="{% if booking.can_complete %}true{% else %}false{% endif %}"
                             >
 
                                 <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
@@ -2290,8 +2485,10 @@
                                     <div class="flex flex-wrap gap-1.5">
 
                                         <a
-                                            href="/admin/bookings/booking/{{ booking.id }}/change/"
-                                            class="rsa-manage-btn"
+                                            href="#rsaBookingDetailOverlay"
+                                            class="rsa-manage-btn rsa-manager-booking-link"
+                                            data-booking-reference="{{ booking.booking_reference }}"
+                                            aria-label="Manage booking {{ booking.booking_reference }}"
                                         >
                                             Manage
                                         </a>
@@ -2495,6 +2692,167 @@
         </section>
 
     {% endif %}
+
+</div>
+
+
+<!-- =========================================================
+     MANAGER BOOKING DETAIL PANEL
+     ========================================================= -->
+
+<div
+    id="rsaBookingDetailOverlay"
+    class="rsa-booking-detail-overlay hidden"
+    aria-hidden="true"
+>
+
+    <div
+        id="rsaBookingDetailPanel"
+        class="rsa-booking-detail-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rsaBookingDetailTitle"
+    >
+
+        <div class="rsa-booking-detail-header">
+
+            <div>
+
+                <div class="rsa-section-kicker" style="color:#E7CB70;">
+                    Booking details
+                </div>
+
+                <h2
+                    id="rsaBookingDetailTitle"
+                    class="text-lg font-extrabold text-white mt-1"
+                >
+                    Booking
+                </h2>
+
+                <p
+                    id="rsaBookingDetailStatus"
+                    class="text-[10px] text-white/60 mt-1"
+                >
+                    —
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                id="rsaBookingDetailClose"
+                class="rsa-booking-detail-close"
+                aria-label="Close booking details"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div class="rsa-booking-detail-body">
+
+            <div class="rsa-booking-detail-grid">
+
+                <div class="rsa-booking-detail-item full">
+                    <div class="rsa-booking-detail-label">Customer</div>
+                    <div id="rsaDetailCustomer" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Phone</div>
+                    <div id="rsaDetailPhone" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Email</div>
+                    <div id="rsaDetailEmail" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Table</div>
+                    <div id="rsaDetailTable" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Booking reference</div>
+                    <div id="rsaDetailReference" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Date</div>
+                    <div id="rsaDetailDate" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Session</div>
+                    <div id="rsaDetailSession" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Duration</div>
+                    <div id="rsaDetailDuration" class="rsa-booking-detail-value">—</div>
+                </div>
+
+                <div class="rsa-booking-detail-item">
+                    <div class="rsa-booking-detail-label">Amount</div>
+                    <div id="rsaDetailAmount" class="rsa-booking-detail-value">—</div>
+                </div>
+
+            </div>
+
+            <div class="rsa-booking-detail-actions">
+
+                <a
+                    id="rsaDetailCallButton"
+                    href="#"
+                    class="rsa-booking-detail-action call"
+                >
+                    <i class="fa-solid fa-phone"></i>
+                    Call customer
+                </a>
+
+                <form
+                    id="rsaDetailCompleteForm"
+                    method="post"
+                    class="inline-flex"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        id="rsaDetailCompleteButton"
+                        class="rsa-booking-detail-action complete"
+                    >
+                        <i class="fa-solid fa-check"></i>
+                        Complete session
+                    </button>
+                </form>
+
+                <form
+                    id="rsaDetailCancelForm"
+                    method="post"
+                    class="inline-flex"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        id="rsaDetailCancelButton"
+                        class="rsa-booking-detail-action cancel"
+                    >
+                        <i class="fa-solid fa-ban"></i>
+                        Cancel booking
+                    </button>
+                </form>
+
+            </div>
+
+            <div
+                id="rsaBookingDetailNote"
+                class="rsa-booking-detail-note"
+            ></div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -3566,7 +3924,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       MANAGER-FRIENDLY BOOKING NAVIGATION
+       MANAGER-FRIENDLY BOOKING DETAILS
        ========================================================= */
 
     const managementSection =
@@ -3582,32 +3940,353 @@ document.addEventListener("DOMContentLoaded", function () {
             ".rsa-manager-manage-link"
         );
 
-    function openManagerBookingControls(reference) {
+    const bookingDetailOverlay =
+        document.getElementById("rsaBookingDetailOverlay");
 
-        if (!managementSection) {
+    const bookingDetailClose =
+        document.getElementById("rsaBookingDetailClose");
+
+    const bookingDetailPanel =
+        document.getElementById("rsaBookingDetailPanel");
+
+    const detailTitle =
+        document.getElementById("rsaBookingDetailTitle");
+
+    const detailStatus =
+        document.getElementById("rsaBookingDetailStatus");
+
+    const detailCustomer =
+        document.getElementById("rsaDetailCustomer");
+
+    const detailPhone =
+        document.getElementById("rsaDetailPhone");
+
+    const detailEmail =
+        document.getElementById("rsaDetailEmail");
+
+    const detailTable =
+        document.getElementById("rsaDetailTable");
+
+    const detailReference =
+        document.getElementById("rsaDetailReference");
+
+    const detailDate =
+        document.getElementById("rsaDetailDate");
+
+    const detailSession =
+        document.getElementById("rsaDetailSession");
+
+    const detailDuration =
+        document.getElementById("rsaDetailDuration");
+
+    const detailAmount =
+        document.getElementById("rsaDetailAmount");
+
+    const detailCallButton =
+        document.getElementById("rsaDetailCallButton");
+
+    const detailCompleteForm =
+        document.getElementById("rsaDetailCompleteForm");
+
+    const detailCancelForm =
+        document.getElementById("rsaDetailCancelForm");
+
+    const detailNote =
+        document.getElementById("rsaBookingDetailNote");
+
+
+    function formatDetailDate(dateValue) {
+
+        if (!dateValue) {
+            return "—";
+        }
+
+        const parts = dateValue.split("-");
+
+        if (parts.length !== 3) {
+            return dateValue;
+        }
+
+        const date = new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    function formatDetailTime(timeValue) {
+
+        if (!timeValue) {
+            return "—";
+        }
+
+        const parts = timeValue.split(":");
+
+        if (parts.length < 2) {
+            return timeValue;
+        }
+
+        const date = new Date();
+
+        date.setHours(
+            Number(parts[0]),
+            Number(parts[1]),
+            0,
+            0
+        );
+
+        return date.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "numeric",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    function getDetailEndTime(startTime, duration) {
+
+        if (!startTime || !duration) {
+            return "—";
+        }
+
+        const parts = startTime.split(":");
+
+        if (parts.length < 2) {
+            return "—";
+        }
+
+        const date = new Date();
+
+        date.setHours(
+            Number(parts[0]),
+            Number(parts[1]),
+            0,
+            0
+        );
+
+        date.setMinutes(
+            date.getMinutes() +
+            Number(duration) * 60
+        );
+
+        return date.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "numeric",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    function getBookingRowByReference(reference) {
+
+        if (!reference) {
+            return null;
+        }
+
+        const rows =
+            document.querySelectorAll(
+                ".all-booking-row"
+            );
+
+        for (const row of rows) {
+
+            if (
+                row.dataset.bookingReference ===
+                reference
+            ) {
+                return row;
+            }
+
+        }
+
+        return null;
+
+    }
+
+
+    function setDetailStatus(status) {
+
+        const normalized =
+            String(status || "").trim().toLowerCase();
+
+        let label = status || "—";
+        let color = "#E7CB70";
+
+        if (normalized === "confirmed") {
+            label = "Confirmed";
+            color = "#52D49A";
+        } else if (normalized === "cancelled") {
+            label = "Cancelled";
+            color = "#FF8C8C";
+        } else if (normalized === "completed") {
+            label = "Completed";
+            color = "#7FC5F1";
+        } else if (normalized === "pending") {
+            label = "Pending";
+            color = "#E7CB70";
+        }
+
+        detailStatus.textContent = label;
+        detailStatus.style.color = color;
+
+    }
+
+
+    function openBookingDetail(reference) {
+
+        if (!bookingDetailOverlay) {
             return;
         }
 
-        managementSection.open = true;
+        const row =
+            getBookingRowByReference(reference);
 
-        if (reference && searchInput) {
-
-            searchInput.value = reference;
-
-            currentPage = 1;
-
-            renderBookingRows();
-
+        if (!row) {
+            return;
         }
 
+        const data = row.dataset;
+
+        const status =
+            String(data.bookingStatus || "").trim();
+
+        const duration =
+            Number(data.bookingDuration || 0);
+
+        const startTime =
+            data.bookingStart || "";
+
+        const endTime =
+            getDetailEndTime(
+                startTime,
+                duration
+            );
+
+        detailTitle.textContent =
+            data.bookingReference || "Booking details";
+
+        setDetailStatus(status);
+
+        detailCustomer.textContent =
+            data.bookingCustomer || "—";
+
+        detailPhone.innerHTML =
+            data.bookingPhone
+                ? `<a href="tel:${data.bookingPhone}">${data.bookingPhone}</a>`
+                : "—";
+
+        detailEmail.innerHTML =
+            data.bookingEmail
+                ? `<a href="mailto:${data.bookingEmail}">${data.bookingEmail}</a>`
+                : "—";
+
+        detailTable.textContent =
+            data.bookingTableType
+                ? `${data.bookingTable} · ${data.bookingTableType}`
+                : (data.bookingTable || "—");
+
+        detailReference.textContent =
+            data.bookingReference || "—";
+
+        detailDate.textContent =
+            formatDetailDate(data.bookingDate);
+
+        detailSession.textContent =
+            `${formatDetailTime(startTime)} – ${endTime}`;
+
+        detailDuration.textContent =
+            duration === 1
+                ? "1 hour"
+                : `${duration} hours`;
+
+        detailAmount.textContent =
+            data.bookingAmount
+                ? `₹${data.bookingAmount}`
+                : "—";
+
+        if (data.bookingPhone) {
+            detailCallButton.href =
+                `tel:${data.bookingPhone}`;
+            detailCallButton.classList.remove("hidden");
+        } else {
+            detailCallButton.classList.add("hidden");
+        }
+
+        detailCompleteForm.action =
+            `/admin-dashboard/bookings/${data.bookingId}/complete/`;
+
+        detailCancelForm.action =
+            `/admin-dashboard/bookings/${data.bookingId}/cancel/`;
+
+        const canComplete =
+            data.bookingCanComplete === "true";
+
+        detailCompleteForm.classList.toggle(
+            "hidden",
+            status !== "Confirmed" || !canComplete
+        );
+
+        detailCancelForm.classList.toggle(
+            "hidden",
+            status !== "Confirmed"
+        );
+
+        if (status === "Confirmed" && !canComplete) {
+            detailNote.textContent =
+                "This session can be completed only after its scheduled end time.";
+        } else if (status === "Confirmed" && canComplete) {
+            detailNote.textContent =
+                "The scheduled session has ended and is ready to be marked as completed.";
+        } else if (status === "Cancelled") {
+            detailNote.textContent =
+                "This booking has been cancelled. No further manager action is available.";
+        } else if (status === "Completed") {
+            detailNote.textContent =
+                "This booking has already been completed.";
+        } else if (status === "Pending") {
+            detailNote.textContent =
+                "This booking is pending. No manager action is configured for pending bookings yet.";
+        } else {
+            detailNote.textContent = "";
+        }
+
+        bookingDetailOverlay.classList.remove("hidden");
+        bookingDetailOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+
         setTimeout(function () {
+            bookingDetailClose.focus();
+        }, 50);
 
-            managementSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+    }
 
-        }, 60);
+
+    function closeBookingDetail() {
+
+        if (!bookingDetailOverlay) {
+            return;
+        }
+
+        bookingDetailOverlay.classList.add("hidden");
+        bookingDetailOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
 
     }
 
@@ -3618,7 +4297,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             event.preventDefault();
 
-            openManagerBookingControls(
+            openBookingDetail(
                 link.dataset.bookingReference || ""
             );
 
@@ -3633,11 +4312,106 @@ document.addEventListener("DOMContentLoaded", function () {
 
             event.preventDefault();
 
-            openManagerBookingControls("");
+            if (managementSection) {
+                managementSection.open = true;
+                setTimeout(function () {
+                    managementSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }, 60);
+            }
 
         });
 
     });
+
+
+    if (bookingDetailClose) {
+
+        bookingDetailClose.addEventListener(
+            "click",
+            closeBookingDetail
+        );
+
+    }
+
+
+    if (bookingDetailOverlay) {
+
+        bookingDetailOverlay.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === bookingDetailOverlay) {
+                    closeBookingDetail();
+                }
+
+            }
+        );
+
+    }
+
+
+    if (bookingDetailPanel) {
+
+        bookingDetailPanel.addEventListener(
+            "click",
+            function (event) {
+                event.stopPropagation();
+            }
+        );
+
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                bookingDetailOverlay &&
+                !bookingDetailOverlay.classList.contains("hidden")
+            ) {
+                closeBookingDetail();
+            }
+
+        }
+    );
+
+
+    if (detailCompleteForm) {
+
+        detailCompleteForm.addEventListener(
+            "submit",
+            function (event) {
+                if (!confirm(
+                    "Are you sure you want to mark this booking as completed?"
+                )) {
+                    event.preventDefault();
+                }
+            }
+        );
+
+    }
+
+
+    if (detailCancelForm) {
+
+        detailCancelForm.addEventListener(
+            "submit",
+            function (event) {
+                if (!confirm(
+                    "Are you sure you want to cancel this booking?"
+                )) {
+                    event.preventDefault();
+                }
+            }
+        );
+
+    }
+
 
 });
 
