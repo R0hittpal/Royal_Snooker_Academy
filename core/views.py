@@ -260,7 +260,7 @@ def build_booking_confirmation_html(
     style="
         margin:0;
         padding:0;
-        background-color:#f3f4f6;
+        background-color:#F7F5EF;
         font-family:Arial,Helvetica,sans-serif;
         color:#1f2937;
     "
@@ -272,7 +272,7 @@ def build_booking_confirmation_html(
     cellspacing="0"
     cellpadding="0"
     border="0"
-    style="background-color:#f3f4f6;"
+    style="background-color:#F7F5EF;"
 >
     <tr>
         <td
@@ -289,6 +289,8 @@ def build_booking_confirmation_html(
                 style="
                     max-width:620px;
                     background-color:#ffffff;
+                    border:1px solid #D7E2DD;
+                    border-top:4px solid #D4AF37;
                     border-radius:16px;
                     overflow:hidden;
                     box-shadow:0 4px 18px rgba(15,23,42,0.08);
@@ -300,7 +302,8 @@ def build_booking_confirmation_html(
                     <td
                         align="center"
                         style="
-                            background-color:#0f172a;
+                            background-color:#07100D;
+                            border-bottom:1px solid #D4AF37;
                             padding:28px 24px 25px;
                         "
                     >
@@ -337,7 +340,7 @@ def build_booking_confirmation_html(
                         <div
                             style="
                                 margin-top:7px;
-                                color:#cbd5e1;
+                                color:#E7CB70;
                                 font-size:12px;
                                 letter-spacing:1.8px;
                                 text-transform:uppercase;
@@ -360,9 +363,9 @@ def build_booking_confirmation_html(
                         <div
                             style="
                                 display:inline-block;
-                                background-color:#ecfdf5;
-                                border:1px solid #bbf7d0;
-                                color:#166534;
+                                background-color:#EAF5F0;
+                                border:1px solid #B9DCCF;
+                                color:#07513F;
                                 padding:8px 16px;
                                 border-radius:999px;
                                 font-size:12px;
@@ -391,7 +394,7 @@ def build_booking_confirmation_html(
                                 font-size:17px;
                                 line-height:26px;
                                 font-weight:700;
-                                color:#111827;
+                                color:#18322B;
                             "
                         >
                             Hi {booking.customer_name},
@@ -402,11 +405,11 @@ def build_booking_confirmation_html(
                                 margin:0;
                                 font-size:15px;
                                 line-height:25px;
-                                color:#4b5563;
+                                color:#66746F;
                             "
                         >
                             Your snooker session at
-                            <strong style="color:#111827;">
+                            <strong style="color:#18322B;">
                                 Royal Snooker Academy
                             </strong>
                             has been successfully reserved.
@@ -431,8 +434,8 @@ def build_booking_confirmation_html(
                             cellpadding="0"
                             border="0"
                             style="
-                                background-color:#f8fafc;
-                                border:1px solid #e2e8f0;
+                                background-color:#F4F7F5;
+                                border:1px solid #D7E2DD;
                                 border-radius:12px;
                             "
                         >
@@ -445,7 +448,7 @@ def build_booking_confirmation_html(
 
                                     <div
                                         style="
-                                            color:#64748b;
+                                            color:#66746F;
                                             font-size:11px;
                                             font-weight:800;
                                             letter-spacing:1.2px;
@@ -458,7 +461,7 @@ def build_booking_confirmation_html(
 
                                     <div
                                         style="
-                                            color:#0f172a;
+                                            color:#07100D;
                                             font-size:20px;
                                             line-height:26px;
                                             font-weight:800;
@@ -486,7 +489,7 @@ def build_booking_confirmation_html(
 
                         <div
                             style="
-                                color:#111827;
+                                color:#18322B;
                                 font-size:14px;
                                 font-weight:800;
                                 letter-spacing:0.8px;
@@ -515,9 +518,9 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#64748b;
+                                        color:#66746F;
                                         font-size:13px;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                         width:42%;
                                     "
                                 >
@@ -527,11 +530,11 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#111827;
+                                        color:#18322B;
                                         font-size:13px;
                                         font-weight:700;
                                         text-align:right;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     {booking.table.name}
@@ -543,9 +546,9 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#64748b;
+                                        color:#66746F;
                                         font-size:13px;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     Table Type
@@ -554,11 +557,11 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#111827;
+                                        color:#18322B;
                                         font-size:13px;
                                         font-weight:700;
                                         text-align:right;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     {booking.table.table_type}
@@ -570,9 +573,9 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#64748b;
+                                        color:#66746F;
                                         font-size:13px;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     Date
@@ -581,11 +584,11 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#111827;
+                                        color:#18322B;
                                         font-size:13px;
                                         font-weight:700;
                                         text-align:right;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     {booking.booking_date.strftime("%d %B %Y")}
@@ -597,9 +600,9 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#64748b;
+                                        color:#66746F;
                                         font-size:13px;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     Start Time
@@ -608,11 +611,11 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#111827;
+                                        color:#18322B;
                                         font-size:13px;
                                         font-weight:700;
                                         text-align:right;
-                                        border-bottom:1px solid #f1f5f9;
+                                        border-bottom:1px solid #E8EFEB;
                                     "
                                 >
                                     {booking.start_time.strftime("%I:%M %p")}
@@ -624,7 +627,7 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#64748b;
+                                        color:#66746F;
                                         font-size:13px;
                                     "
                                 >
@@ -634,7 +637,7 @@ def build_booking_confirmation_html(
                                 <td
                                     style="
                                         padding:13px 16px;
-                                        color:#111827;
+                                        color:#18322B;
                                         font-size:13px;
                                         font-weight:700;
                                         text-align:right;
@@ -665,8 +668,8 @@ def build_booking_confirmation_html(
                             cellpadding="0"
                             border="0"
                             style="
-                                background-color:#fffbeb;
-                                border:1px solid #fde68a;
+                                background-color:#FFF8E1;
+                                border:1px solid #E7CB70;
                                 border-radius:12px;
                             "
                         >
@@ -681,7 +684,7 @@ def build_booking_confirmation_html(
 
                                     <div
                                         style="
-                                            color:#92400e;
+                                            color:#8A6814;
                                             font-size:11px;
                                             font-weight:800;
                                             letter-spacing:1.2px;
@@ -694,7 +697,7 @@ def build_booking_confirmation_html(
 
                                     <div
                                         style="
-                                            color:#111827;
+                                            color:#18322B;
                                             font-size:27px;
                                             line-height:34px;
                                             font-weight:800;
@@ -725,7 +728,7 @@ def build_booking_confirmation_html(
                                 margin:0 0 14px;
                                 font-size:14px;
                                 line-height:24px;
-                                color:#374151;
+                                color:#36514A;
                             "
                         >
                             Your table has been reserved successfully.
@@ -736,7 +739,7 @@ def build_booking_confirmation_html(
                                 margin:0 0 14px;
                                 font-size:14px;
                                 line-height:24px;
-                                color:#374151;
+                                color:#36514A;
                             "
                         >
                             Please arrive a few minutes before your
@@ -748,7 +751,7 @@ def build_booking_confirmation_html(
                                 margin:0;
                                 font-size:15px;
                                 line-height:25px;
-                                color:#111827;
+                                color:#18322B;
                                 font-weight:700;
                             "
                         >
@@ -764,7 +767,7 @@ def build_booking_confirmation_html(
                     <td
                         align="center"
                         style="
-                            background-color:#0f172a;
+                            background-color:#07100D;
                             padding:24px 24px;
                         "
                     >
@@ -782,7 +785,7 @@ def build_booking_confirmation_html(
 
                         <div
                             style="
-                                color:#94a3b8;
+                                color:#AEBBB6;
                                 font-size:12px;
                                 line-height:19px;
                             "
@@ -793,7 +796,7 @@ def build_booking_confirmation_html(
                         <div
                             style="
                                 margin-top:12px;
-                                color:#64748b;
+                                color:#66746F;
                                 font-size:11px;
                                 line-height:18px;
                             "
@@ -847,7 +850,7 @@ def build_completion_email_html(
     style="
         margin:0;
         padding:0;
-        background-color:#f3f4f6;
+        background-color:#F7F5EF;
         font-family:Arial,Helvetica,sans-serif;
         color:#1f2937;
     "
@@ -859,7 +862,7 @@ def build_completion_email_html(
     cellspacing="0"
     cellpadding="0"
     border="0"
-    style="background-color:#f3f4f6;"
+    style="background-color:#F7F5EF;"
 >
     <tr>
         <td
@@ -876,6 +879,8 @@ def build_completion_email_html(
                 style="
                     max-width:620px;
                     background-color:#ffffff;
+                    border:1px solid #D7E2DD;
+                    border-top:4px solid #D4AF37;
                     border-radius:18px;
                     overflow:hidden;
                     box-shadow:0 5px 20px rgba(15,23,42,0.08);
@@ -887,7 +892,8 @@ def build_completion_email_html(
                     <td
                         align="center"
                         style="
-                            background-color:#0f172a;
+                            background-color:#07100D;
+                            border-bottom:1px solid #D4AF37;
                             padding:28px 24px 25px;
                         "
                     >
@@ -923,7 +929,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:6px;
-                                color:#cbd5e1;
+                                color:#E7CB70;
                                 font-size:11px;
                                 letter-spacing:2px;
                                 text-transform:uppercase;
@@ -948,9 +954,9 @@ def build_completion_email_html(
                         <div
                             style="
                                 display:inline-block;
-                                background-color:#ecfdf5;
-                                border:1px solid #bbf7d0;
-                                color:#166534;
+                                background-color:#EAF5F0;
+                                border:1px solid #B9DCCF;
+                                color:#07513F;
                                 padding:7px 15px;
                                 border-radius:999px;
                                 font-size:11px;
@@ -965,7 +971,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:25px;
-                                color:#111827;
+                                color:#18322B;
                                 font-size:27px;
                                 line-height:35px;
                                 font-weight:800;
@@ -977,14 +983,14 @@ def build_completion_email_html(
                         <p
                             style="
                                 margin:14px 0 0;
-                                color:#64748b;
+                                color:#66746F;
                                 font-size:15px;
                                 line-height:25px;
                             "
                         >
                             Hi {booking.customer_name},<br>
                             we hope you enjoyed your session at
-                            <strong style="color:#111827;">
+                            <strong style="color:#18322B;">
                                 Royal Snooker Academy
                             </strong>.
                         </p>
@@ -1003,7 +1009,7 @@ def build_completion_email_html(
 
                         <div
                             style="
-                                color:#111827;
+                                color:#18322B;
                                 font-size:13px;
                                 font-weight:800;
                                 letter-spacing:1px;
@@ -1022,8 +1028,8 @@ def build_completion_email_html(
                             cellpadding="0"
                             border="0"
                             style="
-                                background-color:#f8fafc;
-                                border:1px solid #e2e8f0;
+                                background-color:#F4F7F5;
+                                border:1px solid #D7E2DD;
                                 border-radius:14px;
                             "
                         >
@@ -1038,7 +1044,7 @@ def build_completion_email_html(
 
                                     <div
                                         style="
-                                            color:#0f172a;
+                                            color:#07100D;
                                             font-size:18px;
                                             line-height:25px;
                                             font-weight:800;
@@ -1050,7 +1056,7 @@ def build_completion_email_html(
                                     <div
                                         style="
                                             margin-top:4px;
-                                            color:#64748b;
+                                            color:#66746F;
                                             font-size:13px;
                                         "
                                     >
@@ -1069,7 +1075,7 @@ def build_completion_email_html(
 
                                     <div
                                         style="
-                                            color:#0f172a;
+                                            color:#07100D;
                                             font-size:16px;
                                             font-weight:800;
                                         "
@@ -1080,7 +1086,7 @@ def build_completion_email_html(
                                     <div
                                         style="
                                             margin-top:5px;
-                                            color:#64748b;
+                                            color:#66746F;
                                             font-size:12px;
                                         "
                                     >
@@ -1103,7 +1109,7 @@ def build_completion_email_html(
                                     <div
                                         style="
                                             height:1px;
-                                            background-color:#e2e8f0;
+                                            background-color:#D7E2DD;
                                         "
                                     ></div>
 
@@ -1122,7 +1128,7 @@ def build_completion_email_html(
 
                                             <td
                                                 style="
-                                                    color:#64748b;
+                                                    color:#66746F;
                                                     font-size:12px;
                                                 "
                                             >
@@ -1132,7 +1138,7 @@ def build_completion_email_html(
                                             <td
                                                 align="right"
                                                 style="
-                                                    color:#111827;
+                                                    color:#18322B;
                                                     font-size:12px;
                                                     font-weight:700;
                                                 "
@@ -1164,7 +1170,7 @@ def build_completion_email_html(
 
                         <div
                             style="
-                                color:#64748b;
+                                color:#66746F;
                                 font-size:10px;
                                 font-weight:800;
                                 letter-spacing:1.5px;
@@ -1177,7 +1183,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:5px;
-                                color:#111827;
+                                color:#18322B;
                                 font-size:26px;
                                 line-height:34px;
                                 font-weight:800;
@@ -1205,8 +1211,8 @@ def build_completion_email_html(
                             cellpadding="0"
                             border="0"
                             style="
-                                background-color:#fffaf0;
-                                border-left:4px solid #d4a017;
+                                background-color:#FFF8E1;
+                                border-left:4px solid #D4AF37;
                             "
                         >
 
@@ -1215,7 +1221,7 @@ def build_completion_email_html(
                                 <td
                                     style="
                                         padding:15px 16px;
-                                        color:#374151;
+                                        color:#36514A;
                                         font-size:14px;
                                         line-height:23px;
                                     "
@@ -1245,7 +1251,7 @@ def build_completion_email_html(
                         <p
                             style="
                                 margin:0;
-                                color:#374151;
+                                color:#36514A;
                                 font-size:14px;
                                 line-height:24px;
                             "
@@ -1256,7 +1262,7 @@ def build_completion_email_html(
                         <p
                             style="
                                 margin:8px 0 0;
-                                color:#111827;
+                                color:#18322B;
                                 font-size:16px;
                                 line-height:25px;
                                 font-weight:800;
@@ -1282,8 +1288,8 @@ def build_completion_email_html(
                             href="{booking_url}"
                             style="
                                 display:inline-block;
-                                background-color:#d4a017;
-                                color:#0f172a;
+                                background-color:#D4AF37;
+                                color:#07100D;
                                 text-decoration:none;
                                 font-size:14px;
                                 font-weight:800;
@@ -1309,13 +1315,13 @@ def build_completion_email_html(
 
                         <div
                             style="
-                                color:#94a3b8;
+                                color:#AEBBB6;
                                 font-size:11px;
                                 line-height:18px;
                             "
                         >
                             Booking Reference:
-                            <strong style="color:#64748b;">
+                            <strong style="color:#66746F;">
                                 {booking.booking_reference}
                             </strong>
                         </div>
@@ -1329,7 +1335,7 @@ def build_completion_email_html(
                     <td
                         align="center"
                         style="
-                            background-color:#0f172a;
+                            background-color:#07100D;
                             padding:24px;
                         "
                     >
@@ -1347,7 +1353,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:6px;
-                                color:#94a3b8;
+                                color:#AEBBB6;
                                 font-size:12px;
                             "
                         >
@@ -1357,7 +1363,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:12px;
-                                color:#64748b;
+                                color:#66746F;
                                 font-size:11px;
                                 line-height:18px;
                             "

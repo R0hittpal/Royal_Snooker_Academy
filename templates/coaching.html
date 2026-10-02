@@ -143,6 +143,30 @@
                 </div>
 
 
+                <!-- Coaching fee -->
+                {% if program.price %}
+                <div class="mt-5 rounded-xl border border-[#D4AF37]/25 bg-[#F7F5EF] px-5 py-4">
+                    <p class="text-[#66746F] text-[9px] font-bold uppercase tracking-[0.18em]">
+                        Coaching Fee
+                    </p>
+
+                    <p class="font-heading font-extrabold text-2xl text-[#18322B] mt-1">
+                        ₹{{ program.price|floatformat:0 }}
+                    </p>
+                </div>
+                {% else %}
+                <div class="mt-5 rounded-xl border border-[#18322B]/10 bg-[#F7F5EF] px-5 py-4">
+                    <p class="text-[#66746F] text-[9px] font-bold uppercase tracking-[0.18em]">
+                        Coaching Fee
+                    </p>
+
+                    <p class="text-[#18322B] text-sm font-bold mt-1">
+                        Contact Academy
+                    </p>
+                </div>
+                {% endif %}
+
+
                 <!-- Enquiry -->
                 <a
                     href="{% url 'contact' %}"
