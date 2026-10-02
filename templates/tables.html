@@ -1,0 +1,2230 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tables & Slots | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --rsa-black: #07100D;
+        --rsa-emerald: #06382D;
+        --rsa-green: #07513F;
+        --rsa-gold: #D4AF37;
+        --rsa-gold-light: #E7CB70;
+        --rsa-ivory: #F7F5EF;
+        --rsa-text: #18322B;
+        --rsa-muted: #66746F;
+    }
+
+    .tables-page {
+        background: var(--rsa-ivory);
+        color: var(--rsa-text);
+    }
+
+    .gold-text {
+        background: linear-gradient(
+            135deg,
+            #F7E8A9 0%,
+            #D4AF37 42%,
+            #E8CF78 68%,
+            #B98C22 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .gold-button {
+        background: linear-gradient(
+            135deg,
+            #F2D77F 0%,
+            #D4AF37 48%,
+            #B98A1B 100%
+        );
+        color: #07100D;
+        box-shadow: 0 8px 20px rgba(180, 140, 30, 0.16);
+        transition: all 0.2s ease;
+    }
+
+    .gold-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(180, 140, 30, 0.25);
+    }
+
+    .tables-hero {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 88% 10%,
+                rgba(212, 175, 55, 0.10),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 8% 100%,
+                rgba(5, 81, 63, 0.30),
+                transparent 36%
+            ),
+            linear-gradient(
+                135deg,
+                #050B09 0%,
+                #071713 50%,
+                #06382D 100%
+            );
+    }
+
+    .tables-hero::before {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        right: -260px;
+        top: -300px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.11);
+        box-shadow:
+            0 0 0 55px rgba(212, 175, 55, 0.025),
+            0 0 0 110px rgba(212, 175, 55, 0.015);
+    }
+
+    .tables-hero::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        left: -160px;
+        bottom: -190px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.045);
+        filter: blur(50px);
+    }
+
+    .royal-standard {
+        background:
+            radial-gradient(
+                circle at 90% 0%,
+                rgba(212, 175, 55, 0.11),
+                transparent 28%
+            ),
+            linear-gradient(
+                135deg,
+                #07100D,
+                #08261F 55%,
+                #06382D
+            );
+        border: 1px solid rgba(212, 175, 55, 0.22);
+        box-shadow: 0 14px 35px rgba(7, 16, 13, 0.12);
+    }
+
+    .availability-panel {
+        background: #FFFFFF;
+        border: 1px solid #E1DFD6;
+        box-shadow: 0 12px 32px rgba(20, 38, 31, 0.07);
+    }
+
+    .availability-field {
+        border: 1px solid #D9D8D0;
+        background: #FBFAF6;
+        color: #18322B;
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .availability-field:focus {
+        outline: none;
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+    }
+
+    .availability-check {
+        background: linear-gradient(
+            135deg,
+            #F2D77F,
+            #D4AF37,
+            #B98A1B
+        );
+        color: #07100D;
+        transition: all 0.2s ease;
+    }
+
+    .availability-check:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(180, 140, 30, 0.22);
+    }
+
+    .availability-check:disabled {
+        cursor: wait;
+        opacity: 0.65;
+    }
+
+    .table-card {
+        position: relative;
+        overflow: hidden;
+        background: #FFFFFF;
+        border: 1px solid #E2E0D8;
+        border-top: 3px solid #D4AF37;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(20, 38, 31, 0.055);
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease,
+            border-color 0.22s ease;
+    }
+
+    .table-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 34px rgba(20, 38, 31, 0.10);
+        border-color: rgba(212, 175, 55, 0.55);
+    }
+
+    .table-card.booked {
+        border-top-color: #D7D7D1;
+        opacity: 0.76;
+    }
+
+    .table-card.available {
+        border-top-color: #D4AF37;
+    }
+
+    .table-card.selected {
+        border-color: #D4AF37;
+        box-shadow:
+            0 0 0 2px rgba(212, 175, 55, 0.20),
+            0 16px 34px rgba(20, 38, 31, 0.12);
+    }
+
+    .table-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #EDF5F1;
+        color: #07513F;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .status-available {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #E8F5EF;
+        border: 1px solid #CBE8D9;
+        color: #087052;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .status-booked {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #DC2626;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .status-neutral {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #F1F1ED;
+        border: 1px solid #DDDDD5;
+        color: #737A77;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .table-feature {
+        background: #F9F8F4;
+        border: 1px solid #E6E4DC;
+    }
+
+    .cta-section {
+        background: #FFFFFF;
+    }
+
+    .availability-section {
+        scroll-margin-top: 110px;
+    }
+
+    #tableGrid {
+        scroll-margin-top: 110px;
+    }
+
+    #tableCollection {
+        scroll-margin-top: 125px;
+    }
+
+    .cta-card {
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(212, 175, 55, 0.10),
+                transparent 28%
+            ),
+            linear-gradient(
+                135deg,
+                #07100D,
+                #08261F,
+                #06382D
+            );
+        box-shadow: 0 18px 45px rgba(7, 16, 13, 0.14);
+    }
+
+    @media (max-width: 768px) {
+        .tables-hero::before {
+            width: 340px;
+            height: 340px;
+        }
+
+        .table-card:hover {
+            transform: none;
+        }
+    }
+</style>
+
+
+<div class="tables-page">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="tables-hero text-white">
+
+        <div class="relative z-10">
+
+            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+                <div class="max-w-4xl py-16 sm:py-20 lg:py-24">
+
+                    <div class="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/35 bg-black/20 px-4 py-2">
+
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                        <span class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.20em]">
+                            Bengaluru's Premium Snooker Destination
+                        </span>
+
+                    </div>
+
+
+                    <p class="text-[#D4AF37] text-[10px] sm:text-xs font-bold uppercase tracking-[0.24em] mt-8">
+                        Tables & Slots
+                    </p>
+
+
+                    <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.03] mt-3">
+
+                        Choose Your
+
+                        <span class="gold-text">
+                            Table.
+                        </span>
+
+                    </h1>
+
+
+                    <div class="w-24 h-1 bg-[#D4AF37] mt-7"></div>
+
+
+                    <p class="text-white/65 text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 mt-6 max-w-2xl">
+
+                        Choose your preferred date, playing time and duration,
+                        then find the table that is available for your session.
+
+                    </p>
+
+
+                    <div class="flex flex-wrap gap-3 mt-8">
+
+                        <a
+                            href="#availability"
+                            class="gold-button inline-flex items-center justify-center gap-2 rounded-lg px-6 sm:px-7 py-3.5 font-extrabold text-sm"
+                        >
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Check Availability
+                        </a>
+
+
+                        <a
+                            href="{% url 'contact' %}"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 sm:px-7 py-3.5 font-bold text-sm text-white/90 hover:bg-white/[0.07] transition"
+                        >
+                            <i class="fa-solid fa-location-dot text-[#D4AF37]"></i>
+                            Contact Academy
+                        </a>
+
+                    </div>
+
+
+                    <div class="flex flex-wrap gap-x-7 gap-y-3 mt-7 text-[11px] text-white/50">
+
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+                            Premium Tables
+                        </span>
+
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+                            Imported Equipment
+                        </span>
+
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-[#D4AF37]"></i>
+                            Live Availability
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-80"></div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN TABLE EXPERIENCE
+         ===================================================== -->
+
+    <section class="bg-[#F7F5EF] py-16 sm:py-20 lg:py-24">
+
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+
+            <!-- SECTION HEADING -->
+
+            <div
+                id="availability"
+                class="text-center max-w-3xl mx-auto availability-section"
+            >
+
+                <p class="text-[#B38B20] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                    Reserve Your Session
+                </p>
+
+
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+
+                    Find Your
+
+                    <span class="text-[#B38B20]">
+                        Table.
+                    </span>
+
+                </h2>
+
+
+                <div class="w-16 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+
+                <p class="text-[#66746F] text-sm sm:text-base leading-7 mt-5">
+
+                    Select the session you want to play.
+                    We will show which tables are available for that exact time.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 AVAILABILITY PANEL
+                 ================================================= -->
+
+            <div
+                class="availability-panel rounded-2xl p-6 sm:p-7 lg:p-8 mt-10"
+            >
+
+                <div class="flex flex-col lg:flex-row lg:items-end gap-5">
+
+
+                    <!-- DATE -->
+
+                    <div class="flex-1">
+
+                        <label
+                            for="tableBookingDate"
+                            class="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#B38B20] mb-2"
+                        >
+                            Playing Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="tableBookingDate"
+                            class="availability-field w-full rounded-xl px-4 py-3.5 text-sm"
+                        >
+
+                    </div>
+
+
+                    <!-- TIME -->
+
+                    <div class="flex-1">
+
+                        <label
+                            for="tableBookingTime"
+                            class="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#B38B20] mb-2"
+                        >
+                            Start Time
+                        </label>
+
+                        <select
+                            id="tableBookingTime"
+                            class="availability-field w-full rounded-xl px-4 py-3.5 text-sm"
+                        >
+
+                            <option value="">
+                                Select start time
+                            </option>
+
+                            <option value="10:00" data-start-time="10:00">10:00 AM</option>
+                            <option value="11:00" data-start-time="11:00">11:00 AM</option>
+                            <option value="12:00" data-start-time="12:00">12:00 PM</option>
+                            <option value="13:00" data-start-time="13:00">1:00 PM</option>
+                            <option value="14:00" data-start-time="14:00">2:00 PM</option>
+                            <option value="15:00" data-start-time="15:00">3:00 PM</option>
+                            <option value="16:00" data-start-time="16:00">4:00 PM</option>
+                            <option value="17:00" data-start-time="17:00">5:00 PM</option>
+                            <option value="18:00" data-start-time="18:00">6:00 PM</option>
+                            <option value="19:00" data-start-time="19:00">7:00 PM</option>
+                            <option value="20:00" data-start-time="20:00">8:00 PM</option>
+                            <option value="21:00" data-start-time="21:00">9:00 PM</option>
+                            <option value="22:00" data-start-time="22:00">10:00 PM</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DURATION -->
+
+                    <div class="flex-1">
+
+                        <label
+                            for="tableBookingDuration"
+                            class="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#B38B20] mb-2"
+                        >
+                            Duration
+                        </label>
+
+                        <select
+                            id="tableBookingDuration"
+                            class="availability-field w-full rounded-xl px-4 py-3.5 text-sm"
+                        >
+
+                            <option value="">
+                                Select duration
+                            </option>
+
+                            <option value="1">
+                                1 Hour
+                            </option>
+
+                            <option value="2">
+                                2 Hours
+                            </option>
+
+                            <option value="3">
+                                3 Hours
+                            </option>
+
+                            <option value="4">
+                                4 Hours
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <button
+                        type="button"
+                        id="checkAvailabilityButton"
+                        class="availability-check inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-extrabold text-sm whitespace-nowrap"
+                    >
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        Check Availability
+
+                    </button>
+
+                </div>
+
+
+                <!-- SESSION SUMMARY -->
+
+                <div
+                    id="sessionSummary"
+                    class="hidden mt-5 rounded-xl bg-[#F7F5EF] border border-[#E4E2D9] px-4 py-3"
+                >
+
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#66746F]">
+
+                        <span>
+                            <i class="fa-regular fa-calendar text-[#B38B20] mr-1.5"></i>
+                            <strong id="summaryDate"></strong>
+                        </span>
+
+                        <span>
+                            <i class="fa-regular fa-clock text-[#B38B20] mr-1.5"></i>
+                            <strong id="summaryTime"></strong>
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-hourglass-half text-[#B38B20] mr-1.5"></i>
+                            <strong id="summaryDuration"></strong>
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div
+                    id="availabilityMessage"
+                    class="mt-5 text-xs text-[#7A8581]"
+                >
+                    Select a date, start time and duration to check the tables.
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ROYAL STANDARD
+                 ================================================= -->
+
+            <div class="royal-standard rounded-2xl p-5 sm:p-6 mt-7 text-white">
+
+                <div class="flex flex-col md:flex-row md:items-center gap-5">
+
+                    <div class="w-11 h-11 rounded-xl bg-[#D4AF37] text-[#07100D] flex items-center justify-center shrink-0">
+
+                        <i class="fa-solid fa-crown"></i>
+
+                    </div>
+
+
+                    <div class="flex-1">
+
+                        <div class="flex flex-wrap items-center gap-3">
+
+                            <p class="text-[#E7CB70] text-[9px] font-bold uppercase tracking-[0.20em]">
+                                The Royal Standard
+                            </p>
+
+                            <span class="text-white/25 text-[10px]">
+                                Premium Playing Environment
+                            </span>
+
+                        </div>
+
+
+                        <p class="text-white/65 text-xs sm:text-sm leading-6 mt-2">
+
+                            Premium tables, imported equipment and a comfortable
+                            environment designed around your game.
+
+                        </p>
+
+
+                        <div class="flex flex-wrap gap-x-5 gap-y-2 mt-3 text-[9px] text-white/45">
+
+                            <span>
+                                <i class="fa-solid fa-circle-check text-[#D4AF37] mr-1"></i>
+                                Premium tables
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-circle-check text-[#D4AF37] mr-1"></i>
+                                Imported equipment
+                            </span>
+
+                            <span>
+                                <i class="fa-solid fa-circle-check text-[#D4AF37] mr-1"></i>
+                                Online reservations
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TABLE COLLECTION
+                 ================================================= -->
+
+            <div
+                id="tableCollection"
+                class="flex items-end justify-between gap-5 mt-12"
+            >
+
+                <div>
+
+                    <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                        Table Collection
+                    </p>
+
+                    <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-[#18322B] mt-2">
+                        Select Your
+                        <span class="text-[#B38B20]">
+                            Playing Environment
+                        </span>
+                    </h2>
+
+                </div>
+
+
+                <div class="hidden sm:flex items-center gap-4 text-[10px] text-[#7A8581]">
+
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Available
+                    </span>
+
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                        Booked
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TABLE CARDS -->
+
+            <div
+                id="tableGrid"
+                class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mt-6"
+            >
+
+                {% for table in tables %}
+
+                    <article
+                        class="table-card"
+                        data-table-id="{{ table.id }}"
+                        data-table-name="{{ table.name }}"
+                        data-table-type="{{ table.table_type }}"
+                        data-table-rate="{{ table.hourly_rate }}"
+                    >
+
+                        <div class="p-6">
+
+
+                            <!-- HEADER -->
+
+                            <div class="flex items-start justify-between gap-4">
+
+                                <div>
+
+                                    <div class="status-neutral availability-status">
+                                        <span class="status-dot"></span>
+                                        Select Session
+                                    </div>
+
+                                    <h3 class="font-heading font-extrabold text-xl text-[#18322B] mt-3">
+                                        {{ table.name }}
+                                    </h3>
+
+                                    <p class="text-xs text-[#7A8581] mt-1">
+                                        {{ table.table_type }}
+                                    </p>
+
+                                </div>
+
+
+                                <div class="text-right shrink-0">
+
+                                    <div class="font-heading font-extrabold text-2xl text-[#B38B20]">
+
+                                        ₹{{ table.hourly_rate|floatformat:0 }}
+
+                                    </div>
+
+
+                                    <div class="text-[8px] text-[#8A918E] uppercase tracking-[0.14em] mt-0.5">
+                                        Per Hour
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="h-px bg-[#E8E6DE] mt-5"></div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <div class="flex gap-3 mt-5 min-h-[65px]">
+
+                                <div class="table-icon">
+
+                                    {% if "English Star" in table.table_type or "English Star" in table.name %}
+
+                                        <i class="fa-solid fa-star text-xs"></i>
+
+                                    {% elif "French" in table.table_type or "Pool" in table.table_type or "French" in table.name or "Pool" in table.name %}
+
+                                        <i class="fa-solid fa-circle text-xs"></i>
+
+                                    {% elif "Professional" in table.table_type %}
+
+                                        <i class="fa-solid fa-crown text-xs"></i>
+
+                                    {% else %}
+
+                                        <i class="fa-solid fa-table-cells text-xs"></i>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <p class="text-[#66746F] text-xs leading-5">
+
+                                    {% if "English Star" in table.table_type or "English Star" in table.name %}
+
+                                        Premium imported English Star table
+                                        experience for refined snooker sessions.
+
+                                    {% elif "French" in table.table_type or "Pool" in table.table_type or "French" in table.name or "Pool" in table.name %}
+
+                                        Premium French pool experience for a
+                                        different cue-sports session.
+
+                                    {% elif "Professional" in table.table_type %}
+
+                                        Professional playing environment for
+                                        focused practice and serious play.
+
+                                    {% else %}
+
+                                        Comfortable playing option for regular
+                                        practice and enjoyable sessions.
+
+                                    {% endif %}
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- SELECTED SESSION -->
+
+                            <div class="session-time-box hidden mt-5 rounded-xl bg-[#F7F5EF] border border-[#E6E4DC] px-4 py-3">
+
+                                <p class="text-[9px] text-[#B38B20] font-bold uppercase tracking-[0.14em]">
+                                    Your Session
+                                </p>
+
+                                <p class="session-time text-sm font-bold text-[#18322B] mt-1"></p>
+
+                            </div>
+
+
+                            <!-- ACTION -->
+
+                            <div class="mt-6">
+
+                                <a
+                                    href="{% url 'booking' %}"
+                                    data-table-id="{{ table.id }}"
+                                    class="reserve-button hidden gold-button items-center justify-center gap-2 w-full rounded-lg px-5 py-3.5 text-xs font-extrabold"
+                                >
+
+                                    <i class="fa-solid fa-calendar-check"></i>
+
+                                    Reserve Table
+
+                                </a>
+
+
+                                <div class="waiting-button rounded-lg bg-[#F7F5EF] border border-[#E5E3DB] px-5 py-3.5 text-center text-xs font-bold text-[#7A8581]">
+
+                                    Check a session to see availability
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center">
+
+                        <div class="w-14 h-14 rounded-xl bg-emerald-50 text-[#07513F] flex items-center justify-center mx-auto">
+
+                            <i class="fa-solid fa-table-cells text-xl"></i>
+
+                        </div>
+
+
+                        <h3 class="font-heading font-bold text-xl text-[#18322B] mt-5">
+                            No Tables Available
+                        </h3>
+
+
+                        <p class="text-[#66746F] text-sm mt-2">
+                            Table information will appear here once tables are added
+                            through the academy administration panel.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FEATURES
+                 ================================================= -->
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-7">
+
+                <div class="table-feature rounded-xl p-4 flex items-center gap-3">
+
+                    <div class="w-9 h-9 rounded-lg bg-[#07513F] text-[#E7CB70] flex items-center justify-center shrink-0">
+
+                        <i class="fa-solid fa-star text-xs"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <p class="text-xs font-bold text-[#18322B]">
+                            Premium Tables
+                        </p>
+
+                        <p class="text-[10px] text-[#7A8581] mt-0.5">
+                            Quality playing environment
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-feature rounded-xl p-4 flex items-center gap-3">
+
+                    <div class="w-9 h-9 rounded-lg bg-[#07513F] text-[#E7CB70] flex items-center justify-center shrink-0">
+
+                        <i class="fa-solid fa-crown text-xs"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <p class="text-xs font-bold text-[#18322B]">
+                            Imported Equipment
+                        </p>
+
+                        <p class="text-[10px] text-[#7A8581] mt-0.5">
+                            English Star & French Pool
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-feature rounded-xl p-4 flex items-center gap-3">
+
+                    <div class="w-9 h-9 rounded-lg bg-[#07513F] text-[#E7CB70] flex items-center justify-center shrink-0">
+
+                        <i class="fa-solid fa-clock text-xs"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <p class="text-xs font-bold text-[#18322B]">
+                            Flexible Booking
+                        </p>
+
+                        <p class="text-[10px] text-[#7A8581] mt-0.5">
+                            Choose date, time & duration
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
+
+    <section class="cta-section py-16 sm:py-20">
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+            <div class="cta-card rounded-2xl p-8 sm:p-10 text-white">
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+
+
+                    <div>
+
+                        <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                            Ready to Play?
+                        </p>
+
+
+                        <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3">
+
+                            Your Table.
+
+                            <span class="gold-text">
+                                Your Game.
+                            </span>
+
+                        </h2>
+
+
+                        <p class="text-white/55 text-sm leading-6 mt-3 max-w-xl">
+
+                            Choose your session above and reserve your preferred
+                            table at Royal Snooker Academy.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+
+                        <a
+                            href="#availability"
+                            class="gold-button inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 text-sm font-extrabold"
+                        >
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                            Check Availability
+
+                        </a>
+
+
+                        <a
+                            href="{% url 'contact' %}"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-bold text-white hover:bg-white/[0.08] transition"
+                        >
+
+                            <i class="fa-solid fa-location-dot text-[#E7CB70]"></i>
+
+                            Contact Academy
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================================
+     LIVE AVAILABILITY JAVASCRIPT
+     ========================================================= -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dateInput = document.getElementById("tableBookingDate");
+    const timeInput = document.getElementById("tableBookingTime");
+    const durationInput = document.getElementById("tableBookingDuration");
+    const checkButton = document.getElementById("checkAvailabilityButton");
+    const message = document.getElementById("availabilityMessage");
+    const sessionSummary = document.getElementById("sessionSummary");
+    const summaryDate = document.getElementById("summaryDate");
+    const summaryTime = document.getElementById("summaryTime");
+    const summaryDuration = document.getElementById("summaryDuration");
+    const tableCards = document.querySelectorAll(".table-card");
+
+
+    /*
+     * =========================================================
+     * SAFETY CHECK
+     * =========================================================
+     */
+
+    if (
+        !dateInput ||
+        !timeInput ||
+        !durationInput ||
+        !checkButton ||
+        !message
+    ) {
+        console.error("Tables availability elements could not be found.");
+        return;
+    }
+
+
+    /*
+     * =========================================================
+     * TODAY
+     * =========================================================
+     */
+
+    const today = new Date();
+
+    const todayString =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
+
+
+    dateInput.min = todayString;
+
+
+    if (!dateInput.value) {
+        dateInput.value = todayString;
+    }
+
+
+    /*
+     * =========================================================
+     * DISABLE PAST START TIMES
+     * =========================================================
+     *
+     * For today's date, start times that have already passed
+     * beyond the existing 15-minute grace period are disabled.
+     *
+     * For future dates, all academy start times remain enabled.
+     *
+     * This function is also refreshed periodically so the
+     * dropdown stays accurate while the page remains open.
+     * =========================================================
+     */
+
+    function updatePastTimeOptions() {
+
+        const selectedDate =
+            dateInput.value;
+
+        const current =
+            new Date();
+
+        const currentDateString =
+            current.getFullYear() +
+            "-" +
+            String(current.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(current.getDate()).padStart(2, "0");
+
+        const currentMinutes =
+            current.getHours() * 60 +
+            current.getMinutes() +
+            current.getSeconds() / 60;
+
+        const timeOptions =
+            timeInput.querySelectorAll(
+                "option[data-start-time]"
+            );
+
+
+        timeOptions.forEach(function (option) {
+
+            const startTime =
+                option.dataset.startTime;
+
+            const parts =
+                startTime.split(":");
+
+            const slotMinutes =
+                parseInt(parts[0], 10) * 60 +
+                parseInt(parts[1], 10);
+
+
+            /*
+             * Future date:
+             * Keep every academy start time selectable.
+             */
+
+            if (
+                selectedDate !==
+                currentDateString
+            ) {
+
+                option.disabled =
+                    false;
+
+                return;
+
+            }
+
+
+            /*
+             * Today:
+             * Disable sessions that have already passed
+             * beyond the existing 15-minute grace period.
+             */
+
+            const isPast =
+                currentMinutes >
+                slotMinutes + 15;
+
+            option.disabled =
+                isPast;
+
+
+            /*
+             * If the currently selected time becomes invalid,
+             * clear it so an older time cannot remain selected.
+             */
+
+            if (
+                isPast &&
+                timeInput.value ===
+                option.value
+            ) {
+
+                timeInput.value =
+                    "";
+
+            }
+
+        });
+
+    }
+
+
+    /*
+     * Apply the correct time availability immediately.
+     */
+
+    updatePastTimeOptions();
+
+
+    /*
+     * =========================================================
+     * FORMAT DATE
+     * =========================================================
+     */
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        const parts = value.split("-");
+
+        if (parts.length !== 3) {
+            return value;
+        }
+
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        ];
+
+        const year = parts[0];
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+
+        return day + " " + months[month] + " " + year;
+    }
+
+
+    /*
+     * =========================================================
+     * FORMAT TIME
+     * =========================================================
+     */
+
+    function formatTime(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        const parts = value.split(":");
+
+        let hour = parseInt(parts[0], 10);
+        const minute = parts[1];
+
+        const suffix = hour >= 12 ? "PM" : "AM";
+
+        hour = hour % 12 || 12;
+
+        return hour + ":" + minute + " " + suffix;
+    }
+
+
+    /*
+     * =========================================================
+     * CALCULATE END TIME
+     * =========================================================
+     */
+
+    function calculateEndTime(startTime, duration) {
+
+        const parts = startTime.split(":");
+
+        const date = new Date();
+
+        date.setHours(
+            parseInt(parts[0], 10),
+            parseInt(parts[1], 10),
+            0,
+            0
+        );
+
+        date.setHours(
+            date.getHours() + duration
+        );
+
+        let hour = date.getHours();
+
+        const minute =
+            String(date.getMinutes()).padStart(2, "0");
+
+        const suffix =
+            hour >= 12 ? "PM" : "AM";
+
+        hour = hour % 12 || 12;
+
+        return hour + ":" + minute + " " + suffix;
+    }
+
+
+    /*
+     * =========================================================
+     * RESET CARDS
+     * =========================================================
+     */
+
+    function resetCards() {
+
+        tableCards.forEach(function (card) {
+
+            card.classList.remove(
+                "available",
+                "booked",
+                "selected"
+            );
+
+
+            const status =
+                card.querySelector(".availability-status");
+
+            const reserveButton =
+                card.querySelector(".reserve-button");
+
+            const waitingButton =
+                card.querySelector(".waiting-button");
+
+            const sessionBox =
+                card.querySelector(".session-time-box");
+
+            const sessionTime =
+                card.querySelector(".session-time");
+
+
+            if (status) {
+
+                status.className =
+                    "status-neutral availability-status";
+
+                status.innerHTML =
+                    '<span class="status-dot"></span> Select Session';
+
+            }
+
+
+            if (reserveButton) {
+
+                reserveButton.classList.add("hidden");
+
+                reserveButton.classList.remove("inline-flex");
+
+                reserveButton.href =
+                    "{% url 'booking' %}";
+
+            }
+
+
+            if (waitingButton) {
+
+                waitingButton.classList.remove("hidden");
+
+                waitingButton.textContent =
+                    "Check a session to see availability";
+
+            }
+
+
+            if (sessionBox) {
+
+                sessionBox.classList.add("hidden");
+
+            }
+
+
+            if (sessionTime) {
+
+                sessionTime.textContent = "";
+
+            }
+
+        });
+
+    }
+
+
+    /*
+     * =========================================================
+     * CHECK AVAILABILITY
+     * =========================================================
+     */
+
+    async function checkAvailability() {
+
+        const bookingDate =
+            dateInput.value;
+
+        const startTime =
+            timeInput.value;
+
+        const duration =
+            durationInput.value;
+
+
+        /*
+         * DATE VALIDATION
+         */
+
+        if (!bookingDate) {
+
+            message.textContent =
+                "Please select a playing date.";
+
+            message.className =
+                "mt-5 text-xs font-semibold text-red-600";
+
+            resetCards();
+
+            sessionSummary.classList.add("hidden");
+
+            return;
+        }
+
+
+        /*
+         * TIME VALIDATION
+         */
+
+        if (!startTime) {
+
+            message.textContent =
+                "Please select a start time.";
+
+            message.className =
+                "mt-5 text-xs font-semibold text-red-600";
+
+            resetCards();
+
+            sessionSummary.classList.add("hidden");
+
+            return;
+        }
+
+
+        /*
+         * DURATION VALIDATION
+         */
+
+        if (!duration) {
+
+            message.textContent =
+                "Please select a duration.";
+
+            message.className =
+                "mt-5 text-xs font-semibold text-red-600";
+
+            resetCards();
+
+            sessionSummary.classList.add("hidden");
+
+            return;
+        }
+
+
+        /*
+         * =====================================================
+         * PAST TIME CHECK
+         * =====================================================
+         */
+
+        if (bookingDate === todayString) {
+
+            const current = new Date();
+
+            const selectedParts =
+                startTime.split(":");
+
+            const selectedMinutes =
+                parseInt(selectedParts[0], 10) * 60 +
+                parseInt(selectedParts[1], 10);
+
+            const currentMinutes =
+                current.getHours() * 60 +
+                current.getMinutes();
+
+
+            if (
+                currentMinutes >
+                selectedMinutes + 15
+            ) {
+
+                message.textContent =
+                    "That start time has already passed. Please choose a later session.";
+
+                message.className =
+                    "mt-5 text-xs font-semibold text-red-600";
+
+                resetCards();
+
+                sessionSummary.classList.add("hidden");
+
+                return;
+            }
+        }
+
+
+        /*
+         * =====================================================
+         * ACADEMY CLOSING TIME CHECK
+         * =====================================================
+         */
+
+        const timeParts =
+            startTime.split(":");
+
+        const startMinutes =
+            parseInt(timeParts[0], 10) * 60 +
+            parseInt(timeParts[1], 10);
+
+        const endMinutes =
+            startMinutes +
+            parseInt(duration, 10) * 60;
+
+        const academyClosingMinutes =
+            23 * 60;
+
+
+        if (
+            endMinutes >
+            academyClosingMinutes
+        ) {
+
+            message.textContent =
+                "This session would extend beyond the academy's 11:00 PM closing time. Please choose an earlier start time or shorter duration.";
+
+            message.className =
+                "mt-5 text-xs font-semibold text-red-600";
+
+            resetCards();
+
+            sessionSummary.classList.add("hidden");
+
+            return;
+        }
+
+
+        /*
+         * =====================================================
+         * RESET BEFORE REQUEST
+         * =====================================================
+         */
+
+        resetCards();
+
+
+        /*
+         * =====================================================
+         * LOADING STATE
+         * =====================================================
+         */
+
+        checkButton.disabled = true;
+
+        checkButton.classList.add(
+            "opacity-60",
+            "cursor-wait"
+        );
+
+        checkButton.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+
+
+        message.textContent =
+            "Checking live table availability...";
+
+        message.className =
+            "mt-5 text-xs font-semibold text-[#66746F]";
+
+
+        /*
+         * =====================================================
+         * REQUEST PARAMETERS
+         * =====================================================
+         */
+
+        const params =
+            new URLSearchParams();
+
+        params.set(
+            "date",
+            bookingDate
+        );
+
+        params.set(
+            "start_time",
+            startTime
+        );
+
+        params.set(
+            "duration",
+            duration
+        );
+
+
+        try {
+
+            /*
+             * =================================================
+             * CALL DJANGO AVAILABILITY ENDPOINT
+             * =================================================
+             */
+
+            const response =
+                await fetch(
+                    "/book/availability/?" +
+                    params.toString()
+                );
+
+
+            const data =
+                await response.json();
+
+
+            /*
+             * =================================================
+             * HANDLE SERVER ERROR
+             * =================================================
+             */
+
+            if (
+                !response.ok ||
+                data.error
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Unable to check availability."
+                );
+
+            }
+
+
+            /*
+             * =================================================
+             * SESSION SUMMARY
+             * =================================================
+             */
+
+            summaryDate.textContent =
+                formatDate(bookingDate);
+
+            summaryTime.textContent =
+                formatTime(startTime);
+
+            summaryDuration.textContent =
+                duration +
+                " " +
+                (
+                    duration === "1"
+                        ? "Hour"
+                        : "Hours"
+                );
+
+            sessionSummary.classList.remove(
+                "hidden"
+            );
+
+
+            /*
+             * =================================================
+             * AVAILABILITY LOOKUP
+             * =================================================
+             */
+
+            const availabilityMap = {};
+
+
+            (data.tables || []).forEach(
+                function (table) {
+
+                    availabilityMap[
+                        String(table.id)
+                    ] = table;
+
+                }
+            );
+
+
+            let availableCount = 0;
+
+
+            /*
+             * =================================================
+             * UPDATE EACH TABLE CARD
+             * =================================================
+             */
+
+            tableCards.forEach(
+                function (card) {
+
+                    const tableId =
+                        String(
+                            card.dataset.tableId
+                        );
+
+                    const table =
+                        availabilityMap[
+                            tableId
+                        ];
+
+
+                    /*
+                     * If backend did not return
+                     * this table, leave it unchanged.
+                     */
+
+                    if (!table) {
+                        return;
+                    }
+
+
+                    const status =
+                        card.querySelector(
+                            ".availability-status"
+                        );
+
+                    const reserveButton =
+                        card.querySelector(
+                            ".reserve-button"
+                        );
+
+                    const waitingButton =
+                        card.querySelector(
+                            ".waiting-button"
+                        );
+
+                    const sessionBox =
+                        card.querySelector(
+                            ".session-time-box"
+                        );
+
+                    const sessionTime =
+                        card.querySelector(
+                            ".session-time"
+                        );
+
+
+                    /*
+                     * SESSION DISPLAY
+                     */
+
+                    if (sessionBox) {
+
+                        sessionBox.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+
+                    if (sessionTime) {
+
+                        sessionTime.textContent =
+                            formatTime(startTime) +
+                            " – " +
+                            calculateEndTime(
+                                startTime,
+                                parseInt(
+                                    duration,
+                                    10
+                                )
+                            );
+
+                    }
+
+
+                    /*
+                     * =================================================
+                     * AVAILABLE
+                     * =================================================
+                     */
+
+                    if (
+                        table.available === true
+                    ) {
+
+                        availableCount += 1;
+
+
+                        card.classList.remove(
+                            "booked"
+                        );
+
+                        card.classList.add(
+                            "available"
+                        );
+
+
+                        /*
+                         * STATUS
+                         */
+
+                        if (status) {
+
+                            status.className =
+                                "status-available availability-status";
+
+                            status.innerHTML =
+                                '<span class="status-dot"></span> Available';
+
+                        }
+
+
+                        /*
+                         * BUILD COMPLETE BOOKING URL
+                         *
+                         * IMPORTANT:
+                         * We deliberately use normal string
+                         * concatenation instead of JavaScript
+                         * template literals.
+                         */
+
+                        const bookingParams =
+                            new URLSearchParams();
+
+                        bookingParams.set(
+                            "table",
+                            tableId
+                        );
+
+                        bookingParams.set(
+                            "date",
+                            bookingDate
+                        );
+
+                        bookingParams.set(
+                            "start_time",
+                            startTime
+                        );
+
+                        bookingParams.set(
+                            "duration",
+                            duration
+                        );
+
+
+                        const bookingUrl =
+                            "{% url 'booking' %}" +
+                            "?" +
+                            bookingParams.toString();
+
+
+                        /*
+                         * RESERVE BUTTON
+                         */
+
+                        if (reserveButton) {
+
+                            reserveButton.href =
+                                bookingUrl;
+
+                            reserveButton.classList.remove(
+                                "hidden"
+                            );
+
+                            reserveButton.classList.add(
+                                "inline-flex"
+                            );
+
+                            reserveButton.setAttribute(
+                                "aria-label",
+                                "Reserve " +
+                                card.dataset.tableName +
+                                " for " +
+                                formatDate(
+                                    bookingDate
+                                ) +
+                                " at " +
+                                formatTime(
+                                    startTime
+                                ) +
+                                " for " +
+                                duration +
+                                " " +
+                                (
+                                    duration === "1"
+                                        ? "hour"
+                                        : "hours"
+                                )
+                            );
+
+                        }
+
+
+                        /*
+                         * HIDE WAITING MESSAGE
+                         */
+
+                        if (waitingButton) {
+
+                            waitingButton.classList.add(
+                                "hidden"
+                            );
+
+                        }
+
+                    }
+
+
+                    /*
+                     * =================================================
+                     * BOOKED
+                     * =================================================
+                     */
+
+                    else {
+
+                        card.classList.remove(
+                            "available"
+                        );
+
+                        card.classList.add(
+                            "booked"
+                        );
+
+
+                        /*
+                         * STATUS
+                         */
+
+                        if (status) {
+
+                            status.className =
+                                "status-booked availability-status";
+
+                            status.innerHTML =
+                                '<span class="status-dot"></span> Booked';
+
+                        }
+
+
+                        /*
+                         * HIDE RESERVE
+                         */
+
+                        if (reserveButton) {
+
+                            reserveButton.classList.add(
+                                "hidden"
+                            );
+
+                            reserveButton.classList.remove(
+                                "inline-flex"
+                            );
+
+                            reserveButton.href =
+                                "{% url 'booking' %}";
+
+                        }
+
+
+                        /*
+                         * SHOW UNAVAILABLE
+                         */
+
+                        if (waitingButton) {
+
+                            waitingButton.classList.remove(
+                                "hidden"
+                            );
+
+                            waitingButton.textContent =
+                                "Unavailable for this session";
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * =====================================================
+             * RESULT MESSAGE
+             * =====================================================
+             */
+
+            if (
+                availableCount > 0
+            ) {
+
+                message.textContent =
+                    availableCount +
+                    " table" +
+                    (
+                        availableCount === 1
+                            ? ""
+                            : "s"
+                    ) +
+                    " available for " +
+                    formatTime(startTime) +
+                    " – " +
+                    calculateEndTime(
+                        startTime,
+                        parseInt(
+                            duration,
+                            10
+                        )
+                    ) +
+                    ".";
+
+                message.className =
+                    "mt-5 text-xs font-bold text-emerald-700";
+
+            }
+
+            else {
+
+                message.textContent =
+                    "No tables are available for this session. Please choose another time or duration.";
+
+                message.className =
+                    "mt-5 text-xs font-bold text-red-600";
+
+            }
+
+
+            const tableCollection =
+                document.getElementById("tableCollection");
+
+            if (tableCollection) {
+                tableCollection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Availability check error:",
+                error
+            );
+
+
+            message.textContent =
+                error.message ||
+                "Unable to check availability.";
+
+            message.className =
+                "mt-5 text-xs font-bold text-red-600";
+
+        }
+
+
+        finally {
+
+            /*
+             * =================================================
+             * RESTORE BUTTON
+             * =================================================
+             */
+
+            checkButton.disabled =
+                false;
+
+            checkButton.classList.remove(
+                "opacity-60",
+                "cursor-wait"
+            );
+
+            checkButton.innerHTML =
+                '<i class="fa-solid fa-magnifying-glass"></i> Check Availability';
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * CHECK BUTTON
+     * =========================================================
+     */
+
+    checkButton.addEventListener(
+        "click",
+        checkAvailability
+    );
+
+
+    /*
+     * =========================================================
+     * SESSION CHANGE
+     * =========================================================
+     */
+
+    function sessionChanged() {
+
+        updatePastTimeOptions();
+
+        resetCards();
+
+        sessionSummary.classList.add(
+            "hidden"
+        );
+
+        message.textContent =
+            "Click Check Availability to see tables for the selected session.";
+
+        message.className =
+            "mt-5 text-xs text-[#7A8581]";
+    }
+
+
+    dateInput.addEventListener(
+        "change",
+        sessionChanged
+    );
+
+
+    timeInput.addEventListener(
+        "change",
+        sessionChanged
+    );
+
+
+    durationInput.addEventListener(
+        "change",
+        sessionChanged
+    );
+
+
+    /*
+     * =========================================================
+     * REFRESH PAST TIMES
+     * =========================================================
+     *
+     * If the page stays open, refresh the time options every
+     * minute so newly passed sessions become disabled.
+     * =========================================================
+     */
+
+    setInterval(
+        updatePastTimeOptions,
+        60 * 1000
+    );
+
+});
+</script>
+
+{% endblock %}

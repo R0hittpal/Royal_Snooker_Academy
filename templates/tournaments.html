@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Tournaments | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     TOURNAMENT HERO
+     ========================================================= -->
+<section class="relative overflow-hidden bg-[#06120F] text-white">
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -top-32 -right-20 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-20 w-96 h-96 rounded-full bg-[#0C4A3B]/30 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+
+        <div class="max-w-4xl">
+
+            <div class="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 px-4 py-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                    Royal Snooker Academy
+                </p>
+            </div>
+
+            <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mt-6">
+                Upcoming
+                <span class="text-[#E7CB70]">Tournaments.</span>
+            </h1>
+
+            <div class="w-24 h-1 bg-[#D4AF37] mt-6"></div>
+
+            <p class="text-white/60 text-sm sm:text-base leading-7 max-w-2xl mt-6">
+                Compete, improve your game and experience tournament snooker
+                at Royal Snooker Academy.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3 mt-8">
+
+                <a
+                    href="#tournament-list"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-6 py-3.5 font-extrabold text-sm hover:brightness-105 transition"
+                >
+                    <i class="fa-solid fa-trophy"></i>
+                    View Tournaments
+                </a>
+
+                <a
+                    href="{% url 'contact' %}"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] text-white px-6 py-3.5 font-bold text-sm hover:bg-white/[0.08] transition"
+                >
+                    <i class="fa-solid fa-message"></i>
+                    Contact Academy
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- =========================================================
+     TOURNAMENT LIST
+     ========================================================= -->
+<section id="tournament-list" class="bg-[#F7F5EF] py-16 sm:py-20 lg:py-24">
+
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+        {% if tournament_content %}
+
+        <!-- Section heading -->
+        <div class="text-center max-w-3xl mx-auto">
+
+            <p class="text-[#B38B20] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                Competition Calendar
+            </p>
+
+            <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+                Play. Compete. Perform.
+            </h2>
+
+            <div class="w-24 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+            <p class="text-[#66746F] text-sm sm:text-base leading-7 mt-5">
+                Explore the tournaments currently listed by Royal Snooker Academy.
+                Check the event details below for dates, entry information and prize details.
+            </p>
+
+        </div>
+
+
+        <!-- Tournament cards -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+
+            {% for tournament in tournament_content %}
+
+            <article
+                class="
+                    group relative overflow-hidden
+                    bg-white
+                    border border-[#18322B]/10
+                    rounded-2xl
+                    p-7 sm:p-8
+                    shadow-sm
+                    hover:shadow-xl
+                    hover:-translate-y-1
+                    transition-all duration-300
+                "
+            >
+
+                <!-- Gold top accent -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-[#D4AF37]"></div>
+
+
+                <!-- Header -->
+                <div class="flex items-start justify-between gap-4">
+
+                    <div class="flex-1 min-w-0">
+
+                        <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
+                            Tournament
+                        </p>
+
+                        <h3 class="font-heading font-extrabold text-2xl text-[#18322B] mt-2">
+                            {{ tournament.title }}
+                        </h3>
+
+                    </div>
+
+
+                    <!-- Tournament icon / date -->
+                    {% if tournament.tournament_date %}
+
+                    <div class="shrink-0 w-16 rounded-xl overflow-hidden border border-[#18322B]/10 shadow-sm">
+
+                        <div class="bg-[#18322B] text-white text-center py-1.5">
+                            <span class="text-[8px] font-bold uppercase tracking-wider text-[#E7CB70]">
+                                Date
+                            </span>
+                        </div>
+
+                        <div class="bg-[#F7F5EF] text-center py-2.5">
+                            <span class="block font-heading font-extrabold text-lg text-[#18322B] leading-none">
+                                {{ tournament.tournament_date|date:"d" }}
+                            </span>
+
+                            <span class="block text-[9px] font-bold uppercase text-[#66746F] mt-1">
+                                {{ tournament.tournament_date|date:"M" }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="w-11 h-11 rounded-xl bg-[#EAF1EE] text-[#0C4A3B] flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Divider -->
+                <div class="w-16 h-1 bg-[#D4AF37] mt-5"></div>
+
+
+                <!-- Description -->
+                <div class="mt-5 min-h-[120px]">
+
+                    <p class="text-[#66746F] text-sm leading-7">
+                        {{ tournament.description }}
+                    </p>
+
+                </div>
+
+
+                <!-- Event details -->
+                <div class="border-t border-[#18322B]/10 mt-6 pt-5 space-y-4">
+
+                    {% if tournament.tournament_date %}
+
+                    <div class="flex items-start gap-3">
+
+                        <div class="w-9 h-9 rounded-lg bg-[#EAF1EE] text-[#0C4A3B] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-calendar-day text-sm"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-[9px] uppercase tracking-[0.15em] font-bold text-[#8A938F]">
+                                Tournament Date
+                            </p>
+
+                            <p class="text-sm font-bold text-[#18322B] mt-1">
+                                {{ tournament.tournament_date|date:"d F Y" }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if tournament.entry_fee %}
+
+                    <div class="flex items-start gap-3">
+
+                        <div class="w-9 h-9 rounded-lg bg-[#F7F5EF] text-[#B38B20] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-indian-rupee-sign text-sm"></i>
+                        </div>
+
+                        <div>
+                            <p class="text-[9px] uppercase tracking-[0.15em] font-bold text-[#8A938F]">
+                                Entry Fee
+                            </p>
+
+                            <p class="text-sm font-bold text-[#18322B] mt-1">
+                                ₹{{ tournament.entry_fee|floatformat:0 }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if tournament.prize_info %}
+
+                    <div class="flex items-start gap-3">
+
+                        <div class="w-9 h-9 rounded-lg bg-[#F7F5EF] text-[#B38B20] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-trophy text-sm"></i>
+                        </div>
+
+                        <div>
+
+                            <p class="text-[9px] uppercase tracking-[0.15em] font-bold text-[#8A938F]">
+                                Prize Information
+                            </p>
+
+                            <p class="text-sm text-[#66746F] leading-6 mt-1">
+                                {{ tournament.prize_info }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Enquiry button -->
+                <a
+                    href="{% url 'contact' %}"
+                    class="
+                        mt-7
+                        inline-flex items-center justify-center gap-2
+                        w-full
+                        rounded-lg
+                        bg-[#18322B]
+                        text-white
+                        py-3.5
+                        px-5
+                        text-sm
+                        font-extrabold
+                        hover:bg-[#0C4A3B]
+                        transition
+                    "
+                >
+                    <i class="fa-solid fa-message"></i>
+                    Enquire About Tournament
+                </a>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Information note -->
+        <div class="max-w-3xl mx-auto mt-10 text-center">
+
+            <p class="text-[#8A938F] text-xs leading-6">
+                Tournament dates, entry fees, prize information and availability
+                are maintained by Royal Snooker Academy and may be updated by the academy.
+            </p>
+
+        </div>
+
+
+        {% else %}
+
+        <!-- =====================================================
+             NO TOURNAMENTS
+             ===================================================== -->
+        <div class="max-w-3xl mx-auto">
+
+            <div class="bg-white border border-[#18322B]/10 rounded-2xl p-8 sm:p-12 text-center shadow-sm">
+
+                <div class="w-16 h-16 rounded-2xl bg-[#EAF1EE] text-[#0C4A3B] flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+
+                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.22em] mt-6">
+                    Tournament Calendar
+                </p>
+
+                <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-[#18322B] mt-3">
+                    Tournaments Coming Soon
+                </h2>
+
+                <div class="w-20 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+                <p class="text-[#66746F] text-sm leading-7 mt-5 max-w-xl mx-auto">
+                    Upcoming tournaments will be announced here.
+                    Please contact Royal Snooker Academy for current tournament information.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-3 mt-7">
+
+                    <a
+                        href="{% url 'contact' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#18322B] text-white px-6 py-3.5 font-extrabold text-sm hover:bg-[#0C4A3B] transition"
+                    >
+                        <i class="fa-solid fa-message"></i>
+                        Contact Academy
+                    </a>
+
+                    <a
+                        href="{% url 'booking' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-[#18322B]/15 bg-white text-[#18322B] px-6 py-3.5 font-bold text-sm hover:bg-[#F7F5EF] transition"
+                    >
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Book a Table
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+
+<!-- =========================================================
+     TOURNAMENT CTA
+     ========================================================= -->
+<section class="bg-white py-16 sm:py-20">
+
+    <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+        <div class="relative overflow-hidden rounded-2xl bg-[#06120F] text-white p-8 sm:p-10 lg:p-12">
+
+            <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[#D4AF37]/10 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">
+
+                <div>
+
+                    <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                        Step Into Competition
+                    </p>
+
+                    <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3">
+                        Ready to
+                        <span class="text-[#E7CB70]">Compete?</span>
+                    </h2>
+
+                    <p class="text-white/55 text-sm leading-7 mt-4 max-w-2xl">
+                        Check the tournament calendar or contact Royal Snooker
+                        Academy for information about upcoming events.
+                    </p>
+
+                </div>
+
+
+                <div class="flex flex-col gap-3">
+
+                    <a
+                        href="{% url 'contact' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-7 py-3.5 font-extrabold text-sm whitespace-nowrap hover:brightness-105 transition"
+                    >
+                        <i class="fa-solid fa-message"></i>
+                        Contact Academy
+                    </a>
+
+                    <a
+                        href="{% url 'booking' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-7 py-3.5 font-bold text-sm whitespace-nowrap hover:bg-white/[0.08] transition"
+                    >
+                        <i class="fa-solid fa-calendar-check text-[#E7CB70]"></i>
+                        Book a Table
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

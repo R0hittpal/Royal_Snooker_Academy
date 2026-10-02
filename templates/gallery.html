@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}Gallery | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     GALLERY HERO
+     ========================================================= -->
+<section class="relative overflow-hidden bg-[#06120F] text-white">
+
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -top-32 -right-20 w-96 h-96 rounded-full bg-[#D4AF37]/10 blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-20 w-96 h-96 rounded-full bg-[#0C4A3B]/30 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+
+        <div class="max-w-4xl">
+
+            <div class="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 px-4 py-2">
+
+                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+
+                <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                    Royal Snooker Academy
+                </p>
+
+            </div>
+
+
+            <h1 class="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mt-6">
+                Inside
+                <span class="text-[#E7CB70]">Royal.</span>
+            </h1>
+
+
+            <div class="w-24 h-1 bg-[#D4AF37] mt-6"></div>
+
+
+            <p class="text-white/60 text-sm sm:text-base leading-7 max-w-2xl mt-6">
+                Take a look at Royal Snooker Academy, our tables, events
+                and training environment.
+            </p>
+
+
+            <div class="flex flex-col sm:flex-row gap-3 mt-8">
+
+                <a
+                    href="#academy-gallery"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-6 py-3.5 font-extrabold text-sm hover:brightness-105 transition"
+                >
+                    <i class="fa-solid fa-images"></i>
+                    View Gallery
+                </a>
+
+
+                <a
+                    href="{% url 'booking' %}"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] text-white px-6 py-3.5 font-bold text-sm hover:bg-white/[0.08] transition"
+                >
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Book a Table
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GALLERY
+     ========================================================= -->
+<section id="academy-gallery" class="bg-[#F7F5EF] py-16 sm:py-20 lg:py-24">
+
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+
+        {% if gallery_images %}
+
+        <!-- Section heading -->
+        <div class="text-center max-w-3xl mx-auto">
+
+            <p class="text-[#B38B20] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                Academy Gallery
+            </p>
+
+
+            <h2 class="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#18322B] mt-3">
+                See The Royal Experience.
+            </h2>
+
+
+            <div class="w-24 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+
+            <p class="text-[#66746F] text-sm sm:text-base leading-7 mt-5">
+                Explore the academy through photographs uploaded by Royal
+                Snooker Academy.
+            </p>
+
+        </div>
+
+
+        <!-- Image gallery -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
+
+            {% for gallery_image in gallery_images %}
+
+            <article
+                class="
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    bg-white
+                    border border-[#18322B]/10
+                    shadow-sm
+                    hover:shadow-xl
+                    transition-all duration-300
+                "
+            >
+
+                <!-- Image -->
+                <div class="relative aspect-[4/3] overflow-hidden bg-[#EAF1EE]">
+
+                    <img
+                        src="{{ gallery_image.image.url }}"
+                        alt="{{ gallery_image.title|default:'Royal Snooker Academy' }}"
+                        loading="lazy"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    >
+
+
+                    <!-- Image overlay -->
+                    <div
+                        class="
+                            absolute inset-0
+                            bg-gradient-to-t
+                            from-black/70
+                            via-black/10
+                            to-transparent
+                            opacity-0
+                            group-hover:opacity-100
+                            transition-opacity duration-300
+                        "
+                    ></div>
+
+
+                    <!-- Gallery icon -->
+                    <div
+                        class="
+                            absolute
+                            top-4
+                            right-4
+                            w-10
+                            h-10
+                            rounded-xl
+                            bg-[#06120F]/80
+                            backdrop-blur-sm
+                            text-[#E7CB70]
+                            flex
+                            items-center
+                            justify-center
+                            opacity-0
+                            group-hover:opacity-100
+                            transition-opacity duration-300
+                        "
+                    >
+                        <i class="fa-solid fa-expand"></i>
+                    </div>
+
+                </div>
+
+
+                <!-- Image information -->
+                {% if gallery_image.title or gallery_image.description %}
+
+                <div class="p-5 sm:p-6">
+
+                    {% if gallery_image.title %}
+
+                    <div class="flex items-start gap-3">
+
+                        <div class="w-9 h-9 rounded-lg bg-[#EAF1EE] text-[#0C4A3B] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-image text-sm"></i>
+                        </div>
+
+                        <div class="min-w-0">
+
+                            <h3 class="font-heading font-extrabold text-lg text-[#18322B]">
+                                {{ gallery_image.title }}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if gallery_image.description %}
+
+                    <p class="text-[#66746F] text-sm leading-6 mt-4">
+                        {{ gallery_image.description }}
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Gallery note -->
+        <div class="max-w-3xl mx-auto mt-10 text-center">
+
+            <p class="text-[#8A938F] text-xs leading-6">
+                Gallery images are managed by Royal Snooker Academy and can be
+                updated through the academy administration system.
+            </p>
+
+        </div>
+
+
+        {% else %}
+
+        <!-- =====================================================
+             NO GALLERY IMAGES
+             ===================================================== -->
+        <div class="max-w-3xl mx-auto">
+
+            <div class="bg-white border border-[#18322B]/10 rounded-2xl p-8 sm:p-12 text-center shadow-sm">
+
+                <div class="w-16 h-16 rounded-2xl bg-[#EAF1EE] text-[#0C4A3B] flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-images"></i>
+                </div>
+
+
+                <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.22em] mt-6">
+                    Academy Gallery
+                </p>
+
+
+                <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-[#18322B] mt-3">
+                    Gallery Coming Soon
+                </h2>
+
+
+                <div class="w-20 h-1 bg-[#D4AF37] mx-auto mt-5"></div>
+
+
+                <p class="text-[#66746F] text-sm leading-7 mt-5 max-w-xl mx-auto">
+                    Academy photos will be displayed here soon.
+                    Please check back once images have been added by the academy.
+                </p>
+
+
+                <div class="flex flex-col sm:flex-row justify-center gap-3 mt-7">
+
+                    <a
+                        href="{% url 'booking' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#18322B] text-white px-6 py-3.5 font-extrabold text-sm hover:bg-[#0C4A3B] transition"
+                    >
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Book a Table
+                    </a>
+
+
+                    <a
+                        href="{% url 'contact' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-[#18322B]/15 bg-white text-[#18322B] px-6 py-3.5 font-bold text-sm hover:bg-[#F7F5EF] transition"
+                    >
+                        <i class="fa-solid fa-message"></i>
+                        Contact Academy
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GALLERY CTA
+     ========================================================= -->
+<section class="bg-white py-16 sm:py-20">
+
+    <div class="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
+
+        <div class="relative overflow-hidden rounded-2xl bg-[#06120F] text-white p-8 sm:p-10 lg:p-12">
+
+            <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[#D4AF37]/10 blur-3xl"></div>
+
+
+            <div class="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">
+
+                <div>
+
+                    <p class="text-[#E7CB70] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em]">
+                        Visit Royal
+                    </p>
+
+
+                    <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mt-3">
+                        See It.
+                        <span class="text-[#E7CB70]">Play It.</span>
+                    </h2>
+
+
+                    <p class="text-white/55 text-sm leading-7 mt-4 max-w-2xl">
+                        Ready to experience Royal Snooker Academy for yourself?
+                        Choose a table and reserve your session.
+                    </p>
+
+                </div>
+
+
+                <div class="flex flex-col gap-3">
+
+                    <a
+                        href="{% url 'booking' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D4AF37] text-[#07100D] px-7 py-3.5 font-extrabold text-sm whitespace-nowrap hover:brightness-105 transition"
+                    >
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Book a Table
+                    </a>
+
+
+                    <a
+                        href="{% url 'contact' %}"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-7 py-3.5 font-bold text-sm whitespace-nowrap hover:bg-white/[0.08] transition"
+                    >
+                        <i class="fa-solid fa-location-dot text-[#E7CB70]"></i>
+                        Contact Academy
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
