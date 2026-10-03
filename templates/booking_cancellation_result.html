@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Cancellation | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+<section class="rsa-page-bg flex min-h-[60vh] items-center px-4 py-12 sm:px-6">
+    <div class="mx-auto w-full max-w-xl rounded-2xl border border-[#D7E2DD] bg-white p-7 text-center shadow-xl sm:p-10">
+        {% if result == "cancelled" %}
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EAF5F0] text-2xl font-extrabold text-[#07513F]" aria-hidden="true">✓</div>
+            <h1 class="mt-5 font-heading text-2xl font-extrabold text-[#043A2D] sm:text-3xl">Your booking has been cancelled</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">Booking <strong class="text-[#18322B]">{{ booking.booking_reference }}</strong> for {{ booking.table.name }} on {{ booking.booking_date|date:"d M Y" }} has been cancelled. The table is available to book again.</p>
+            {% if email_sent %}
+                <p class="mt-3 text-sm text-[#07513F]">A cancellation confirmation has been emailed to you.</p>
+            {% else %}
+                <p class="mt-3 text-sm text-amber-800">The booking is cancelled, but we could not send the confirmation email. Please contact the academy if you need confirmation.</p>
+            {% endif %}
+        {% elif result == "cutoff" %}
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-2xl font-extrabold text-amber-700" aria-hidden="true">!</div>
+            <h1 class="mt-5 font-heading text-2xl font-extrabold text-[#043A2D]">Online cancellation is closed</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">This session is within 2 hours of its start time. Please contact the academy directly for help.</p>
+        {% elif result == "expired" %}
+            <h1 class="font-heading text-2xl font-extrabold text-[#043A2D]">This link has expired</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">For your security, cancellation links expire after 30 minutes. Request a new link to continue.</p>
+        {% elif result == "already_used" %}
+            <h1 class="font-heading text-2xl font-extrabold text-[#043A2D]">This link has already been used</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">If you still need help with this booking, please contact the academy.</p>
+        {% elif result == "unavailable" %}
+            <h1 class="font-heading text-2xl font-extrabold text-[#043A2D]">This booking can’t be cancelled here</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">The booking may already have been updated. Please contact the academy if you need assistance.</p>
+        {% else %}
+            <h1 class="font-heading text-2xl font-extrabold text-[#043A2D]">This link is not valid</h1>
+            <p class="mt-3 text-sm leading-6 text-[#66746F]">Request a new cancellation link using your booking reference and booking email.</p>
+        {% endif %}
+
+        <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            {% if result == "expired" or result == "invalid" %}
+                <a href="{% url 'booking_cancellation_request' %}" class="rounded-xl bg-[#07513F] px-5 py-3 text-sm font-extrabold text-white hover:bg-[#043A2D]">Request a new link</a>
+            {% endif %}
+            {% if result == "cutoff" %}<a href="{% url 'contact' %}" class="rounded-xl bg-[#D4AF37] px-5 py-3 text-sm font-extrabold text-[#07100D] hover:bg-[#E7CB70]">Contact the academy</a>{% endif %}
+            <a href="{% url 'home' %}" class="rounded-xl border border-[#D7E2DD] px-5 py-3 text-sm font-bold text-[#18322B] hover:bg-[#F7F5EF]">Back to home</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

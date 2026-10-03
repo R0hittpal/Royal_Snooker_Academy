@@ -3,6 +3,7 @@ from pathlib import Path
 
 import dj_database_url
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 
 # ============================================================
@@ -20,28 +21,47 @@ load_dotenv(BASE_DIR / ".env")
 
 # Keep secrets outside source control. In production, set these
 # values in the environment/.env supplied by the hosting platform.
-SECRET_KEY = os.getenv(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-royal-snooker-academy-dev-key-change-me",
-)
+debug_value = os.getenv("DJANGO_DEBUG")
 
-DEBUG = os.getenv(
-    "DJANGO_DEBUG",
-    "True",
-).lower() in ("1", "true", "yes", "on")
+if debug_value is None:
+    DEBUG = False
+elif debug_value.strip().lower() in ("1", "true", "yes", "on"):
+    DEBUG = True
+elif debug_value.strip().lower() in ("0", "false", "no", "off"):
+    DEBUG = False
+else:
+    raise ImproperlyConfigured(
+        "DJANGO_DEBUG must be set to a recognized true or false value."
+    )
+
+DEVELOPMENT_SECRET_KEY = "django-insecure-royal-snooker-academy-dev-key-change-me"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "").strip()
+
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = DEVELOPMENT_SECRET_KEY
+    else:
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be configured when DEBUG is False."
+        )
+elif not DEBUG and SECRET_KEY == DEVELOPMENT_SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY must not use the built-in development key in production."
+    )
+
+default_allowed_hosts = "127.0.0.1,localhost" if DEBUG else ""
 
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "DJANGO_ALLOWED_HOSTS",
-        "127.0.0.1,localhost",
+        default_allowed_hosts,
     ).split(",")
     if host.strip()
 ]
 
 # Render provides the public hostname through RENDER_EXTERNAL_HOSTNAME.
-# Keeping it optional preserves the existing local-development behavior.
-RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
 
 if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -49,6 +69,16 @@ if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
 # Production-only browser security. These remain disabled while
 # DEBUG=True so the local development server continues to work.
 if not DEBUG:
+    if not ALLOWED_HOSTS:
+        raise ImproperlyConfigured(
+            "Set DJANGO_ALLOWED_HOSTS or configure RENDER_EXTERNAL_HOSTNAME "
+            "when DEBUG is False."
+        )
+    if "*" in ALLOWED_HOSTS:
+        raise ImproperlyConfigured(
+            "DJANGO_ALLOWED_HOSTS must list specific production hosts."
+        )
+
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -143,6 +173,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
 
                 "core.context_processors.site_settings",
+                "core.context_processors.owner_admin_dashboard",
             ],
         },
     },
@@ -164,13 +195,26 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Production uses PostgreSQL through DATABASE_URL.
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DEBUG and not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "DATABASE_URL must point to the production PostgreSQL database "
+        "when DEBUG is False."
+    )
+
 if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=not DEBUG,
+    database_config = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
+
+    if not DEBUG and database_config["ENGINE"] != "django.db.backends.postgresql":
+        raise ImproperlyConfigured(
+            "Production DATABASE_URL must configure PostgreSQL."
         )
+
+    DATABASES = {
+        "default": database_config,
     }
 else:
     DATABASES = {
@@ -338,15 +382,18 @@ JAZZMIN_SETTINGS = {
     "user_avatar": None,
 
     "show_sidebar": True,
-    "navigation_expanded": True,
+    "navigation_expanded": False,
 
     "hide_apps": [],
     "hide_models": [],
 
     "order_with_respect_to": [
         "bookings",
-        "bookings.table",
         "bookings.booking",
+        "bookings.table",
+        "bookings.bookingemailnotification",
+        "bookings.site_settings",
+        "bookings.homepagesettings",
         "auth",
         "auth.user",
         "auth.group",
@@ -356,6 +403,9 @@ JAZZMIN_SETTINGS = {
         "bookings": "fas fa-calendar-check",
         "bookings.Table": "fas fa-table",
         "bookings.Booking": "fas fa-calendar-alt",
+        "bookings.BookingEmailNotification": "fas fa-envelope",
+        "bookings.SiteSettings": "fas fa-address-card",
+        "bookings.HomePageSettings": "fas fa-home",
 
         "auth": "fas fa-users-cog",
         "auth.User": "fas fa-user",
@@ -364,10 +414,10 @@ JAZZMIN_SETTINGS = {
         "sites": "fas fa-globe",
     },
 
-    "custom_css": None,
+    "custom_css": "css/admin_owner.css",
     "custom_js": None,
 
-    "show_ui_builder": True,
+    "show_ui_builder": False,
 }
 
 
@@ -377,7 +427,7 @@ JAZZMIN_SETTINGS = {
 
 JAZZMIN_UI_TWEAKS = {
     "theme": "flatly",
-    "dark_mode_theme": "darkly",
+    "default_theme_mode": "light",
 
     "navbar_small_text": False,
     "footer_small_text": False,

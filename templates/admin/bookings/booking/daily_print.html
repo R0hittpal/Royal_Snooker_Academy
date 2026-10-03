@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<section class="rsa-daily-print">
+  <header class="rsa-daily-print-header">
+    <div>
+      <p class="rsa-admin-eyebrow">ROYAL SNOOKER ACADEMY</p>
+      <h1>Daily bookings</h1>
+      <p class="rsa-daily-print-date">{{ report_date|date:"l, j F Y" }}</p>
+    </div>
+    <div class="rsa-daily-print-controls">
+      <form method="get" class="rsa-daily-date-form">
+        <label for="report-date">Choose a date</label>
+        <input id="report-date" type="date" name="date" value="{{ report_date|date:'Y-m-d' }}">
+        <button class="btn btn-primary" type="submit">Show day</button>
+      </form>
+      <button class="btn btn-success" type="button" onclick="window.print()">
+        <i class="fas fa-print" aria-hidden="true"></i> Print this page
+      </button>
+    </div>
+  </header>
+
+  {% if date_error %}
+    <div class="alert alert-warning">That date could not be read. Showing today’s bookings instead.</div>
+  {% endif %}
+
+  <p class="rsa-daily-booking-count">{{ bookings|length }} booking{{ bookings|length|pluralize }} for this day</p>
+
+  {% if bookings %}
+    <div class="table-responsive">
+      <table class="table table-bordered rsa-daily-booking-table">
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Table</th>
+            <th scope="col">Length</th>
+            <th scope="col">Booking reference</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in bookings %}
+            <tr>
+              <td>{{ booking.start_time|time:"g:i A" }}</td>
+              <td>{{ booking.customer_name }}</td>
+              <td>{{ booking.phone }}</td>
+              <td>{{ booking.table.name }}</td>
+              <td>{{ booking.duration_hours }} hour{{ booking.duration_hours|pluralize }}</td>
+              <td>{{ booking.booking_reference }}</td>
+              <td>{{ booking.get_status_display }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="rsa-daily-empty">There are no bookings for this date.</div>
+  {% endif %}
+</section>
+{% endblock %}

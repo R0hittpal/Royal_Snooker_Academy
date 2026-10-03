@@ -360,6 +360,55 @@
         font-weight: 900;
     }
 
+    .rsa-trend-day {
+        min-width: 0;
+        text-align: center;
+    }
+
+    .rsa-trend-count {
+        display: block;
+        min-height: 1.1rem;
+        color: var(--rsa-text);
+        font-size: 0.68rem;
+        font-weight: 900;
+    }
+
+    .rsa-trend-track {
+        height: 92px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        margin: 0.4rem auto 0.55rem;
+        border-radius: 0.55rem;
+        background: linear-gradient(180deg, #F7F5EF, #EEF3F0);
+        overflow: hidden;
+    }
+
+    .rsa-trend-bar {
+        display: block;
+        width: min(58%, 30px);
+        min-height: 4px;
+        border-radius: 0.45rem 0.45rem 0 0;
+        background: linear-gradient(180deg, #D4AF37, #07513F);
+    }
+
+    .rsa-trend-bar-empty {
+        background: #DDE4DF;
+    }
+
+    .rsa-trend-weekday {
+        color: var(--rsa-text);
+        font-size: 0.62rem;
+        font-weight: 900;
+    }
+
+    .rsa-trend-date {
+        display: block;
+        margin-top: 0.15rem;
+        color: var(--rsa-muted);
+        font-size: 0.55rem;
+    }
+
     /* =========================================================
        TABLE FLOOR
        ========================================================= */
@@ -863,6 +912,88 @@
         .rsa-table-card {
             padding: 0.7rem;
         }
+
+        .rsa-all-bookings-scroll {
+            overflow: visible;
+        }
+
+        .rsa-all-bookings-table {
+            display: block;
+            min-width: 0;
+        }
+
+        .rsa-all-bookings-table thead {
+            display: none;
+        }
+
+        .rsa-all-bookings-table tbody {
+            display: block;
+            padding: 0.75rem;
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0;
+            margin-bottom: 0.75rem;
+            padding: 0.3rem;
+            border: 1px solid var(--rsa-line);
+            border-radius: 0.9rem;
+            background: #FFFFFF;
+            box-shadow: 0 5px 16px rgba(7,16,13,0.045);
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row td {
+            display: block;
+            min-width: 0;
+            padding: 0.65rem !important;
+            overflow-wrap: anywhere;
+            white-space: normal !important;
+            border: 0;
+            font-size: 0.68rem;
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row td::before {
+            display: block;
+            margin-bottom: 0.28rem;
+            color: #7C8883;
+            content: attr(data-label);
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row td:nth-child(3),
+        .rsa-all-bookings-table tbody tr.all-booking-row td:nth-child(5),
+        .rsa-all-bookings-table tbody tr.all-booking-row td:nth-child(9) {
+            grid-column: 1 / -1;
+        }
+
+        .rsa-all-bookings-table tbody tr.all-booking-row td:nth-child(9) > div {
+            gap: 0.45rem;
+        }
+
+        .rsa-all-bookings-table .rsa-manage-btn,
+        .rsa-all-bookings-table .rsa-complete-btn,
+        .rsa-all-bookings-table .rsa-cancel-btn {
+            min-height: 40px;
+            padding: 0.55rem 0.7rem;
+            font-size: 0.65rem;
+        }
+
+        .rsa-all-bookings-table .rsa-no-match-row {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .rsa-all-bookings-table .rsa-no-match-row td {
+            display: block;
+        }
     }
 </style>
 
@@ -890,7 +1021,7 @@
 
                         <span class="rsa-live-pill">
                             <span class="rsa-live-dot"></span>
-                            LIVE OPERATIONS
+                            TODAY'S OVERVIEW
                         </span>
 
                     </div>
@@ -922,6 +1053,12 @@
                             class="rsa-clock"
                         >
                             --:--:--
+                        </span>
+
+                        <span class="text-white/30 text-xs">•</span>
+
+                        <span class="rsa-clock">
+                            Data updated {{ dashboard_updated_at|time:"g:i A" }}
                         </span>
 
                     </div>
@@ -968,6 +1105,15 @@
                     </div>
 
                     <div class="rsa-hero-actions">
+
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="rsa-hero-btn rsa-hero-btn-secondary"
+                        aria-label="Refresh dashboard data"
+                    >
+                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                        Refresh
+                    </a>
 
                     <a
                         href="/book/"
@@ -1058,42 +1204,13 @@
             </div>
 
             <div class="text-[10px] text-slate-400">
-                Live from booking records
+                Snapshot from booking records
             </div>
 
         </div>
 
 
-        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-3">
-
-
-            <!-- CONFIRMED -->
-
-            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-
-                <div class="flex items-start justify-between">
-
-                    <div>
-                        <div class="rsa-kpi-label">
-                            Confirmed today
-                        </div>
-
-                        <div class="rsa-kpi-value">
-                            {{ today_booking_count }}
-                        </div>
-                    </div>
-
-                    <div class="rsa-kpi-icon">
-                        📅
-                    </div>
-
-                </div>
-
-                <div class="rsa-kpi-note">
-                    Active reservations for today
-                </div>
-
-            </div>
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
 
 
             <!-- REVENUE -->
@@ -1104,7 +1221,7 @@
 
                     <div>
                         <div class="rsa-kpi-label">
-                            Today's revenue
+                            Confirmed booking value
                         </div>
 
                         <div class="rsa-kpi-value">
@@ -1119,7 +1236,7 @@
                 </div>
 
                 <div class="rsa-kpi-note">
-                    Confirmed booking value
+                    Value of today's confirmed bookings
                 </div>
 
             </div>
@@ -1211,63 +1328,6 @@
 
             </div>
 
-
-            <!-- COMPLETED -->
-
-            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-
-                <div class="flex items-start justify-between">
-
-                    <div>
-                        <div class="rsa-kpi-label">
-                            Completed
-                        </div>
-
-                        <div class="rsa-kpi-value">
-                            {{ today_status_counts.Completed }}
-                        </div>
-                    </div>
-
-                    <div class="rsa-kpi-icon">
-                        ✓
-                    </div>
-
-                </div>
-
-                <div class="rsa-kpi-note">
-                    {{ completed_today_revenue|floatformat:0 }} revenue from completed sessions
-                </div>
-
-            </div>
-
-
-            <!-- CANCELLED -->
-
-            <div class="rsa-kpi-card bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-
-                <div class="flex items-start justify-between">
-
-                    <div>
-                        <div class="rsa-kpi-label">
-                            Cancelled
-                        </div>
-
-                        <div class="rsa-kpi-value">
-                            {{ today_status_counts.Cancelled }}
-                        </div>
-                    </div>
-
-                    <div class="rsa-kpi-icon">
-                        ×
-                    </div>
-
-                </div>
-
-                <div class="rsa-kpi-note">
-                    Cancelled sessions today
-                </div>
-
-            </div>
 
         </div>
 
@@ -1461,7 +1521,7 @@
          QUICK OPERATIONAL INSIGHTS
          ===================================================== -->
 
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <section class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
 
         <div class="rsa-status-box">
             <div class="rsa-status-label">Available tables</div>
@@ -1478,10 +1538,41 @@
             <div class="rsa-status-value text-blue-700">₹{{ completed_today_revenue|floatformat:0 }}</div>
         </div>
 
-        <div class="rsa-status-box">
-            <div class="rsa-status-label">Cancelled today</div>
-            <div class="rsa-status-value text-red-700">{{ cancelled_today_count }}</div>
+    </section>
+
+
+    <!-- =====================================================
+         RECENT BOOKING TREND
+         ===================================================== -->
+
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
+            <div>
+                <div class="rsa-section-kicker">Last 7 days</div>
+                <h2 class="text-base font-extrabold text-slate-900 mt-1">Bookings by day</h2>
+            </div>
+            <p class="text-[10px] text-slate-500">Confirmed and completed sessions, including today</p>
         </div>
+
+        {% if has_booking_trend %}
+            <div class="grid grid-cols-7 gap-2 sm:gap-3" role="img" aria-label="Confirmed and completed bookings for the last seven days">
+                {% for day in booking_trend %}
+                    <div class="rsa-trend-day">
+                        <span class="rsa-trend-count">{{ day.count }}</span>
+                        <div class="rsa-trend-track" aria-hidden="true">
+                            <span class="rsa-trend-bar{% if not day.count %} rsa-trend-bar-empty{% endif %}" style="height: {{ day.bar_height }}%"></span>
+                        </div>
+                        <span class="rsa-trend-weekday">{{ day.weekday }}</span>
+                        <span class="rsa-trend-date">{{ day.date|date:"d M" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="rounded-xl bg-slate-50 px-4 py-5 text-center text-xs text-slate-500">
+                No confirmed or completed bookings in the last 7 days yet.
+            </p>
+        {% endif %}
 
     </section>
 
@@ -2309,9 +2400,9 @@
                  ALL BOOKINGS TABLE
                  ================================================= -->
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto rsa-all-bookings-scroll">
 
-                <table class="rsa-data-table w-full text-left">
+                <table class="rsa-data-table rsa-all-bookings-table w-full text-left">
 
                     <thead class="border-b border-slate-100">
 
@@ -2383,21 +2474,21 @@
                                 data-booking-can-complete="{% if booking.can_complete %}true{% else %}false{% endif %}"
                             >
 
-                                <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
+                                <td data-label="Date" class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
 
                                     {{ booking.booking_date|date:"d M Y" }}
 
                                 </td>
 
 
-                                <td class="px-4 py-3 font-bold text-slate-800 whitespace-nowrap">
+                                <td data-label="Time" class="px-4 py-3 font-bold text-slate-800 whitespace-nowrap">
 
                                     {{ booking.start_time|time:"g:i A" }}
 
                                 </td>
 
 
-                                <td class="px-4 py-3">
+                                <td data-label="Reference" class="px-4 py-3">
 
                                     <span class="text-[9px] font-extrabold text-amber-700">
 
@@ -2408,7 +2499,7 @@
                                 </td>
 
 
-                                <td class="px-4 py-3">
+                                <td data-label="Table" class="px-4 py-3">
 
                                     <div class="font-bold text-slate-900">
                                         {{ booking.table.name }}
@@ -2421,7 +2512,7 @@
                                 </td>
 
 
-                                <td class="px-4 py-3">
+                                <td data-label="Customer" class="px-4 py-3">
 
                                     <div class="font-bold text-slate-900">
                                         {{ booking.customer_name }}
@@ -2434,7 +2525,7 @@
                                 </td>
 
 
-                                <td class="px-4 py-3 whitespace-nowrap text-slate-600">
+                                <td data-label="Duration" class="px-4 py-3 whitespace-nowrap text-slate-600">
 
                                     {{ booking.duration_hours }}
                                     hr{% if booking.duration_hours != 1 %}s{% endif %}
@@ -2442,14 +2533,14 @@
                                 </td>
 
 
-                                <td class="px-4 py-3 whitespace-nowrap font-extrabold text-slate-900">
+                                <td data-label="Amount" class="px-4 py-3 whitespace-nowrap font-extrabold text-slate-900">
 
                                     ₹{{ booking.amount|floatformat:0 }}
 
                                 </td>
 
 
-                                <td class="px-4 py-3">
+                                <td data-label="Status" class="px-4 py-3">
 
                                     {% if booking.status == "Confirmed" %}
 
@@ -2480,7 +2571,7 @@
                                 </td>
 
 
-                                <td class="px-4 py-3">
+                                <td data-label="Actions" class="px-4 py-3">
 
                                     <div class="flex flex-wrap gap-1.5">
 
@@ -2557,6 +2648,7 @@
 
                         <tr
                             id="noMatchingBookingsRow"
+                            class="rsa-no-match-row"
                             style="display:none;"
                         >
 

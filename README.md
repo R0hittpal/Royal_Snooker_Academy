@@ -225,8 +225,10 @@ RSA_EMAIL_PROVIDER=brevo
 RSA_BREVO_API_KEY=<secret>
 RSA_BREVO_SENDER_EMAIL=<verified sender>
 RSA_BREVO_SENDER_NAME=Royal Snooker Academy
-RSA_EMAIL_LOGO_URL=<public RSA logo URL>
+RSA_EMAIL_LOGO_URL=https://your-public-domain/static/images/royal_snooker_favicon_under_50kb.png
 ```
+
+`RSA_EMAIL_LOGO_URL` must be publicly reachable so Brevo can display the same RSA favicon crest used by the website.
 
 > **Security:** Never commit API keys, SMTP passwords, database URLs, Django secrets, or `.env` files to GitHub.
 
@@ -526,6 +528,21 @@ With `DEBUG=False`, the application enables:
 - Referrer policy
 - Clickjacking protection
 - Render proxy HTTPS handling
+
+Production settings fail at startup when required configuration is missing.
+Configure all of the following in Render Environment Variables:
+
+- `DJANGO_SECRET_KEY`: a long, randomly generated production secret
+- `DATABASE_URL`: the Render PostgreSQL connection URL
+- `DJANGO_ALLOWED_HOSTS`: the production domain(s), unless Render supplies
+  `RENDER_EXTERNAL_HOSTNAME`
+- `DJANGO_DEBUG=False`: set explicitly for production
+
+When `DJANGO_DEBUG` is omitted, it defaults to `False`. Local development
+should explicitly set `DJANGO_DEBUG=True` in `.env`; SQLite remains the local
+database default. Invalid boolean values, missing production hosts/secrets, or
+a non-PostgreSQL production database URL stop startup with a configuration
+error.
 
 ---
 

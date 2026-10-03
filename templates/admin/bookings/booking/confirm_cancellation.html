@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="card rsa-admin-app">
+  <div class="card-header"><h1 class="card-title">Cancel these bookings?</h1></div>
+  <div class="card-body">
+    <p>The selected confirmed bookings will be cancelled and customers will be emailed.</p>
+    {% if queryset %}
+      <ul>
+        {% for booking in queryset %}
+          <li><strong>{{ booking.customer_name }}</strong> — {{ booking.booking_date }} at {{ booking.start_time }} · {{ booking.table }}</li>
+        {% endfor %}
+      </ul>
+      <form method="post">
+        {% csrf_token %}
+        {% for booking in queryset %}<input type="hidden" name="_selected_action" value="{{ booking.pk }}">{% endfor %}
+        <input type="hidden" name="action" value="{{ action_name }}">
+        <input type="hidden" name="index" value="{{ action_index }}">
+        <input type="hidden" name="select_across" value="0">
+        <input type="hidden" name="confirm_booking_cancellation" value="yes">
+        <button class="btn btn-danger" type="submit">Cancel bookings and email customers</button>
+        <a class="btn btn-secondary" href="{% url 'admin:bookings_booking_changelist' %}">Go back</a>
+      </form>
+    {% else %}
+      <p>No confirmed bookings were selected. Nothing has been changed.</p>
+      <a class="btn btn-secondary" href="{% url 'admin:bookings_booking_changelist' %}">Return to bookings</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

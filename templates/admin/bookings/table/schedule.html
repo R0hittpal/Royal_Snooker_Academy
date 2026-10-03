@@ -1,0 +1,87 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<section class="rsa-table-schedule">
+  <header class="rsa-table-schedule-header">
+    <div>
+      <p class="rsa-admin-eyebrow">ROYAL SNOOKER ACADEMY</p>
+      <h1>Visual table schedule</h1>
+      <p>Choose a date to see confirmed bookings and pending requests for each table.</p>
+    </div>
+    <form method="get" class="rsa-schedule-date-form">
+      <label for="schedule-date">Schedule date</label>
+      <input id="schedule-date" type="date" name="date" value="{{ schedule_date|date:'Y-m-d' }}">
+      <button type="submit" class="btn btn-primary">Show schedule</button>
+    </form>
+  </header>
+
+  {% if date_error %}
+    <div class="alert alert-warning">That date could not be read. Showing today’s schedule instead.</div>
+  {% endif %}
+
+  <div class="rsa-schedule-toolbar">
+    <div class="rsa-schedule-legend" aria-label="Schedule key">
+      <span><i class="rsa-schedule-key rsa-schedule-key-free"></i> Free</span>
+      <span><i class="rsa-schedule-key rsa-schedule-key-booked"></i> Confirmed</span>
+      <span><i class="rsa-schedule-key rsa-schedule-key-pending"></i> Pending</span>
+      <span><i class="rsa-schedule-key rsa-schedule-key-inactive"></i> Inactive table</span>
+    </div>
+    <div class="rsa-schedule-links">
+      <a class="btn btn-outline-secondary btn-sm" href="{{ booking_list_url }}?booking_window=today">All bookings</a>
+      <a class="btn btn-primary btn-sm" href="{{ booking_add_url }}">Add a booking</a>
+    </div>
+  </div>
+
+  {% if slots %}
+    <div class="rsa-schedule-scroll" role="region" aria-label="Table availability by time" tabindex="0">
+      <table class="rsa-schedule-grid">
+        <thead>
+          <tr>
+            <th class="rsa-schedule-table-heading" scope="col">Table</th>
+            {% for slot in slots %}<th scope="col">{{ slot.label }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in table_rows %}
+            <tr>
+              <th class="rsa-schedule-table-name" scope="row">
+                {{ row.table.name }}
+                <small>{{ row.table.table_type }} · {% if row.table.is_active %}Active{% else %}Inactive{% endif %}</small>
+                <small>{{ row.confirmed_count }} confirmed · {{ row.pending_count }} pending</small>
+              </th>
+              {% for cell in row.cells %}
+                <td class="rsa-schedule-cell rsa-schedule-cell-{{ cell.state }}">
+                  {% if cell.events %}
+                    {% for event in cell.events %}
+                      <a class="rsa-schedule-event rsa-schedule-event-{{ event.status|lower }}" href="{{ event.url }}">
+                        {% if event.starts_here %}
+                          <strong>{{ event.customer }}</strong>
+                          <small>{{ event.start_label }} to {{ event.end_label }}</small>
+                          <small>{{ event.reference }}</small>
+                        {% else %}
+                          <strong>{% if event.status == "Confirmed" %}In use{% else %}Pending{% endif %}</strong>
+                          <small>Until {{ event.end_label }}</small>
+                        {% endif %}
+                      </a>
+                    {% endfor %}
+                  {% elif cell.state == "free" %}
+                    <span class="rsa-schedule-free-label">Free</span>
+                  {% else %}
+                    <span class="rsa-schedule-inactive-label">Unavailable</span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% empty %}
+            <tr><td colspan="{{ slots|length|add:1 }}">No tables have been added yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No customer booking start times fall within the current opening hours for this date.</div>
+  {% endif %}
+
+  <p class="rsa-schedule-note">Each column covers one hour. A booking appears across every hour it uses. Only confirmed bookings block a table; pending requests are shown separately.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Booking Cancellation | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+<section class="rsa-page-bg min-h-[65vh] px-4 py-12 sm:px-6 sm:py-16">
+    <div class="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-[#D7E2DD] bg-white shadow-xl">
+        <div class="bg-[#07513F] px-6 py-7 text-white sm:px-8">
+            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#E7CB70]">Booking review</p>
+            <h1 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">Confirm cancellation</h1>
+            <p class="mt-2 text-sm leading-6 text-white/80">Please check the session details before continuing. The booking is not cancelled until you submit this form.</p>
+        </div>
+
+        <div class="p-6 sm:p-8">
+            <dl class="grid gap-3 rounded-xl border border-[#D7E2DD] bg-[#F7F5EF] p-4 sm:grid-cols-2 sm:p-5">
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Reference</dt><dd class="mt-1 break-all text-sm font-extrabold text-[#07513F]">{{ booking.booking_reference }}</dd></div>
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Table</dt><dd class="mt-1 text-sm font-bold text-[#18322B]">{{ booking.table.name }} · {{ booking.table.table_type }}</dd></div>
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Date</dt><dd class="mt-1 text-sm font-bold text-[#18322B]">{{ booking.booking_date|date:"l, d M Y" }}</dd></div>
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Start time</dt><dd class="mt-1 text-sm font-bold text-[#18322B]">{{ booking.start_time|time:"g:i A" }}</dd></div>
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Duration</dt><dd class="mt-1 text-sm font-bold text-[#18322B]">{{ booking.duration_hours }} hour{% if booking.duration_hours != 1 %}s{% endif %}</dd></div>
+                <div><dt class="text-[10px] font-extrabold uppercase tracking-widest text-[#66746F]">Amount</dt><dd class="mt-1 text-sm font-bold text-[#18322B]">₹{{ booking.amount|floatformat:2 }}</dd></div>
+            </dl>
+
+            <div class="my-5 rounded-xl border border-[#E7CB70]/70 bg-[#FFF8E1] p-4 text-xs leading-5 text-[#594716]">
+                You can cancel online up to 2 hours before the session starts. This cancellation does not process a refund; please contact the academy about any payment or refund questions.
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div role="alert" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors }}</div>{% endif %}
+
+                <div class="mb-5">
+                    <label for="{{ form.reason.id_for_label }}" class="mb-2 block text-sm font-bold text-[#18322B]">{{ form.reason.label }}</label>
+                    {{ form.reason }}
+                    {% for error in form.reason.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
+                </div>
+
+                <div id="cancellationOtherReasonField" class="mb-6" {% if form.reason.value != "other" %}hidden{% endif %}>
+                    <label for="{{ form.reason_details.id_for_label }}" class="mb-2 block text-sm font-bold text-[#18322B]">{{ form.reason_details.label }}</label>
+                    {{ form.reason_details }}
+                    {% for error in form.reason_details.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <a href="{% url 'booking' %}" class="inline-flex items-center justify-center rounded-xl border border-[#D7E2DD] px-5 py-3 text-sm font-bold text-[#18322B] hover:bg-[#F7F5EF]">Keep my booking</a>
+                    <button type="submit" class="rounded-xl bg-[#07513F] px-5 py-3 text-sm font-extrabold text-white hover:bg-[#043A2D] focus:outline-none focus:ring-4 focus:ring-[#07513F]/20">Confirm cancellation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const reasonSelect = document.getElementById("{{ form.reason.id_for_label }}");
+    const otherField = document.getElementById("cancellationOtherReasonField");
+    const details = document.getElementById("{{ form.reason_details.id_for_label }}");
+    if (!reasonSelect || !otherField || !details) return;
+
+    function updateOtherReason() {
+        const show = reasonSelect.value === "other";
+        otherField.hidden = !show;
+        details.required = show;
+    }
+
+    reasonSelect.addEventListener("change", updateOtherReason);
+    updateOtherReason();
+});
+</script>
+{% endblock %}

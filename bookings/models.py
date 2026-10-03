@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class AcademySettings(models.Model):
@@ -383,5 +384,131 @@ class Booking(models.Model):
             models.CheckConstraint(
                 condition=models.Q(amount__gte=0),
                 name="booking_amount_non_negative",
+            ),
+        ]
+
+
+class BookingCancellation(models.Model):
+    class Reason(models.TextChoices):
+        PLANS_CHANGED = "plans_changed", "My plans changed"
+        BOOKED_WRONG_DETAILS = "booked_wrong_details", "I selected the wrong date or time"
+        UNABLE_TO_ATTEND = "unable_to_attend", "I can no longer attend"
+        BOOKED_BY_MISTAKE = "booked_by_mistake", "I made this booking by mistake"
+        OTHER = "other", "Other"
+
+    booking = models.OneToOneField(
+        Booking,
+        on_delete=models.CASCADE,
+        related_name="customer_cancellation",
+    )
+    token_digest = models.CharField(max_length=64, unique=True)
+    requested_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    reason = models.CharField(
+        max_length=32,
+        choices=Reason.choices,
+        blank=True,
+    )
+    reason_details = models.CharField(max_length=500, blank=True)
+
+    def __str__(self):
+        return f"Customer cancellation — {self.booking.booking_reference}"
+
+    class Meta:
+        verbose_name = "Customer Cancellation"
+        verbose_name_plural = "Customer Cancellations"
+
+
+class BookingEmailNotification(models.Model):
+    class NotificationType(models.TextChoices):
+        CONFIRMATION = "confirmation", "Confirmation"
+        CANCELLATION = "cancellation", "Cancellation"
+        COMPLETION = "completion", "Completion"
+
+    class DeliveryStatus(models.TextChoices):
+        PENDING = "pending", "Pending"
+        SENDING = "sending", "Sending"
+        SENT = "sent", "Sent"
+        FAILED = "failed", "Failed"
+
+    booking = models.ForeignKey(
+        Booking,
+        on_delete=models.CASCADE,
+        related_name="email_notifications",
+    )
+
+    notification_type = models.CharField(
+        max_length=20,
+        choices=NotificationType.choices,
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=DeliveryStatus.choices,
+        default=DeliveryStatus.PENDING,
+    )
+
+    recipient_email = models.EmailField()
+
+    subject = models.CharField(max_length=255)
+
+    plain_message = models.TextField()
+
+    html_message = models.TextField()
+
+    attempt_count = models.PositiveIntegerField(default=0)
+
+    last_error = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    last_attempt_at = models.DateTimeField(null=True, blank=True)
+
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_notification_type_display()} - {self.booking.booking_reference}"
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["booking", "notification_type"],
+                name="booking_email_booking_type_uniq",
+            ),
+        ]
+
+
+class BookingEmailDeliveryAttempt(models.Model):
+    class AttemptStatus(models.TextChoices):
+        SENDING = "sending", "Sending"
+        SENT = "sent", "Sent"
+        FAILED = "failed", "Failed"
+
+    notification = models.ForeignKey(
+        BookingEmailNotification,
+        on_delete=models.CASCADE,
+        related_name="delivery_attempts",
+    )
+    attempt_number = models.PositiveIntegerField()
+    status = models.CharField(
+        max_length=10,
+        choices=AttemptStatus.choices,
+        default=AttemptStatus.SENDING,
+    )
+    started_at = models.DateTimeField(default=timezone.now)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    error_summary = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Attempt {self.attempt_number} — {self.notification}"
+
+    class Meta:
+        ordering = ["-attempt_number"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["notification", "attempt_number"],
+                name="booking_email_attempt_number_uniq",
             ),
         ]

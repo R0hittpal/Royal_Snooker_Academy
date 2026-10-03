@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Request Booking Cancellation | Royal Snooker Academy{% endblock %}
+
+{% block content %}
+<section class="rsa-page-bg min-h-[65vh] px-4 py-12 sm:px-6 sm:py-16">
+    <div class="mx-auto max-w-xl overflow-hidden rounded-2xl border border-[#D7E2DD] bg-white shadow-xl">
+        <div class="bg-[#07513F] px-6 py-7 text-white sm:px-8">
+            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#E7CB70]">Royal Snooker Academy</p>
+            <h1 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">Request a booking cancellation</h1>
+            <p class="mt-2 text-sm leading-6 text-white/80">Enter the reference and email address from your booking confirmation. We’ll send a secure link to that email.</p>
+        </div>
+
+        <div class="p-6 sm:p-8">
+            {% if request_submitted %}
+                <div role="status" class="mb-6 rounded-xl border border-[#B9DCCF] bg-[#EAF5F0] p-4 text-sm leading-6 text-[#07513F]">
+                    If the details match an eligible upcoming booking, a cancellation link will be sent to its email address. The link expires after 30 minutes. Please check your inbox and spam folder. Online cancellation is available until 2 hours before the session; after that, please contact the academy.
+                </div>
+                <p class="mb-5 text-xs leading-5 text-[#66746F]">If you don’t receive a link, check that the reference and booking email are correct. You can request another link after 2 minutes.</p>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div role="alert" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="mb-5">
+                    <label for="{{ form.booking_reference.id_for_label }}" class="mb-2 block text-sm font-bold text-[#18322B]">{{ form.booking_reference.label }}</label>
+                    {{ form.booking_reference }}
+                    {% for error in form.booking_reference.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
+                </div>
+
+                <div class="mb-6">
+                    <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-bold text-[#18322B]">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}<p class="mt-1 text-xs text-red-700">{{ error }}</p>{% endfor %}
+                </div>
+
+                <button type="submit" class="w-full rounded-xl bg-[#D4AF37] px-5 py-3.5 text-sm font-extrabold text-[#07100D] transition hover:bg-[#E7CB70] focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/30">
+                    Email me a secure cancellation link
+                </button>
+            </form>
+
+            <p class="mt-5 text-xs leading-5 text-[#66746F]">This form doesn’t cancel a booking by itself. You’ll review the booking and choose a reason before confirming. Any payment or refund questions are handled directly by the academy.</p>
+            <a href="{% url 'booking' %}" class="mt-5 inline-flex text-sm font-bold text-[#07513F] underline underline-offset-4">Back to booking</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

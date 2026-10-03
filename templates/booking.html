@@ -329,6 +329,34 @@
         scroll-margin-top: 115px;
     }
 
+    .rsa-availability-message {
+        transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .rsa-availability-message[data-state="loading"] {
+        background: #EEF3F0;
+        border-color: #AABCB3;
+        color: #52605A;
+    }
+
+    .rsa-availability-message[data-state="success"] {
+        background: #EAF7EF;
+        border-color: #B9DEC9;
+        color: #17613F;
+    }
+
+    .rsa-availability-message[data-state="warning"] {
+        background: #FBF7EA;
+        border-color: #E8D797;
+        color: #765C13;
+    }
+
+    .rsa-availability-message[data-state="error"] {
+        background: #FFF1F0;
+        border-color: #E9B9B5;
+        color: #9A332C;
+    }
+
     .rsa-booking-progress {
         position: sticky;
         top: 92px;
@@ -414,19 +442,28 @@
     @media (max-width: 767px) {
         .rsa-booking-progress {
             top: 76px;
+            padding: 0.55rem 0.35rem;
         }
 
         .rsa-progress-step {
-            gap: 0;
+            flex-direction: column;
             justify-content: center;
+            gap: 4px;
         }
 
         .rsa-progress-step::after {
-            margin-left: 8px;
+            position: absolute;
+            top: 16px;
+            left: calc(50% + 17px);
+            width: calc(100% - 34px);
+            margin: 0;
         }
 
         .rsa-progress-label {
-            display: none;
+            display: block;
+            font-size: 9px;
+            letter-spacing: 0.035em;
+            line-height: 1.15;
         }
 
         .rsa-progress-number {
@@ -462,6 +499,11 @@
     }
 
     @media (max-width: 640px) {
+        .rsa-booking-hero-inner {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
         .rsa-booking-card {
             box-shadow: 0 10px 28px rgba(20, 38, 31, 0.05);
         }
@@ -615,7 +657,7 @@
                             </p>
 
                             <p class="text-xs sm:text-sm text-white/55 leading-6 mt-1">
-                                Please contact Royal Snooker Academy directly for booking changes or cancellations.
+                                Need to cancel? <a href="{% url 'booking_cancellation_request' %}" class="font-bold text-[#E7CB70] underline underline-offset-2">Request it online at least 2 hours before your session</a>, or contact Royal Snooker Academy for other booking changes.
                             </p>
 
                         </div>
@@ -628,7 +670,7 @@
                 <div class="flex flex-col sm:flex-row gap-3 mt-7">
 
                     <a
-                        href="{% url 'booking' %}"
+                        href="{% url 'booking' %}?source=book-another"
                         id="bookAnotherButton"
                         class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#D4AF37] text-[#07100D] px-6 py-3.5 font-extrabold text-sm hover:bg-[#E7CB70] transition"
                     >
@@ -948,6 +990,10 @@
                             Select the time you want to start playing.
                         </p>
 
+                        <p class="text-xs text-[#89938E] leading-5 mt-2">
+                            Disabled times may have passed today or may not leave enough time for your session.
+                        </p>
+
                     </div>
 
                 </div>
@@ -990,7 +1036,11 @@
 
                 <div
                     id="timeMessage"
-                    class="mt-5 rounded-xl bg-[#f4f7f4] border border-[#e0e7e2] px-4 py-3 text-xs sm:text-sm text-[#65716B]"
+                    class="rsa-availability-message mt-5 rounded-xl bg-[#f4f7f4] border border-[#e0e7e2] px-4 py-3 text-xs sm:text-sm text-[#65716B]"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    data-state="info"
                 >
                     Please select a date, duration and start time.
                 </div>
@@ -1140,7 +1190,11 @@
 
                 <div
                     id="tableMessage"
-                    class="mt-5 rounded-xl bg-[#f4f7f4] border border-[#e0e7e2] px-4 py-3 text-xs sm:text-sm text-[#65716B]"
+                    class="rsa-availability-message mt-5 rounded-xl bg-[#f4f7f4] border border-[#e0e7e2] px-4 py-3 text-xs sm:text-sm text-[#65716B]"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    data-state="info"
                 >
                     Select a date, duration and start time to check table availability.
                 </div>
@@ -1214,7 +1268,11 @@
                             placeholder="Enter your full name"
                             title="Enter your name using alphabets and spaces only."
                             class="rsa-input"
+                            aria-describedby="customerNameError"
+                            aria-invalid="false"
                         >
+
+                        <p id="customerNameError" class="hidden text-xs text-red-700 mt-2" role="status" aria-live="polite"></p>
 
                     </div>
 
@@ -1244,7 +1302,11 @@
                                 placeholder="9876543210"
                                 title="Enter exactly 10 digits. The first digit must be 6, 7, 8 or 9."
                                 class="rsa-input"
+                                aria-describedby="customerPhoneError"
+                                aria-invalid="false"
                             >
+
+                            <p id="customerPhoneError" class="hidden text-xs text-red-700 mt-2" role="status" aria-live="polite"></p>
 
                         </div>
 
@@ -1269,11 +1331,15 @@
                                 placeholder="you@example.com"
                                 title="Enter a valid email address."
                                 class="rsa-input"
+                                aria-describedby="emailError"
+                                aria-invalid="false"
                             >
 
                             <p
                                 id="emailError"
-                                class="hidden text-xs text-red-600 mt-2"
+                                class="hidden text-xs text-red-700 mt-2"
+                                role="status"
+                                aria-live="polite"
                             ></p>
 
                         </div>
@@ -1495,6 +1561,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedTableInput =
         document.getElementById("selectedTable");
 
+    const requestedTableId =
+        new URLSearchParams(window.location.search).get("table");
+
     const timeButtons =
         document.querySelectorAll(".rsa-time-button");
 
@@ -1555,6 +1624,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const emailError =
         document.getElementById("emailError");
 
+    const customerNameError =
+        document.getElementById("customerNameError");
+
+    const customerPhoneError =
+        document.getElementById("customerPhoneError");
+
+    const tableCardsContainer =
+        document.getElementById("tableCards");
+
 
     const progressSteps =
         document.querySelectorAll("[data-progress-step]");
@@ -1570,24 +1648,57 @@ document.addEventListener("DOMContentLoaded", function () {
      * ============================================================
      */
 
+    const headerScrollOffset = 105;
+
     function scrollToSection(element, extraOffset = 0) {
 
         if (!element) {
             return;
         }
 
-        const headerOffset = 105;
-
         const targetPosition =
             element.getBoundingClientRect().top +
             window.pageYOffset -
-            headerOffset +
+            headerScrollOffset +
             extraOffset;
 
         window.scrollTo({
             top: Math.max(0, targetPosition),
             behavior: "smooth"
         });
+
+    }
+
+
+    function scrollToConfirmButton() {
+
+        const buttonHeight =
+            confirmButton.getBoundingClientRect().height;
+
+        const targetTop =
+            Math.max(
+                headerScrollOffset,
+                Math.min(
+                    window.innerHeight * 0.62,
+                    window.innerHeight - buttonHeight - 24
+                )
+            );
+
+        scrollToSection(
+            confirmButton,
+            headerScrollOffset - targetTop
+        );
+
+    }
+
+
+    if (bookingConfirmation) {
+
+        setTimeout(function () {
+            scrollToSection(bookingConfirmation, -5);
+        }, 150);
+
+        return;
 
     }
 
@@ -1708,6 +1819,50 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    let reviewScrollScheduled = false;
+
+    function scrollToReviewWhenDetailsAreComplete() {
+
+        const detailsAreValid =
+            selectedTableInput.value &&
+            customerName.validity.valid &&
+            customerPhone.validity.valid &&
+            customerEmail.validity.valid;
+
+
+        if (!detailsAreValid) {
+            reviewScrollScheduled = false;
+            return;
+        }
+
+
+        if (reviewScrollScheduled) {
+            return;
+        }
+
+
+        reviewScrollScheduled = true;
+
+        setTimeout(function () {
+
+            const detailsAreStillValid =
+                selectedTableInput.value &&
+                customerName.validity.valid &&
+                customerPhone.validity.valid &&
+                customerEmail.validity.valid;
+
+            if (detailsAreStillValid) {
+                scrollToConfirmButton();
+            }
+            else {
+                reviewScrollScheduled = false;
+            }
+
+        }, 180);
+
+    }
+
+
     /*
      * ============================================================
      * UPDATE SUMMARY DATE
@@ -1755,6 +1910,12 @@ document.addEventListener("DOMContentLoaded", function () {
      */
 
     function resetTables() {
+
+        setAvailabilityMessage(
+            tableMessage,
+            "Choose a date, duration and start time to check table availability.",
+            "info"
+        );
 
         selectedTableInput.value =
             "";
@@ -1929,6 +2090,18 @@ document.addEventListener("DOMContentLoaded", function () {
      * ============================================================
      */
 
+    function setAvailabilityMessage(element, message, state = "info") {
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent = message;
+        element.dataset.state = state;
+
+    }
+
+
     async function loadAvailability() {
 
         const bookingDate =
@@ -1946,8 +2119,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!bookingDate) {
 
-            timeMessage.textContent =
-                "Please select a booking date.";
+            setAvailabilityMessage(
+                timeMessage,
+                "Choose a booking date to see available start times.",
+                "info"
+            );
+
+            setAvailabilityMessage(
+                tableMessage,
+                "Your available tables will appear after you choose a date, duration and start time.",
+                "info"
+            );
 
             return;
 
@@ -1956,8 +2138,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!duration) {
 
-            timeMessage.textContent =
-                "Please select a duration.";
+            setAvailabilityMessage(
+                timeMessage,
+                "Choose a session duration to see the start times that fit.",
+                "info"
+            );
+
+            setAvailabilityMessage(
+                tableMessage,
+                "Choose a duration and start time to check table availability.",
+                "info"
+            );
 
             return;
 
@@ -1966,16 +2157,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!startTime) {
 
-            timeMessage.textContent =
-                "Please select a start time.";
+            setAvailabilityMessage(
+                timeMessage,
+                "Choose a start time to check which tables are available.",
+                "info"
+            );
+
+            setAvailabilityMessage(
+                tableMessage,
+                "Choose one of the available start times to continue.",
+                "info"
+            );
 
             return;
 
         }
 
 
-        timeMessage.textContent =
-            "Checking table availability...";
+        setAvailabilityMessage(
+            timeMessage,
+            "Checking availability for your selected time…",
+            "loading"
+        );
+
+        setAvailabilityMessage(
+            tableMessage,
+            "Checking which tables are free. This may take a moment.",
+            "loading"
+        );
+
+        if (tableCardsContainer) {
+            tableCardsContainer.setAttribute("aria-busy", "true");
+        }
 
 
         const params =
@@ -1997,15 +2210,24 @@ document.addEventListener("DOMContentLoaded", function () {
             const data =
                 await response.json();
 
+            if (tableCardsContainer) {
+                tableCardsContainer.removeAttribute("aria-busy");
+            }
+
 
             if (!response.ok || data.error) {
 
-                timeMessage.textContent =
-                    data.error ||
-                    "Unable to check availability.";
+                setAvailabilityMessage(
+                    timeMessage,
+                    data.error || "We couldn’t check availability. Please try again.",
+                    "error"
+                );
 
-                tableMessage.textContent =
-                    "Please check your date, duration and start time.";
+                setAvailabilityMessage(
+                    tableMessage,
+                    "Your selections are still here. Try checking availability again.",
+                    "error"
+                );
 
                 return;
 
@@ -2142,12 +2364,9 @@ document.addEventListener("DOMContentLoaded", function () {
              * Restore table selected from Tables & Slots page.
              */
 
-            const requestedTable =
-                "{{ request.GET.table|default:'' }}";
-
             const existingSelectedTable =
                 selectedTableInput.value ||
-                requestedTable;
+                requestedTableId;
 
 
             if (existingSelectedTable) {
@@ -2165,7 +2384,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     selectTable(
                         restoredCard,
-                        false
+                        !initialStartTime
                     );
 
                 }
@@ -2175,21 +2394,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (availableCount === 0) {
 
-                tableMessage.textContent =
-                    "All tables are booked for the selected time.";
+                setAvailabilityMessage(
+                    tableMessage,
+                    "No tables are free for this time. Try another start time or a shorter session.",
+                    "warning"
+                );
 
             }
 
             else {
 
-                tableMessage.textContent =
-                    `${availableCount} table${availableCount === 1 ? "" : "s"} available. ${bookedCount} table${bookedCount === 1 ? "" : "s"} already booked. Select one to continue.`;
+                setAvailabilityMessage(
+                    tableMessage,
+                    `${availableCount} table${availableCount === 1 ? " is" : "s are"} available${bookedCount ? `; ${bookedCount} already booked` : ""}. Select an available table to continue.`,
+                    "success"
+                );
 
             }
 
 
-            timeMessage.textContent =
-                "Table availability updated.";
+            setAvailabilityMessage(
+                timeMessage,
+                "Availability checked for your selected date, duration and time.",
+                availableCount ? "success" : "warning"
+            );
 
         }
 
@@ -2198,8 +2426,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             console.error(error);
 
-            timeMessage.textContent =
-                "Unable to check availability. Please try again.";
+            if (tableCardsContainer) {
+                tableCardsContainer.removeAttribute("aria-busy");
+            }
+
+            setAvailabilityMessage(
+                timeMessage,
+                "We couldn’t check availability. Check your connection and try again.",
+                "error"
+            );
+
+            setAvailabilityMessage(
+                tableMessage,
+                "No booking has been made. Your selected date and time are still available to retry.",
+                "error"
+            );
 
         }
 
@@ -2274,6 +2515,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         selectedTableInput.value =
             card.dataset.tableId;
+
+        setAvailabilityMessage(
+            tableMessage,
+            `${card.dataset.tableName} selected. Enter your details, then review the total before confirming.`,
+            "success"
+        );
 
         updateBookingProgress();
 
@@ -2359,8 +2606,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 setTimeout(function () {
 
+                    const restoredHomeTable =
+                        requestedTableId &&
+                        !initialStartTime &&
+                        selectedTableInput.value === requestedTableId;
+
                     scrollToSection(
-                        tableSection
+                        restoredHomeTable
+                            ? customerSection
+                            : tableSection
                     );
 
                 }, 180);
@@ -2426,6 +2680,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             resetTables();
 
+            setAvailabilityMessage(
+                timeMessage,
+                "Choose a start time for your selected date and session duration.",
+                "info"
+            );
+
             /*
              * Date is the first step, so don't force the
              * customer down the page immediately.
@@ -2463,6 +2723,12 @@ document.addEventListener("DOMContentLoaded", function () {
             updateTimeButtons();
 
             resetTables();
+
+            setAvailabilityMessage(
+                timeMessage,
+                "Choose a start time that fits your selected session duration.",
+                "info"
+            );
 
 
             /*
@@ -2584,6 +2850,65 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function updateCustomerFieldError(input, errorElement, label) {
+
+        if (!input || !errorElement) {
+            return;
+        }
+
+        const shouldShowError =
+            input.dataset.validationTouched === "true" || Boolean(input.value);
+
+        let message = "";
+
+        if (shouldShowError && !input.validity.valid) {
+            if (input.validity.valueMissing) {
+                message = `Please enter your ${label}.`;
+            }
+            else if (input.id === "customerName" && input.validity.tooShort) {
+                message = "Enter your name using at least 2 letters.";
+            }
+            else if (input.id === "customerName" && input.validity.patternMismatch) {
+                message = "Use letters and spaces only for your name.";
+            }
+            else if (input.id === "customerPhone" && input.validity.patternMismatch) {
+                message = "Enter a 10-digit mobile number starting with 6, 7, 8 or 9.";
+            }
+            else if (input.id === "customerEmail" && input.validity.typeMismatch) {
+                message = "Enter a valid email address, such as name@example.com.";
+            }
+            else {
+                message = `Please check your ${label}.`;
+            }
+        }
+
+        errorElement.textContent = message;
+        errorElement.classList.toggle("hidden", !message);
+        input.setAttribute("aria-invalid", message ? "true" : "false");
+        input.classList.toggle("border-red-400", Boolean(message));
+
+    }
+
+
+    function attachCustomerFieldValidation(input, errorElement, label) {
+
+        if (!input || !errorElement) {
+            return;
+        }
+
+        input.addEventListener("blur", function () {
+            input.dataset.validationTouched = "true";
+            updateCustomerFieldError(input, errorElement, label);
+        });
+
+    }
+
+
+    attachCustomerFieldValidation(customerName, customerNameError, "full name");
+    attachCustomerFieldValidation(customerPhone, customerPhoneError, "phone number");
+    attachCustomerFieldValidation(customerEmail, emailError, "email address");
+
+
     customerName.addEventListener(
         "input",
         function () {
@@ -2591,6 +2916,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cleanNameInput();
 
             updateBookingProgress();
+            updateCustomerFieldError(customerName, customerNameError, "full name");
 
             if (customerName.validity.valid) {
 
@@ -2666,6 +2992,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cleanPhoneInput();
 
             updateBookingProgress();
+            updateCustomerFieldError(customerPhone, customerPhoneError, "phone number");
 
             if (customerPhone.validity.valid) {
 
@@ -2697,66 +3024,14 @@ document.addEventListener("DOMContentLoaded", function () {
      * ============================================================
      */
 
-    function setEmailError(message) {
-
-        if (!emailError) {
-            return;
-        }
-
-
-        if (message) {
-
-            emailError.textContent =
-                message;
-
-            emailError.classList.remove(
-                "hidden"
-            );
-
-            customerEmail.classList.remove(
-                "border-green-400"
-            );
-
-            customerEmail.classList.add(
-                "border-red-400"
-            );
-
-        }
-
-        else {
-
-            emailError.textContent =
-                "";
-
-            emailError.classList.add(
-                "hidden"
-            );
-
-            customerEmail.classList.remove(
-                "border-red-400"
-            );
-
-        }
-
-    }
-
-
     customerEmail.addEventListener(
         "input",
         function () {
 
-            const emailPattern =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
             updateBookingProgress();
+            updateCustomerFieldError(customerEmail, emailError, "email address");
 
-            if (
-                emailPattern.test(
-                    customerEmail.value.trim()
-                )
-            ) {
-
-                setEmailError("");
+            if (customerEmail.validity.valid && customerEmail.value) {
 
                 customerEmail.classList.remove(
                     "border-red-400"
@@ -2774,22 +3049,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     "border-green-400"
                 );
 
-                if (customerEmail.value) {
-
-                    setEmailError(
-                        "Please enter a valid email address, for example name@example.com."
-                    );
-
-                }
-
-                else {
-
-                    setEmailError("");
-
-                }
-
             }
 
+        }
+    );
+
+
+    [customerName, customerPhone, customerEmail].forEach(
+        function (input) {
+            input.addEventListener(
+                "input",
+                scrollToReviewWhenDetailsAreComplete
+            );
         }
     );
 
@@ -2806,6 +3077,20 @@ document.addEventListener("DOMContentLoaded", function () {
             "submit",
             function (event) {
 
+                if (!dateInput.value || !durationInput.value) {
+                    event.preventDefault();
+
+                    setAvailabilityMessage(
+                        timeMessage,
+                        "Choose a date and session duration before confirming your booking.",
+                        "error"
+                    );
+
+                    scrollToSection(dateDurationSection);
+                    return;
+                }
+
+
                 if (
                     !selectedTableInput.value ||
                     !selectedStartTimeInput.value
@@ -2813,15 +3098,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     event.preventDefault();
 
-
-                    alert(
-                        "Please select a time and an available table before confirming the booking."
-                    );
-
-
                     if (
                         !selectedStartTimeInput.value
                     ) {
+
+                        setAvailabilityMessage(
+                            timeMessage,
+                            "Choose a start time before confirming your booking.",
+                            "error"
+                        );
 
                         scrollToSection(
                             timeSection
@@ -2830,6 +3115,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     else {
+
+                        setAvailabilityMessage(
+                            tableMessage,
+                            "Choose an available table before confirming your booking.",
+                            "error"
+                        );
 
                         scrollToSection(
                             tableSection
@@ -2842,11 +3133,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (
-                    !customerName.value.trim() ||
-                    !customerPhone.value.trim() ||
-                    !customerEmail.value.trim()
-                ) {
+                const customerFields = [
+                    [customerName, customerNameError, "full name"],
+                    [customerPhone, customerPhoneError, "phone number"],
+                    [customerEmail, emailError, "email address"]
+                ];
+
+                customerFields.forEach(function ([input, errorElement, label]) {
+                    input.dataset.validationTouched = "true";
+                    updateCustomerFieldError(input, errorElement, label);
+                });
+
+                const firstInvalidCustomerField =
+                    customerFields.find(function ([input]) {
+                        return !input.validity.valid;
+                    });
+
+                if (firstInvalidCustomerField) {
 
                     event.preventDefault();
 
@@ -2854,22 +3157,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         customerSection
                     );
 
-                    return;
-
-                }
-
-
-                if (
-                    !customerName.validity.valid ||
-                    !customerPhone.validity.valid ||
-                    !customerEmail.validity.valid
-                ) {
-
-                    event.preventDefault();
-
-                    scrollToSection(
-                        customerSection
-                    );
+                    firstInvalidCustomerField[0].focus({ preventScroll: true });
 
                     return;
 
@@ -2986,12 +3274,9 @@ document.addEventListener("DOMContentLoaded", function () {
          * selection step.
          */
 
-        const requestedTableFromUrl =
-            new URLSearchParams(window.location.search).get("table");
-
         setTimeout(function () {
 
-            if (requestedTableFromUrl) {
+            if (requestedTableId) {
 
                 scrollToSection(
                     timeSection
@@ -3015,7 +3300,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const pageParams = new URLSearchParams(window.location.search);
     const bookingSource = pageParams.get("source");
-    const homeTableId = pageParams.get("table");
 
     /*
      * Home-page booking links must always begin with Step 01.
@@ -3027,7 +3311,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (
         (bookingSource === "home-hero" ||
          bookingSource === "home-table" ||
-         bookingSource === "home-booking") &&
+         bookingSource === "home-booking" ||
+         bookingSource === "book-another") &&
         !initialStartTime
     ) {
 
@@ -3036,26 +3321,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 180);
 
     }
-
-    /*
-     * ============================================================
-     * SUCCESS SCROLL
-     * ============================================================
-     */
-
-    if (bookingConfirmation) {
-
-        setTimeout(function () {
-
-            scrollToSection(
-                bookingConfirmation,
-                -5
-            );
-
-        }, 150);
-
-    }
-
 
     /*
      * ============================================================
@@ -3075,36 +3340,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-
-    /*
-     * ============================================================
-     * BOOK ANOTHER TABLE
-     *
-     * Return the user to the beginning of the booking journey.
-     * ============================================================
-     */
-
-    const bookAnotherButton =
-        document.getElementById(
-            "bookAnotherButton"
-        );
-
-
-    if (bookAnotherButton) {
-
-        bookAnotherButton.addEventListener(
-            "click",
-            function () {
-
-                /*
-                 * Normal navigation is retained.
-                 * The new booking page will begin at Step 1.
-                 */
-
-            }
-        );
-
-    }
 
 });
 

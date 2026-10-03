@@ -155,6 +155,11 @@
             scroll-behavior: smooth;
         }
 
+        :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+            outline: 3px solid #E7CB70;
+            outline-offset: 3px;
+        }
+
 
         body {
 
@@ -425,7 +430,7 @@
 
         .rsa-mobile-nav-link:focus-visible,
         .rsa-site-header summary:focus-visible {
-            outline: 2px solid #E7CB70;
+            outline: 3px solid #E7CB70;
             outline-offset: 2px;
         }
 

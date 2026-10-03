@@ -1,8 +1,10 @@
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from functools import wraps
+import hashlib
 import logging
 import re
+import secrets
 
 import requests
 
@@ -16,10 +18,11 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.core.validators import validate_email
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Count, F, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.html import escape
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 
@@ -29,12 +32,20 @@ logger = logging.getLogger(__name__)
 from bookings.models import (
     AcademySettings,
     Booking,
+    BookingCancellation,
+    BookingEmailDeliveryAttempt,
+    BookingEmailNotification,
     CoachingContent,
     GalleryImage,
     HomePageSettings,
     MembershipContent,
     Table,
     TournamentContent,
+)
+from bookings.audit import log_booking_status_change
+from bookings.forms import (
+    BookingCancellationLookupForm,
+    CustomerBookingCancellationForm,
 )
 
 
@@ -295,7 +306,7 @@ def send_rsa_html_email(
 
                 logo = MIMEImage(
                     image_file.read(),
-                    _subtype="jpeg",
+                    _subtype="png",
                 )
 
             logo.add_header(
@@ -306,7 +317,7 @@ def send_rsa_html_email(
             logo.add_header(
                 "Content-Disposition",
                 "inline",
-                filename="rsa-logo.jpg",
+                filename="rsa-logo.png",
             )
 
             email.attach(logo)
@@ -321,12 +332,139 @@ def get_rsa_email_logo_path():
         Path(settings.BASE_DIR)
         / "static"
         / "images"
-        / "Royal_Snooker_Academy_Email_Logo.jpg"
+        / "royal_snooker_favicon_under_50kb.png"
     )
+
+
+def _attempt_booking_email_delivery(notification, retry=False):
+    now = timezone.now()
+    eligible = Q(status=BookingEmailNotification.DeliveryStatus.PENDING)
+
+    if retry:
+        stale_before = now - timedelta(minutes=15)
+        eligible |= Q(
+            status=BookingEmailNotification.DeliveryStatus.FAILED
+        ) | Q(
+            status=BookingEmailNotification.DeliveryStatus.SENDING,
+            last_attempt_at__lte=stale_before,
+        ) | Q(
+            status=BookingEmailNotification.DeliveryStatus.SENDING,
+            last_attempt_at__isnull=True,
+        )
+
+    with transaction.atomic():
+        claimed = BookingEmailNotification.objects.filter(
+            pk=notification.pk,
+        ).filter(
+            eligible,
+        ).update(
+            status=BookingEmailNotification.DeliveryStatus.SENDING,
+            attempt_count=F("attempt_count") + 1,
+            last_attempt_at=now,
+            last_error="",
+        )
+
+        if not claimed:
+            notification.refresh_from_db(fields=["status"])
+            return notification.status == BookingEmailNotification.DeliveryStatus.SENT
+
+        notification.refresh_from_db(fields=["attempt_count"])
+        delivery_attempt = BookingEmailDeliveryAttempt.objects.create(
+            notification=notification,
+            attempt_number=notification.attempt_count,
+            status=BookingEmailDeliveryAttempt.AttemptStatus.SENDING,
+            started_at=now,
+        )
+
+    try:
+        send_rsa_html_email(
+            subject=notification.subject,
+            recipient=notification.recipient_email,
+            plain_message=notification.plain_message,
+            html_message=notification.html_message,
+            logo_path=get_rsa_email_logo_path(),
+        )
+    except Exception as error:
+        completed_at = timezone.now()
+        error_summary = (
+            f"{type(error).__name__}. Check the application log for details."
+        )
+        with transaction.atomic():
+            BookingEmailNotification.objects.filter(
+                pk=notification.pk,
+                status=BookingEmailNotification.DeliveryStatus.SENDING,
+                last_attempt_at=now,
+            ).update(
+                status=BookingEmailNotification.DeliveryStatus.FAILED,
+                last_error=error_summary,
+            )
+            BookingEmailDeliveryAttempt.objects.filter(
+                pk=delivery_attempt.pk,
+                status=BookingEmailDeliveryAttempt.AttemptStatus.SENDING,
+            ).update(
+                status=BookingEmailDeliveryAttempt.AttemptStatus.FAILED,
+                completed_at=completed_at,
+                error_summary=error_summary,
+            )
+        logger.exception(
+            "Booking %s email delivery failed for %s",
+            notification.notification_type,
+            notification.booking.booking_reference,
+        )
+        return False
+
+    completed_at = timezone.now()
+    with transaction.atomic():
+        BookingEmailNotification.objects.filter(
+            pk=notification.pk,
+            status=BookingEmailNotification.DeliveryStatus.SENDING,
+            last_attempt_at=now,
+        ).update(
+            status=BookingEmailNotification.DeliveryStatus.SENT,
+            sent_at=completed_at,
+            last_error="",
+        )
+        BookingEmailDeliveryAttempt.objects.filter(
+            pk=delivery_attempt.pk,
+            status=BookingEmailDeliveryAttempt.AttemptStatus.SENDING,
+        ).update(
+            status=BookingEmailDeliveryAttempt.AttemptStatus.SENT,
+            completed_at=completed_at,
+            error_summary="",
+        )
+    return True
+
+
+def _send_tracked_booking_email(
+    booking,
+    notification_type,
+    subject,
+    plain_message,
+    html_message,
+):
+    notification, _ = BookingEmailNotification.objects.get_or_create(
+        booking=booking,
+        notification_type=notification_type,
+        defaults={
+            "status": BookingEmailNotification.DeliveryStatus.PENDING,
+            "recipient_email": booking.email,
+            "subject": subject,
+            "plain_message": plain_message,
+            "html_message": html_message,
+        },
+    )
+    return _attempt_booking_email_delivery(notification)
+
+
+def retry_booking_email_notification(notification):
+    """Retry a failed or stalled delivery using its saved message snapshot."""
+
+    return _attempt_booking_email_delivery(notification, retry=True)
 
 
 def build_booking_confirmation_html(
     booking,
+    cancellation_request_url=None,
 ):
     """
     Build the polished HTML booking confirmation email.
@@ -339,6 +477,22 @@ def build_booking_confirmation_html(
     )
 
     amount = f"₹{booking.amount:,.2f}"
+    customer_name = escape(booking.customer_name)
+    booking_reference = escape(booking.booking_reference)
+    table_name = escape(booking.table.name)
+    table_type = escape(booking.table.table_type)
+    cancellation_note = ""
+    if cancellation_request_url:
+        cancellation_note = (
+            '<p style="margin:18px 0 0;padding:12px 14px;'
+            'background:#EAF5F0;border-radius:8px;color:#36514A;'
+            'font-size:12px;line-height:19px;">'
+            'Need to cancel? <a href="'
+            f'{escape(cancellation_request_url)}'
+            '" style="color:#07513F;font-weight:700;">'
+            'Request cancellation online</a> at least 2 hours before '
+            'your session.</p>'
+        )
 
     return f"""
 <!DOCTYPE html>
@@ -398,34 +552,33 @@ def build_booking_confirmation_html(
                     <td
                         align="center"
                         style="
-                            background-color:#07100D;
+                            background-color:#07513F;
                             border-bottom:1px solid #D4AF37;
-                            padding:28px 24px 25px;
+                            padding:18px 24px 16px;
                         "
                     >
 
                         <img
                             src="cid:rsa-logo"
-                            width="105"
+                            width="84"
                             alt="Royal Snooker Academy"
                             style="
                                 display:block;
-                                width:105px;
-                                max-width:105px;
+                                width:84px;
+                                max-width:84px;
                                 height:auto;
-                                margin:0 auto 15px;
+                                margin:0 auto 8px;
                                 border:0;
                                 outline:none;
                                 text-decoration:none;
-                                border-radius:50%;
                             "
                         >
 
                         <div
                             style="
                                 color:#ffffff;
-                                font-size:23px;
-                                line-height:30px;
+                                font-size:20px;
+                                line-height:26px;
                                 font-weight:800;
                                 letter-spacing:0.3px;
                             "
@@ -435,10 +588,10 @@ def build_booking_confirmation_html(
 
                         <div
                             style="
-                                margin-top:7px;
+                                margin-top:4px;
                                 color:#E7CB70;
-                                font-size:12px;
-                                letter-spacing:1.8px;
+                                font-size:10px;
+                                letter-spacing:1.5px;
                                 text-transform:uppercase;
                             "
                         >
@@ -493,7 +646,7 @@ def build_booking_confirmation_html(
                                 color:#18322B;
                             "
                         >
-                            Hi {booking.customer_name},
+                            Hi {customer_name},
                         </p>
 
                         <p
@@ -564,7 +717,7 @@ def build_booking_confirmation_html(
                                             letter-spacing:0.5px;
                                         "
                                     >
-                                        {booking.booking_reference}
+                                    {booking_reference}
                                     </div>
 
                                 </td>
@@ -633,7 +786,7 @@ def build_booking_confirmation_html(
                                         border-bottom:1px solid #E8EFEB;
                                     "
                                 >
-                                    {booking.table.name}
+                                    {table_name}
                                 </td>
                             </tr>
 
@@ -660,7 +813,7 @@ def build_booking_confirmation_html(
                                         border-bottom:1px solid #E8EFEB;
                                     "
                                 >
-                                    {booking.table.table_type}
+                                    {table_type}
                                 </td>
                             </tr>
 
@@ -854,6 +1007,8 @@ def build_booking_confirmation_html(
                             We look forward to seeing you at the academy! 🎱
                         </p>
 
+                        {cancellation_note}
+
                     </td>
                 </tr>
 
@@ -863,15 +1018,16 @@ def build_booking_confirmation_html(
                     <td
                         align="center"
                         style="
-                            background-color:#07100D;
-                            padding:24px 24px;
+                            background-color:#EAF5F0;
+                            border-top:1px solid #D7E2DD;
+                            padding:16px 24px;
                         "
                     >
 
                         <div
                             style="
-                                color:#ffffff;
-                                font-size:15px;
+                                color:#07513F;
+                                font-size:14px;
                                 font-weight:800;
                                 margin-bottom:6px;
                             "
@@ -881,7 +1037,7 @@ def build_booking_confirmation_html(
 
                         <div
                             style="
-                                color:#AEBBB6;
+                                color:#36514A;
                                 font-size:12px;
                                 line-height:19px;
                             "
@@ -929,6 +1085,11 @@ def build_completion_email_html(
     )
 
     amount = f"₹{booking.amount:,.2f}"
+    customer_name = escape(booking.customer_name)
+    booking_reference = escape(booking.booking_reference)
+    table_name = escape(booking.table.name)
+    table_type = escape(booking.table.table_type)
+    safe_booking_url = escape(booking_url)
 
     return f"""
 <!DOCTYPE html>
@@ -988,34 +1149,33 @@ def build_completion_email_html(
                     <td
                         align="center"
                         style="
-                            background-color:#07100D;
+                            background-color:#07513F;
                             border-bottom:1px solid #D4AF37;
-                            padding:28px 24px 25px;
+                            padding:18px 24px 16px;
                         "
                     >
 
                         <img
                             src="cid:rsa-logo"
-                            width="105"
+                            width="84"
                             alt="Royal Snooker Academy"
                             style="
                                 display:block;
-                                width:105px;
-                                max-width:105px;
+                                width:84px;
+                                max-width:84px;
                                 height:auto;
-                                margin:0 auto 16px;
+                                margin:0 auto 8px;
                                 border:0;
                                 outline:none;
                                 text-decoration:none;
-                                border-radius:50%;
                             "
                         >
 
                         <div
                             style="
                                 color:#ffffff;
-                                font-size:22px;
-                                line-height:29px;
+                                font-size:20px;
+                                line-height:26px;
                                 font-weight:800;
                             "
                         >
@@ -1024,10 +1184,10 @@ def build_completion_email_html(
 
                         <div
                             style="
-                                margin-top:6px;
+                                margin-top:4px;
                                 color:#E7CB70;
-                                font-size:11px;
-                                letter-spacing:2px;
+                                font-size:10px;
+                                letter-spacing:1.5px;
                                 text-transform:uppercase;
                             "
                         >
@@ -1084,7 +1244,7 @@ def build_completion_email_html(
                                 line-height:25px;
                             "
                         >
-                            Hi {booking.customer_name},<br>
+                            Hi {customer_name},<br>
                             we hope you enjoyed your session at
                             <strong style="color:#18322B;">
                                 Royal Snooker Academy
@@ -1140,13 +1300,13 @@ def build_completion_email_html(
 
                                     <div
                                         style="
-                                            color:#07100D;
+                                        color:#043A2D;
                                             font-size:18px;
                                             line-height:25px;
                                             font-weight:800;
                                         "
                                     >
-                                        {booking.table.name}
+                                        {table_name}
                                     </div>
 
                                     <div
@@ -1156,7 +1316,7 @@ def build_completion_email_html(
                                             font-size:13px;
                                         "
                                     >
-                                        {booking.table.table_type}
+                                        {table_type}
                                     </div>
 
                                 </td>
@@ -1171,7 +1331,7 @@ def build_completion_email_html(
 
                                     <div
                                         style="
-                                            color:#07100D;
+                                        color:#043A2D;
                                             font-size:16px;
                                             font-weight:800;
                                         "
@@ -1273,7 +1433,7 @@ def build_completion_email_html(
                                 text-transform:uppercase;
                             "
                         >
-                            Amount Paid
+                            Session Amount
                         </div>
 
                         <div
@@ -1381,11 +1541,11 @@ def build_completion_email_html(
                     >
 
                         <a
-                            href="{booking_url}"
+                            href="{safe_booking_url}"
                             style="
                                 display:inline-block;
                                 background-color:#D4AF37;
-                                color:#07100D;
+                            color:#043A2D;
                                 text-decoration:none;
                                 font-size:14px;
                                 font-weight:800;
@@ -1418,7 +1578,7 @@ def build_completion_email_html(
                         >
                             Booking Reference:
                             <strong style="color:#66746F;">
-                                {booking.booking_reference}
+                                {booking_reference}
                             </strong>
                         </div>
 
@@ -1431,15 +1591,16 @@ def build_completion_email_html(
                     <td
                         align="center"
                         style="
-                            background-color:#07100D;
-                            padding:24px;
+                            background-color:#EAF5F0;
+                            border-top:1px solid #D7E2DD;
+                            padding:16px 24px;
                         "
                     >
 
                         <div
                             style="
-                                color:#ffffff;
-                                font-size:15px;
+                                color:#07513F;
+                                font-size:14px;
                                 font-weight:800;
                             "
                         >
@@ -1449,7 +1610,7 @@ def build_completion_email_html(
                         <div
                             style="
                                 margin-top:6px;
-                                color:#AEBBB6;
+                                color:#36514A;
                                 font-size:12px;
                             "
                         >
@@ -1479,6 +1640,207 @@ def build_completion_email_html(
 </body>
 </html>
 """
+
+
+def send_booking_confirmation_notification(
+    booking,
+    cancellation_request_url=None,
+):
+    """Send the standard booking confirmation email and report delivery."""
+
+    if not cancellation_request_url:
+        public_hostname = getattr(
+            settings,
+            "RENDER_EXTERNAL_HOSTNAME",
+            "",
+        ).strip()
+        if public_hostname:
+            cancellation_request_url = (
+                f"https://{public_hostname}"
+                f"{reverse('booking_cancellation_request')}"
+            )
+
+    booking_reference = booking.booking_reference
+    subject = (
+        f"Booking Confirmed - {booking_reference} | "
+        "Royal Snooker Academy"
+    )
+    plain_message = f"""
+Hello {booking.customer_name},
+
+Your snooker session at Royal Snooker Academy has been successfully reserved.
+
+BOOKING DETAILS
+------------------------------
+Booking Reference : {booking_reference}
+Customer Name     : {booking.customer_name}
+Table             : {booking.table.name}
+Table Type        : {booking.table.table_type}
+Date              : {booking.booking_date.strftime("%d %B %Y")}
+Start Time        : {booking.start_time.strftime("%I:%M %p")}
+Duration          : {booking.duration_hours} hour{"s" if booking.duration_hours != 1 else ""}
+Total Amount      : ₹{booking.amount:,.2f}
+
+Your table has been reserved successfully.
+
+Please arrive a few minutes before your scheduled session.
+
+We look forward to seeing you at the academy!
+
+{"To request cancellation, visit " + cancellation_request_url + ". You must request it at least 2 hours before your session." if cancellation_request_url else "For booking changes, please visit the academy website."}
+
+Royal Snooker Academy
+Play. Practice. Perform.
+"""
+
+    return _send_tracked_booking_email(
+        booking=booking,
+        notification_type=BookingEmailNotification.NotificationType.CONFIRMATION,
+        subject=subject,
+        plain_message=plain_message,
+        html_message=build_booking_confirmation_html(
+            booking,
+            cancellation_request_url=cancellation_request_url,
+        ),
+    )
+
+
+def send_booking_cancellation_notification(booking):
+    """Send the customer a branded notice after a booking is cancelled."""
+
+    booking_reference = booking.booking_reference
+    subject = (
+        f"Booking Cancelled - {booking_reference} | "
+        "Royal Snooker Academy"
+    )
+    duration_label = (
+        f"{booking.duration_hours} hour"
+        if booking.duration_hours == 1
+        else f"{booking.duration_hours} hours"
+    )
+    plain_message = f"""
+Hello {booking.customer_name},
+
+This email confirms that your Royal Snooker Academy booking has been cancelled.
+
+BOOKING DETAILS
+------------------------------
+Booking Reference : {booking_reference}
+Table             : {booking.table.name}
+Table Type        : {booking.table.table_type}
+Date              : {booking.booking_date.strftime("%d %B %Y")}
+Start Time        : {booking.start_time.strftime("%I:%M %p")}
+Duration          : {duration_label}
+
+If you expected to attend this session or have questions about the cancellation, please contact the academy using the details on our website.
+
+If you would like to visit another time, you are welcome to make a new booking.
+
+Royal Snooker Academy
+Play. Practice. Perform.
+"""
+    customer_name = escape(booking.customer_name)
+    table_name = escape(booking.table.name)
+    table_type = escape(booking.table.table_type)
+    booking_reference = escape(booking_reference)
+    booking_date = escape(booking.booking_date.strftime("%d %B %Y"))
+    start_time = escape(booking.start_time.strftime("%I:%M %p"))
+    duration_label = escape(duration_label)
+    html_message = f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Booking Cancelled - Royal Snooker Academy</title></head>
+<body style="margin:0;padding:20px 12px;background:#F7F5EF;font-family:Arial,Helvetica,sans-serif;color:#18322B;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #D7E2DD;border-top:4px solid #D4AF37;border-radius:14px;overflow:hidden;">
+    <tr><td style="padding:18px 20px 16px;background:#07513F;text-align:center;border-bottom:1px solid #D4AF37;">
+      <img src="cid:rsa-logo" width="84" alt="Royal Snooker Academy" style="display:block;width:84px;max-width:84px;height:auto;margin:0 auto 8px;border:0;">
+      <div style="color:#ffffff;font-size:20px;line-height:26px;font-weight:800;">Royal Snooker Academy</div>
+      <div style="margin-top:4px;color:#E7CB70;font-size:10px;letter-spacing:1.5px;">PLAY. PRACTICE. PERFORM.</div>
+    </td></tr>
+    <tr><td style="padding:26px 28px 10px;">
+      <div style="display:inline-block;padding:6px 12px;background:#EAF5F0;border:1px solid #B9DCCF;border-radius:999px;color:#07513F;font-size:10px;font-weight:800;letter-spacing:.7px;">BOOKING CANCELLED</div>
+      <h1 style="margin:16px 0 12px;color:#043A2D;font-size:22px;line-height:29px;">Your booking has been cancelled</h1>
+      <p style="margin:0 0 10px;color:#36514A;font-size:14px;line-height:22px;">Hello {customer_name},</p>
+      <p style="margin:0;color:#36514A;font-size:14px;line-height:22px;">This email confirms that the following Royal Snooker Academy booking has been cancelled.</p>
+    </td></tr>
+    <tr><td style="padding:14px 28px 22px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #D7E2DD;border-radius:10px;overflow:hidden;">
+        <tr><td style="padding:11px 14px;background:#EAF5F0;color:#07513F;font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;">Booking reference</td><td align="right" style="padding:11px 14px;background:#EAF5F0;color:#043A2D;font-size:12px;font-weight:800;">{booking_reference}</td></tr>
+        <tr><td style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#66746F;font-size:13px;">Table</td><td align="right" style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#18322B;font-size:13px;font-weight:700;">{table_name}</td></tr>
+        <tr><td style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#66746F;font-size:13px;">Table type</td><td align="right" style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#18322B;font-size:13px;font-weight:700;">{table_type}</td></tr>
+        <tr><td style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#66746F;font-size:13px;">Date</td><td align="right" style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#18322B;font-size:13px;font-weight:700;">{booking_date}</td></tr>
+        <tr><td style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#66746F;font-size:13px;">Start time</td><td align="right" style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#18322B;font-size:13px;font-weight:700;">{start_time}</td></tr>
+        <tr><td style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#66746F;font-size:13px;">Duration</td><td align="right" style="padding:10px 14px;border-top:1px solid #E8EFEB;color:#18322B;font-size:13px;font-weight:700;">{duration_label}</td></tr>
+      </table>
+    </td></tr>
+    <tr><td style="padding:0 28px 24px;color:#36514A;font-size:13px;line-height:21px;">
+      <p style="margin:0 0 10px;">If you expected to attend this session or have questions about the cancellation, please contact the academy using the details on our website.</p>
+      <p style="margin:0;">If you would like to visit another time, you are welcome to make a new booking.</p>
+    </td></tr>
+    <tr><td align="center" style="padding:15px 20px;background:#EAF5F0;border-top:1px solid #D7E2DD;">
+      <div style="color:#07513F;font-size:13px;font-weight:800;">Royal Snooker Academy</div>
+      <div style="margin-top:4px;color:#36514A;font-size:10px;">Play. Practice. Perform.</div>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    return _send_tracked_booking_email(
+        booking=booking,
+        notification_type=BookingEmailNotification.NotificationType.CANCELLATION,
+        subject=subject,
+        plain_message=plain_message,
+        html_message=html_message,
+    )
+
+
+def send_booking_completion_notification(booking, booking_url):
+    """Send the standard post-session email and track its delivery state."""
+
+    subject = (
+        "Thank You for Visiting Royal Snooker Academy | "
+        f"{booking.booking_reference}"
+    )
+    plain_message = f"""
+Hello {booking.customer_name},
+
+Thanks for playing with us!
+
+We hope you enjoyed your session at Royal Snooker Academy.
+
+YOUR SESSION
+------------------------------
+Table             : {booking.table.name}
+Table Type        : {booking.table.table_type}
+Date              : {booking.booking_date.strftime("%d %B %Y")}
+Start Time        : {booking.start_time.strftime("%I:%M %p")}
+Duration          : {booking.duration_hours} hour{"s" if booking.duration_hours != 1 else ""}
+Session Amount    : ₹{booking.amount:,.2f}
+
+Your session has been successfully completed.
+
+We'd love to welcome you back for another game.
+
+Book another session:
+{booking_url}
+
+Booking Reference:
+{booking.booking_reference}
+
+Royal Snooker Academy
+Play. Practice. Perform.
+
+Thank you for being part of the RSA community.
+"""
+    return _send_tracked_booking_email(
+        booking=booking,
+        notification_type=BookingEmailNotification.NotificationType.COMPLETION,
+        subject=subject,
+        plain_message=plain_message,
+        html_message=build_completion_email_html(
+            booking=booking,
+            booking_url=booking_url,
+        ),
+    )
 
 
 def home(request):
@@ -1680,8 +2042,8 @@ def booking(request):
     if academy_settings is None:
 
         academy_settings = AcademySettings.objects.create(
-            opening_time="10:00",
-            closing_time="23:00",
+            opening_time=time(10, 0),
+            closing_time=time(23, 0),
         )
 
     active_tables = Table.objects.filter(
@@ -1978,66 +2340,12 @@ def booking(request):
                 context,
             )
 
-        booking_reference = booking.booking_reference
-
-        # ---------------------------------------------------------
-        # BOOKING CONFIRMATION EMAIL
-        # ---------------------------------------------------------
-
-        booking_email_subject = (
-            f"Booking Confirmed - {booking_reference} | "
-            f"Royal Snooker Academy"
+        send_booking_confirmation_notification(
+            booking,
+            cancellation_request_url=request.build_absolute_uri(
+                reverse("booking_cancellation_request")
+            ),
         )
-
-        booking_plain_message = f"""
-Hello {booking.customer_name},
-
-Your snooker session at Royal Snooker Academy has been successfully reserved.
-
-BOOKING DETAILS
-------------------------------
-Booking Reference : {booking.booking_reference}
-Customer Name     : {booking.customer_name}
-Table             : {booking.table.name}
-Table Type        : {booking.table.table_type}
-Date              : {booking.booking_date.strftime("%d %B %Y")}
-Start Time        : {booking.start_time.strftime("%I:%M %p")}
-Duration          : {booking.duration_hours} hour{"s" if booking.duration_hours != 1 else ""}
-Total Amount      : ₹{booking.amount:,.2f}
-
-Your table has been reserved successfully.
-
-Please arrive a few minutes before your scheduled session.
-
-We look forward to seeing you at the academy!
-
-Royal Snooker Academy
-Play. Practice. Perform.
-"""
-
-        booking_html_message = build_booking_confirmation_html(
-            booking
-        )
-
-        logo_path = get_rsa_email_logo_path()
-
-        try:
-
-            send_rsa_html_email(
-                subject=booking_email_subject,
-                recipient=booking.email,
-                plain_message=booking_plain_message,
-                html_message=booking_html_message,
-                logo_path=logo_path,
-            )
-
-        except Exception as email_error:
-
-            logger.exception(
-                "Booking confirmation email could not be sent for %s: %s",
-                booking_reference,
-                email_error,
-            )
 
         request.session["booking_success"] = {
             "booking_id": booking.id,
@@ -2081,6 +2389,301 @@ Play. Practice. Perform.
     )
 
 
+def _find_customer_booking_for_cancellation(booking_reference, email):
+    match = re.fullmatch(
+        r"RSA-(\d{8})-(\d{4,})",
+        booking_reference.strip().upper(),
+    )
+    if not match:
+        return None
+
+    try:
+        booking_date = datetime.strptime(match.group(1), "%Y%m%d").date()
+        booking_id = int(match.group(2))
+    except (TypeError, ValueError):
+        return None
+
+    booking = (
+        Booking.objects
+        .select_related("table")
+        .filter(pk=booking_id, booking_date=booking_date)
+        .first()
+    )
+    if not booking or booking.email.casefold() != email.strip().casefold():
+        return None
+    return booking
+
+
+def _booking_cancellation_deadline(booking):
+    session_start = datetime.combine(
+        booking.booking_date,
+        booking.start_time,
+    )
+    session_start = timezone.make_aware(
+        session_start,
+        timezone.get_current_timezone(),
+    )
+    return session_start - timedelta(hours=2)
+
+
+def _booking_cancellation_is_allowed(booking, now=None):
+    now = now or timezone.now()
+    return (
+        booking.status == "Confirmed"
+        and now <= _booking_cancellation_deadline(booking)
+    )
+
+
+def _send_booking_cancellation_link(booking, confirmation_url):
+    customer_name = escape(booking.customer_name)
+    booking_reference = escape(booking.booking_reference)
+    table_name = escape(booking.table.name)
+    safe_url = escape(confirmation_url)
+    expiry_minutes = 30
+    plain_message = f"""Hello {booking.customer_name},
+
+We received a request to cancel your Royal Snooker Academy booking.
+
+Booking reference: {booking.booking_reference}
+Table: {booking.table.name}
+Date: {booking.booking_date.strftime("%d %B %Y")}
+Start time: {booking.start_time.strftime("%I:%M %p")}
+
+To continue, open this secure link within {expiry_minutes} minutes:
+{confirmation_url}
+
+Your booking will not be cancelled unless you open the link and confirm. If you did not make this request, you can ignore this email.
+
+Royal Snooker Academy
+Play. Practice. Perform.
+"""
+    html_message = f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Confirm booking cancellation request</title></head>
+<body style="margin:0;padding:20px 12px;background:#F7F5EF;font-family:Arial,Helvetica,sans-serif;color:#18322B;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #D7E2DD;border-top:4px solid #D4AF37;border-radius:14px;overflow:hidden;">
+    <tr><td style="padding:18px 20px 16px;background:#07513F;text-align:center;border-bottom:1px solid #D4AF37;">
+      <img src="cid:rsa-logo" width="84" alt="Royal Snooker Academy" style="display:block;width:84px;max-width:84px;height:auto;margin:0 auto 8px;border:0;">
+      <div style="color:#ffffff;font-size:20px;line-height:26px;font-weight:800;">Royal Snooker Academy</div>
+      <div style="margin-top:4px;color:#E7CB70;font-size:10px;letter-spacing:1.5px;">PLAY. PRACTICE. PERFORM.</div>
+    </td></tr>
+    <tr><td style="padding:26px 28px 28px;">
+      <h1 style="margin:0 0 12px;color:#043A2D;font-size:21px;line-height:28px;">Confirm your cancellation request</h1>
+      <p style="margin:0 0 12px;color:#36514A;font-size:14px;line-height:22px;">Hello {customer_name}, we received a request to cancel this booking:</p>
+      <p style="margin:0 0 20px;padding:12px;background:#EAF5F0;border-radius:8px;color:#07513F;font-size:13px;line-height:21px;"><strong>{booking_reference}</strong><br>{table_name} · {booking.booking_date.strftime("%d %B %Y")} · {booking.start_time.strftime("%I:%M %p")}</p>
+      <p style="margin:0 0 20px;color:#36514A;font-size:13px;line-height:21px;">Your booking will remain confirmed unless you open the secure link below and complete the cancellation. The link expires in {expiry_minutes} minutes.</p>
+      <p style="margin:0 0 20px;text-align:center;"><a href="{safe_url}" style="display:inline-block;padding:12px 20px;background:#D4AF37;border-radius:8px;color:#07100D;font-size:13px;font-weight:800;text-decoration:none;">Review cancellation</a></p>
+      <p style="margin:0;color:#66746F;font-size:12px;line-height:19px;">If you did not make this request, you can ignore this email. No change will be made to your booking.</p>
+    </td></tr>
+    <tr><td align="center" style="padding:14px 20px;background:#EAF5F0;border-top:1px solid #D7E2DD;color:#36514A;font-size:11px;">Royal Snooker Academy · Play. Practice. Perform.</td></tr>
+  </table>
+</body>
+</html>"""
+    send_rsa_html_email(
+        subject=f"Confirm cancellation request - {booking.booking_reference}",
+        recipient=booking.email,
+        plain_message=plain_message,
+        html_message=html_message,
+        logo_path=get_rsa_email_logo_path(),
+    )
+
+
+def booking_cancellation_request(request):
+    form = BookingCancellationLookupForm(request.POST or None)
+    request_submitted = request.method == "POST"
+
+    if request_submitted and form.is_valid():
+        booking = _find_customer_booking_for_cancellation(
+            form.cleaned_data["booking_reference"],
+            form.cleaned_data["email"],
+        )
+
+        if booking and _booking_cancellation_is_allowed(booking):
+            now = timezone.now()
+            token = secrets.token_urlsafe(32)
+            token_digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+            should_send = False
+
+            with transaction.atomic():
+                locked_booking = (
+                    Booking.objects
+                    .select_for_update()
+                    .select_related("table")
+                    .get(pk=booking.pk)
+                )
+                if _booking_cancellation_is_allowed(locked_booking, now):
+                    cancellation, created = BookingCancellation.objects.get_or_create(
+                        booking=locked_booking,
+                        defaults={
+                            "token_digest": token_digest,
+                            "requested_at": now,
+                            "expires_at": now + timedelta(minutes=30),
+                        },
+                    )
+                    can_resend = (
+                        created
+                        or now - cancellation.requested_at >= timedelta(minutes=2)
+                        or cancellation.expires_at <= now
+                    )
+                    if not created and can_resend:
+                        cancellation.token_digest = token_digest
+                        cancellation.requested_at = now
+                        cancellation.expires_at = now + timedelta(minutes=30)
+                        cancellation.used_at = None
+                        cancellation.reason = ""
+                        cancellation.reason_details = ""
+                        cancellation.save(
+                            update_fields=[
+                                "token_digest",
+                                "requested_at",
+                                "expires_at",
+                                "used_at",
+                                "reason",
+                                "reason_details",
+                            ]
+                        )
+                    should_send = created or can_resend
+
+            if should_send:
+                confirmation_url = request.build_absolute_uri(
+                    reverse(
+                        "booking_cancellation_confirm",
+                        kwargs={"token": token},
+                    )
+                )
+                try:
+                    _send_booking_cancellation_link(booking, confirmation_url)
+                except Exception:
+                    logger.exception(
+                        "Customer cancellation link could not be sent for %s",
+                        booking.booking_reference,
+                    )
+
+    return render(
+        request,
+        "booking_cancellation_request.html",
+        {
+            "form": form,
+            "request_submitted": request_submitted and form.is_valid(),
+        },
+    )
+
+
+def booking_cancellation_confirm(request, token):
+    token_digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    cancellation = (
+        BookingCancellation.objects
+        .select_related("booking", "booking__table")
+        .filter(token_digest=token_digest)
+        .first()
+    )
+
+    if cancellation is None:
+        return render(
+            request,
+            "booking_cancellation_result.html",
+            {"result": "invalid"},
+        )
+
+    booking = cancellation.booking
+    now = timezone.now()
+    if cancellation.used_at:
+        return render(
+            request,
+            "booking_cancellation_result.html",
+            {"result": "already_used"},
+        )
+    if cancellation.expires_at <= now:
+        return render(
+            request,
+            "booking_cancellation_result.html",
+            {"result": "expired"},
+        )
+    if not _booking_cancellation_is_allowed(booking, now):
+        result = (
+            "cutoff"
+            if booking.status == "Confirmed"
+            else "unavailable"
+        )
+        return render(
+            request,
+            "booking_cancellation_result.html",
+            {"result": result},
+        )
+
+    form = CustomerBookingCancellationForm(request.POST or None, instance=cancellation)
+    if request.method == "POST" and form.is_valid():
+        cancellation_completed = False
+        result = "unavailable"
+        with transaction.atomic():
+            locked_booking = (
+                Booking.objects
+                .select_for_update()
+                .select_related("table")
+                .get(pk=booking.pk)
+            )
+            locked_cancellation = (
+                BookingCancellation.objects
+                .select_for_update()
+                .filter(pk=cancellation.pk, token_digest=token_digest)
+                .first()
+            )
+            now = timezone.now()
+            if locked_cancellation is None:
+                result = "invalid"
+            elif locked_cancellation.used_at:
+                result = "already_used"
+            elif locked_cancellation.expires_at <= now:
+                result = "expired"
+            elif not _booking_cancellation_is_allowed(locked_booking, now):
+                result = (
+                    "cutoff"
+                    if locked_booking.status == "Confirmed"
+                    else "unavailable"
+                )
+            else:
+                locked_cancellation.reason = form.cleaned_data["reason"]
+                locked_cancellation.reason_details = form.cleaned_data[
+                    "reason_details"
+                ]
+                locked_cancellation.used_at = now
+                locked_cancellation.save(
+                    update_fields=["reason", "reason_details", "used_at"]
+                )
+                locked_booking.status = "Cancelled"
+                locked_booking.save(update_fields=["status"])
+                booking = locked_booking
+                cancellation_completed = True
+                result = "cancelled"
+
+        if cancellation_completed:
+            email_sent = send_booking_cancellation_notification(booking)
+            return render(
+                request,
+                "booking_cancellation_result.html",
+                {
+                    "result": result,
+                    "email_sent": email_sent,
+                    "booking": booking,
+                },
+            )
+        return render(
+            request,
+            "booking_cancellation_result.html",
+            {"result": result},
+        )
+
+    return render(
+        request,
+        "booking_cancellation_confirm.html",
+        {
+            "booking": booking,
+            "cancellation": cancellation,
+            "form": form,
+        },
+    )
+
+
 @manager_required
 def cancel_booking(request, booking_id):
 
@@ -2093,7 +2696,7 @@ def cancel_booking(request, booking_id):
         )
 
     try:
-        booking = Booking.objects.get(id=booking_id)
+        booking = Booking.objects.select_related("table").get(id=booking_id)
     except Booking.DoesNotExist:
         messages.error(
             request,
@@ -2109,16 +2712,41 @@ def cancel_booking(request, booking_id):
         )
         return redirect("admin_dashboard")
 
-    booking.status = "Cancelled"
+    with transaction.atomic():
+        changed = Booking.objects.filter(
+            pk=booking.pk,
+            status="Confirmed",
+        ).update(
+            status="Cancelled",
+        )
 
-    booking.save(
-        update_fields=["status"]
-    )
+        if changed:
+            booking.status = "Cancelled"
+            log_booking_status_change(
+                request.user,
+                booking,
+                old_status="Confirmed",
+                new_status="Cancelled",
+            )
+
+    if not changed:
+        messages.warning(
+            request,
+            f"Booking {booking.booking_reference} was already updated and was not cancelled again.",
+        )
+        return redirect("admin_dashboard")
 
     messages.success(
         request,
         f"Booking {booking.booking_reference} has been cancelled successfully.",
     )
+
+    if not send_booking_cancellation_notification(booking):
+        messages.warning(
+            request,
+            "The booking was cancelled, but its customer email could not be sent. "
+            "See the application log for details.",
+        )
 
     return redirect("admin_dashboard")
 
@@ -2173,84 +2801,44 @@ def complete_booking(request, booking_id):
         )
         return redirect("admin_dashboard")
 
-    booking.status = "Completed"
+    with transaction.atomic():
+        changed = Booking.objects.filter(
+            pk=booking.pk,
+            status="Confirmed",
+        ).update(status="Completed")
 
-    booking.save(
-        update_fields=["status"]
-    )
+        if changed:
+            booking.status = "Completed"
+            log_booking_status_change(
+                request.user,
+                booking,
+                old_status="Confirmed",
+                new_status="Completed",
+            )
 
-    # ---------------------------------------------------------
-    # POST-SESSION THANK-YOU EMAIL
-    # ---------------------------------------------------------
+    if not changed:
+        messages.warning(
+            request,
+            f"Booking {booking.booking_reference} was already updated and was not completed again.",
+        )
+        return redirect("admin_dashboard")
 
-    completion_email_subject = (
-        f"Thank You for Visiting Royal Snooker Academy | "
-        f"{booking.booking_reference}"
-    )
-
-    completion_plain_message = f"""
-Hello {booking.customer_name},
-
-Thanks for playing with us!
-
-We hope you enjoyed your session at Royal Snooker Academy.
-
-YOUR SESSION
-------------------------------
-Table             : {booking.table.name}
-Table Type        : {booking.table.table_type}
-Date              : {booking.booking_date.strftime("%d %B %Y")}
-Start Time        : {booking.start_time.strftime("%I:%M %p")}
-Duration          : {booking.duration_hours} hour{"s" if booking.duration_hours != 1 else ""}
-Amount Paid       : ₹{booking.amount:,.2f}
-
-Your session has been successfully completed.
-
-We'd love to welcome you back for another game.
-
-Book another session:
-{request.build_absolute_uri("/book/")}
-
-Booking Reference:
-{booking.booking_reference}
-
-Royal Snooker Academy
-Play. Practice. Perform.
-
-Thank you for being part of the RSA community.
-"""
-
-    booking_url = request.build_absolute_uri("/book/")
-
-    completion_html_message = build_completion_email_html(
+    email_sent = send_booking_completion_notification(
         booking=booking,
-        booking_url=booking_url,
+        booking_url=request.build_absolute_uri("/book/"),
     )
-
-    logo_path = get_rsa_email_logo_path()
-
-    try:
-
-        send_rsa_html_email(
-            subject=completion_email_subject,
-            recipient=booking.email,
-            plain_message=completion_plain_message,
-            html_message=completion_html_message,
-            logo_path=logo_path,
-        )
-
-    except Exception as email_error:
-
-        logger.exception(
-            "Completion email could not be sent for %s: %s",
-            booking.booking_reference,
-            email_error,
-        )
 
     messages.success(
         request,
         f"Booking {booking.booking_reference} has been marked as completed.",
     )
+
+    if not email_sent:
+        messages.warning(
+            request,
+            "The booking was completed, but its customer email could not be sent. "
+            "See the application log for details.",
+        )
 
     return redirect("admin_dashboard")
 
@@ -2260,6 +2848,7 @@ def admin_dashboard(request):
 
     today = timezone.localdate()
     current_time = timezone.localtime().time()
+    dashboard_updated_at = timezone.localtime()
 
     today_bookings = (
         Booking.objects
@@ -2320,6 +2909,36 @@ def admin_dashboard(request):
         )["total"]
         or 0
     )
+
+    trend_start_date = today - timedelta(days=6)
+    daily_booking_counts = {
+        item["booking_date"]: item["total"]
+        for item in Booking.objects.filter(
+            booking_date__range=(trend_start_date, today),
+            status__in=["Confirmed", "Completed"],
+        ).values("booking_date").annotate(total=Count("id"))
+    }
+    highest_daily_booking_count = max(
+        daily_booking_counts.values(),
+        default=0,
+    )
+    booking_trend = []
+
+    for day_offset in range(7):
+        trend_date = trend_start_date + timedelta(days=day_offset)
+        booking_count = daily_booking_counts.get(trend_date, 0)
+        booking_trend.append(
+            {
+                "date": trend_date,
+                "weekday": trend_date.strftime("%a"),
+                "count": booking_count,
+                "bar_height": (
+                    round(booking_count / highest_daily_booking_count * 100)
+                    if highest_daily_booking_count
+                    else 0
+                ),
+            }
+        )
 
     table_statuses = []
 
@@ -2473,6 +3092,9 @@ def admin_dashboard(request):
         {
             "today": today,
             "current_time": current_time,
+            "dashboard_updated_at": dashboard_updated_at,
+            "booking_trend": booking_trend,
+            "has_booking_trend": bool(highest_daily_booking_count),
             "today_bookings": today_bookings,
             "today_booking_count": confirmed_today.count(),
             "today_status_counts": {

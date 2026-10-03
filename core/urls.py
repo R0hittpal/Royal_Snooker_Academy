@@ -6,6 +6,8 @@ from .views import (
     manager_logout,
     availability,
     booking,
+    booking_cancellation_confirm,
+    booking_cancellation_request,
     cancel_booking,
     complete_booking,
     coaching,
@@ -41,6 +43,18 @@ urlpatterns = [
         "book/availability/",
         availability,
         name="availability",
+    ),
+
+    path(
+        "book/cancel/",
+        booking_cancellation_request,
+        name="booking_cancellation_request",
+    ),
+
+    path(
+        "book/cancel/confirm/<str:token>/",
+        booking_cancellation_confirm,
+        name="booking_cancellation_confirm",
     ),
 
     path(

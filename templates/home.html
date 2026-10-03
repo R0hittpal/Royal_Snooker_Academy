@@ -204,14 +204,14 @@ Home | Royal Snooker Academy
         display: grid;
 
         grid-template-columns:
-            minmax(0, 1.15fr)
-            minmax(300px, 0.85fr);
+            minmax(0, 1.05fr)
+            minmax(400px, 0.95fr);
 
         align-items: center;
 
         gap: 2.5rem;
 
-        min-height: 560px;
+        min-height: 580px;
     }
 
 
@@ -228,7 +228,7 @@ Home | Royal Snooker Academy
     .rsa-hero-visual {
         position: relative;
 
-        min-height: 420px;
+        min-height: 520px;
 
         display: flex;
 
@@ -245,8 +245,8 @@ Home | Royal Snooker Academy
 
         position: absolute;
 
-        width: 430px;
-        height: 430px;
+        width: 520px;
+        height: 520px;
 
         border-radius: 50%;
 
@@ -267,8 +267,8 @@ Home | Royal Snooker Academy
 
         position: absolute;
 
-        width: 270px;
-        height: 270px;
+        width: 340px;
+        height: 340px;
 
         border-radius: 50%;
 
@@ -288,14 +288,14 @@ Home | Royal Snooker Academy
     .rsa-hero-visual-card {
         position: relative;
 
-        width: min(100%, 380px);
+        width: min(100%, 470px);
 
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 0.92 / 1;
 
         border:
-            1px solid rgba(212, 175, 55, 0.20);
+            1px solid rgba(212, 175, 55, 0.32);
 
-        border-radius: 2rem;
+        border-radius: 2.25rem;
 
         background:
             linear-gradient(
@@ -306,7 +306,8 @@ Home | Royal Snooker Academy
             rgba(4, 13, 10, 0.42);
 
         box-shadow:
-            0 28px 70px rgba(0,0,0,0.28);
+            0 32px 78px rgba(0,0,0,0.34),
+            inset 0 1px 0 rgba(255,255,255,0.08);
 
         backdrop-filter: blur(5px);
 
@@ -319,26 +320,26 @@ Home | Royal Snooker Academy
 
         position: absolute;
 
-        inset: 16px;
+        inset: 15px;
 
         border:
             1px solid rgba(212, 175, 55, 0.08);
 
-        border-radius: 1.5rem;
+        border-radius: 1.75rem;
     }
 
 
     .rsa-hero-crest {
         position: absolute;
 
-        top: 30px;
+        top: 32px;
         left: 50%;
 
         transform:
             translateX(-50%);
 
-        width: 72px;
-        height: 72px;
+        width: 76px;
+        height: 76px;
 
         border:
             1px solid rgba(212, 175, 55, 0.35);
@@ -366,11 +367,11 @@ Home | Royal Snooker Academy
     .rsa-hero-logo-wrap {
         position: absolute;
 
-        left: 12%;
-        right: 12%;
+        left: 8%;
+        right: 8%;
 
-        top: 28%;
-        bottom: 19%;
+        top: 25%;
+        bottom: 16%;
 
         display: flex;
 
@@ -379,24 +380,25 @@ Home | Royal Snooker Academy
         justify-content: center;
 
         border:
-            1px solid rgba(212, 175, 55, 0.18);
+            1px solid rgba(212, 175, 55, 0.30);
 
-        border-radius: 1.25rem;
+        border-radius: 1.5rem;
 
         background:
-            rgba(0, 0, 0, 0.30);
+            rgba(0, 0, 0, 0.38);
 
         box-shadow:
-            inset 0 0 35px rgba(0,0,0,0.20),
-            0 18px 35px rgba(0,0,0,0.20);
+            inset 0 0 40px rgba(0,0,0,0.28),
+            0 18px 38px rgba(0,0,0,0.24),
+            0 0 36px rgba(212,175,55,0.055);
 
         overflow: hidden;
     }
 
 
     .rsa-hero-logo-wrap img {
-        width: 88%;
-        height: 88%;
+        width: 96%;
+        height: 96%;
 
         object-fit: contain;
     }
@@ -1080,7 +1082,11 @@ Home | Royal Snooker Academy
 
                             <div class="rsa-hero-crest">
 
-                                <i class="fa-solid fa-crown"></i>
+                                <img
+                                    src="{% static 'images/royal_snooker_favicon_under_50kb.png' %}?v=1"
+                                    alt=""
+                                    class="w-14 h-14 object-contain drop-shadow-[0_3px_8px_rgba(212,175,55,0.25)]"
+                                >
 
                             </div>
 
