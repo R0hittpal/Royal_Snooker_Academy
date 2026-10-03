@@ -116,11 +116,13 @@ class CoachingContentAdmin(admin.ModelAdmin):
 
     list_display = (
         "title",
+        "price",
         "display_order",
         "is_active",
     )
 
     list_editable = (
+        "price",
         "display_order",
         "is_active",
     )

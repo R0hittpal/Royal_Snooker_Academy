@@ -123,6 +123,108 @@
         box-shadow: 0 12px 32px rgba(20, 38, 31, 0.07);
     }
 
+    .step-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: #F4EFE0;
+        border: 1px solid #E5D8B1;
+        color: #8D6B18;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .step-number {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #D4AF37;
+        color: #07100D;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    .session-summary-card {
+        background:
+            linear-gradient(
+                135deg,
+                #FBFAF6 0%,
+                #F5F2E9 100%
+            );
+        border: 1px solid #E3DED0;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .session-summary-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 32px;
+        padding: 6px 10px;
+        border-radius: 9px;
+        background: #FFFFFF;
+        border: 1px solid #E8E4D9;
+    }
+
+    .table-card.available {
+        border-top-color: #087052;
+        box-shadow:
+            0 8px 24px rgba(20, 38, 31, 0.055),
+            0 0 0 1px rgba(8, 112, 82, 0.05);
+    }
+
+    .table-card.available:hover {
+        border-color: rgba(8, 112, 82, 0.38);
+        box-shadow:
+            0 18px 38px rgba(20, 38, 31, 0.11),
+            0 0 0 2px rgba(8, 112, 82, 0.07);
+    }
+
+    .table-card.booked {
+        border-top-color: #B9BBB5;
+        background: #FBFBF9;
+    }
+
+    .table-card.booked .table-icon {
+        background: #F0F1ED;
+        color: #7A8581;
+    }
+
+    .session-time-box {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .session-time-box::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #D4AF37;
+    }
+
+    .table-card.available .session-time-box {
+        background: #F2F8F5;
+        border-color: #D4E8DE;
+    }
+
+    .table-card.booked .waiting-button {
+        background: #F1F1ED;
+        border-color: #DDDDD5;
+        color: #7A8581;
+    }
+
+
     .availability-field {
         border: 1px solid #D9D8D0;
         background: #FBFAF6;
@@ -293,6 +395,33 @@
                 #06382D
             );
         box-shadow: 0 18px 45px rgba(7, 16, 13, 0.14);
+    }
+
+
+
+    .gold-button:focus-visible,
+    .availability-check:focus-visible,
+    .table-card:focus-visible {
+        outline: 3px solid rgba(212, 175, 55, 0.38);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .gold-button,
+        .availability-check,
+        .table-card,
+        .table-card.available,
+        .table-card:hover,
+        .availability-field {
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+
+        .table-card:hover,
+        .gold-button:hover,
+        .availability-check:hover {
+            transform: none !important;
+        }
     }
 
     @media (max-width: 768px) {
@@ -469,6 +598,19 @@
                 class="availability-panel rounded-2xl p-6 sm:p-7 lg:p-8 mt-10"
             >
 
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+
+                    <div class="step-label">
+                        <span class="step-number">1</span>
+                        Set Your Session
+                    </div>
+
+                    <span class="text-[10px] font-semibold text-[#8A918E]">
+                        Date · Start time · Duration
+                    </span>
+
+                </div>
+
                 <div class="flex flex-col lg:flex-row lg:items-end gap-5">
 
 
@@ -593,25 +735,41 @@
 
                 <div
                     id="sessionSummary"
-                    class="hidden mt-5 rounded-xl bg-[#F7F5EF] border border-[#E4E2D9] px-4 py-3"
+                    class="session-summary-card hidden mt-5 rounded-xl px-4 py-4"
                 >
 
-                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#66746F]">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-                        <span>
-                            <i class="fa-regular fa-calendar text-[#B38B20] mr-1.5"></i>
-                            <strong id="summaryDate"></strong>
-                        </span>
+                        <div>
 
-                        <span>
-                            <i class="fa-regular fa-clock text-[#B38B20] mr-1.5"></i>
-                            <strong id="summaryTime"></strong>
-                        </span>
+                            <p class="text-[9px] text-[#B38B20] font-bold uppercase tracking-[0.16em]">
+                                Session Selected
+                            </p>
 
-                        <span>
-                            <i class="fa-solid fa-hourglass-half text-[#B38B20] mr-1.5"></i>
-                            <strong id="summaryDuration"></strong>
-                        </span>
+                            <p class="text-xs text-[#66746F] mt-1">
+                                We will check live availability for this exact session.
+                            </p>
+
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 text-xs text-[#18322B]">
+
+                            <span class="session-summary-item">
+                                <i class="fa-regular fa-calendar text-[#B38B20]"></i>
+                                <strong id="summaryDate"></strong>
+                            </span>
+
+                            <span class="session-summary-item">
+                                <i class="fa-regular fa-clock text-[#B38B20]"></i>
+                                <strong id="summaryTime"></strong>
+                            </span>
+
+                            <span class="session-summary-item">
+                                <i class="fa-solid fa-hourglass-half text-[#B38B20]"></i>
+                                <strong id="summaryDuration"></strong>
+                            </span>
+
+                        </div>
 
                     </div>
 
@@ -706,6 +864,11 @@
             >
 
                 <div>
+
+                    <div class="step-label mb-3">
+                        <span class="step-number">2</span>
+                        Choose Your Table
+                    </div>
 
                     <p class="text-[#B38B20] text-[9px] font-bold uppercase tracking-[0.20em]">
                         Table Collection
@@ -862,11 +1025,23 @@
 
                             <div class="session-time-box hidden mt-5 rounded-xl bg-[#F7F5EF] border border-[#E6E4DC] px-4 py-3">
 
-                                <p class="text-[9px] text-[#B38B20] font-bold uppercase tracking-[0.14em]">
-                                    Your Session
-                                </p>
+                                <div class="flex items-center gap-2">
 
-                                <p class="session-time text-sm font-bold text-[#18322B] mt-1"></p>
+                                    <span class="w-7 h-7 rounded-lg bg-[#D4AF37]/15 text-[#B38B20] flex items-center justify-center shrink-0">
+                                        <i class="fa-regular fa-clock text-[11px]"></i>
+                                    </span>
+
+                                    <div>
+
+                                        <p class="text-[9px] text-[#B38B20] font-bold uppercase tracking-[0.14em]">
+                                            Your Session
+                                        </p>
+
+                                        <p class="session-time text-sm font-bold text-[#18322B] mt-1"></p>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 

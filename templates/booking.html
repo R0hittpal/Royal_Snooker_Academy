@@ -125,12 +125,19 @@
         border-radius: 14px;
         padding: 20px;
         text-align: left;
-        transition: all 0.22s ease;
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+        cursor: default;
     }
 
     .rsa-table-card:not(:disabled):hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(20, 38, 31, 0.08);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 32px rgba(20, 38, 31, 0.10);
+        cursor: pointer;
+    }
+
+    .rsa-table-card:not(:disabled):focus-visible {
+        outline: 3px solid rgba(212, 175, 55, 0.28);
+        outline-offset: 3px;
     }
 
     .rsa-table-card.available {
@@ -138,16 +145,77 @@
         background: #F4FAF6;
     }
 
+    .rsa-table-card.available .rsa-table-icon {
+        box-shadow: 0 8px 18px rgba(7, 81, 63, 0.12);
+    }
+
     .rsa-table-card.selected {
         border-color: #D4AF37 !important;
         background: #FBF7EA !important;
-        box-shadow: 0 12px 25px rgba(212, 175, 55, 0.14);
+        box-shadow: 0 14px 32px rgba(212, 175, 55, 0.18);
+        transform: translateY(-2px);
     }
 
     .rsa-table-card.booked {
         border-color: #E5BABA;
         background: #FFF7F7;
-        opacity: 0.65;
+        opacity: 0.72;
+        cursor: not-allowed;
+    }
+
+    .rsa-table-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 30px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #E1E6E2;
+        background: #F4F7F4;
+        color: #89938E;
+        letter-spacing: 0.06em;
+    }
+
+    .rsa-table-card.available .rsa-table-status {
+        border-color: #B9DEC9;
+        background: #EAF7EF;
+        color: #16704A;
+    }
+
+    .rsa-table-card.booked .rsa-table-status {
+        border-color: #F0CACA;
+        background: #FDEEEE;
+        color: #B83D3D;
+    }
+
+    .rsa-table-card.selected .rsa-table-status {
+        border-color: #D4AF37;
+        background: #D4AF37;
+        color: #07100D;
+    }
+
+    .rsa-table-selected-check {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #D4AF37;
+        color: #07100D;
+        box-shadow: 0 7px 16px rgba(212, 175, 55, 0.20);
+        opacity: 0;
+        transform: scale(0.75);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        pointer-events: none;
+    }
+
+    .rsa-table-card.selected .rsa-table-selected-check {
+        opacity: 1;
+        transform: scale(1);
     }
 
     .rsa-table-icon {
@@ -174,6 +242,55 @@
     .rsa-summary-item {
         background: rgba(255,255,255,0.045);
         border: 1px solid rgba(255,255,255,0.08);
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .rsa-summary-item.has-value {
+        background: rgba(255,255,255,0.065);
+        border-color: rgba(231,203,112,0.18);
+    }
+
+    .rsa-summary-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(212,175,55,0.10);
+        color: #E7CB70;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .rsa-summary-price-panel {
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(231,203,112,0.18);
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+    .rsa-summary-ready {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: rgba(255,255,255,0.62);
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .rsa-summary-ready-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #4CA982;
+        box-shadow: 0 0 0 4px rgba(76,169,130,0.10);
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+        .rsa-summary-price-panel {
+            padding: 16px;
+        }
     }
 
     .rsa-primary-button {
@@ -210,6 +327,138 @@
 
     .rsa-scroll-target {
         scroll-margin-top: 115px;
+    }
+
+    .rsa-booking-progress {
+        position: sticky;
+        top: 92px;
+        z-index: 20;
+        background: rgba(247, 245, 239, 0.94);
+        border: 1px solid #E5E2D8;
+        box-shadow: 0 10px 28px rgba(20, 38, 31, 0.06);
+        backdrop-filter: blur(14px);
+    }
+
+    .rsa-progress-step {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        color: #89938E;
+        transition: color 0.2s ease;
+    }
+
+    .rsa-progress-step::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        margin-left: 2px;
+        background: #DDE2DD;
+        transition: background 0.2s ease;
+    }
+
+    .rsa-progress-step:last-child::after {
+        display: none;
+    }
+
+    .rsa-progress-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid #D8DED9;
+        background: #FFFFFF;
+        color: #89938E;
+        font-size: 10px;
+        font-weight: 800;
+        transition: all 0.2s ease;
+    }
+
+    .rsa-progress-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+    }
+
+    .rsa-progress-step.active {
+        color: #07513F;
+    }
+
+    .rsa-progress-step.active .rsa-progress-number {
+        border-color: #07513F;
+        background: #07513F;
+        color: #E7CB70;
+        box-shadow: 0 6px 16px rgba(7, 81, 63, 0.14);
+    }
+
+    .rsa-progress-step.completed {
+        color: #52605A;
+    }
+
+    .rsa-progress-step.completed .rsa-progress-number {
+        border-color: #D4AF37;
+        background: #D4AF37;
+        color: #07100D;
+    }
+
+    .rsa-progress-step.completed::after {
+        background: #D4AF37;
+    }
+
+    @media (max-width: 767px) {
+        .rsa-booking-progress {
+            top: 76px;
+        }
+
+        .rsa-progress-step {
+            gap: 0;
+            justify-content: center;
+        }
+
+        .rsa-progress-step::after {
+            margin-left: 8px;
+        }
+
+        .rsa-progress-label {
+            display: none;
+        }
+
+        .rsa-progress-number {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+
+
+    .rsa-time-button:focus-visible,
+    .rsa-input:focus-visible,
+    .rsa-table-card:focus-visible {
+        outline: 3px solid rgba(212, 175, 55, 0.34);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rsa-time-button,
+        .rsa-table-card,
+        .rsa-input {
+            transition: none !important;
+        }
+
+        .rsa-time-button:not(:disabled):hover,
+        .rsa-table-card:not(:disabled):hover {
+            transform: none !important;
+        }
+
+        html {
+            scroll-behavior: auto !important;
+        }
     }
 
     @media (max-width: 640px) {
@@ -519,6 +768,35 @@
 
     <main class="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
 
+        <div class="rsa-booking-progress rounded-2xl px-4 sm:px-6 py-3 mb-5">
+            <div class="flex items-center w-full">
+                <div class="rsa-progress-step active flex-1" data-progress-step="1">
+                    <span class="rsa-progress-number">01</span>
+                    <span class="rsa-progress-label">Date</span>
+                </div>
+
+                <div class="rsa-progress-step flex-1" data-progress-step="2">
+                    <span class="rsa-progress-number">02</span>
+                    <span class="rsa-progress-label">Time</span>
+                </div>
+
+                <div class="rsa-progress-step flex-1" data-progress-step="3">
+                    <span class="rsa-progress-number">03</span>
+                    <span class="rsa-progress-label">Table</span>
+                </div>
+
+                <div class="rsa-progress-step flex-1" data-progress-step="4">
+                    <span class="rsa-progress-number">04</span>
+                    <span class="rsa-progress-label">Details</span>
+                </div>
+
+                <div class="rsa-progress-step flex-1" data-progress-step="5">
+                    <span class="rsa-progress-number">05</span>
+                    <span class="rsa-progress-label">Confirm</span>
+                </div>
+            </div>
+        </div>
+
         <form
             method="POST"
             id="bookingForm"
@@ -802,6 +1080,10 @@
 
                         </div>
 
+                        <div class="rsa-table-selected-check" aria-hidden="true">
+                            <i class="fa-solid fa-check text-xs"></i>
+                        </div>
+
 
                         <div class="rsa-table-icon mb-5">
                             <i class="fa-solid fa-table-cells"></i>
@@ -835,7 +1117,7 @@
                         </div>
 
 
-                        <div class="table-status mt-4 text-[10px] font-extrabold uppercase tracking-wide text-[#89938E]">
+                        <div class="table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase">
                             Select date, duration and time
                         </div>
 
@@ -1029,7 +1311,7 @@
                         </h2>
 
                         <p class="text-sm text-white/55 leading-6 mt-1">
-                            Review your session details before confirming the booking.
+                            Everything looks good? Review your session below, then confirm your reservation.
                         </p>
 
                     </div>
@@ -1037,56 +1319,111 @@
                 </div>
 
 
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-7">
+                <div class="mt-7 rounded-2xl border border-white/10 bg-black/10 p-4 sm:p-5">
 
-                    <div class="rsa-summary-item rounded-xl p-4">
-                        <p class="text-[10px] uppercase tracking-widest text-white/35">
-                            Date
-                        </p>
-                        <p id="summaryDate" class="font-bold text-sm mt-2">
-                            —
-                        </p>
+                    <div class="flex items-center justify-between gap-3 mb-4">
+
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.20em] text-[#E7CB70] font-bold">
+                                Your Session
+                            </p>
+                            <p class="text-xs text-white/40 mt-1">
+                                Booking details at a glance
+                            </p>
+                        </div>
+
+                        <div class="hidden sm:inline-flex items-center gap-2 rounded-full border border-[#4CA982]/20 bg-[#4CA982]/10 px-3 py-1.5 text-[10px] font-bold text-[#8ED0B0]">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#4CA982]"></span>
+                            Ready to review
+                        </div>
+
                     </div>
 
 
-                    <div class="rsa-summary-item rounded-xl p-4">
-                        <p class="text-[10px] uppercase tracking-widest text-white/35">
-                            Start Time
-                        </p>
-                        <p id="summaryTime" class="font-bold text-sm mt-2">
-                            —
-                        </p>
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                        <div class="rsa-summary-item has-value rounded-xl p-4 flex items-center gap-3">
+
+                            <div class="rsa-summary-icon">
+                                <i class="fa-regular fa-calendar"></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-[9px] uppercase tracking-widest text-white/35">
+                                    Date
+                                </p>
+                                <p id="summaryDate" class="font-bold text-sm mt-1 truncate">
+                                    —
+                                </p>
+                            </div>
+
+                        </div>
 
 
-                    <div class="rsa-summary-item rounded-xl p-4">
-                        <p class="text-[10px] uppercase tracking-widest text-white/35">
-                            Table
-                        </p>
-                        <p id="summaryTable" class="font-bold text-sm mt-2">
-                            —
-                        </p>
-                    </div>
+                        <div class="rsa-summary-item has-value rounded-xl p-4 flex items-center gap-3">
+
+                            <div class="rsa-summary-icon">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-[9px] uppercase tracking-widest text-white/35">
+                                    Start Time
+                                </p>
+                                <p id="summaryTime" class="font-bold text-sm mt-1 truncate">
+                                    —
+                                </p>
+                            </div>
+
+                        </div>
 
 
-                    <div class="rsa-summary-item rounded-xl p-4">
-                        <p class="text-[10px] uppercase tracking-widest text-white/35">
-                            Duration
-                        </p>
-                        <p id="summaryDuration" class="font-bold text-sm mt-2">
-                            —
-                        </p>
+                        <div class="rsa-summary-item has-value rounded-xl p-4 flex items-center gap-3">
+
+                            <div class="rsa-summary-icon">
+                                <i class="fa-solid fa-table-cells"></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-[9px] uppercase tracking-widest text-white/35">
+                                    Table
+                                </p>
+                                <p id="summaryTable" class="font-bold text-sm mt-1 truncate">
+                                    —
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="rsa-summary-item has-value rounded-xl p-4 flex items-center gap-3">
+
+                            <div class="rsa-summary-icon">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-[9px] uppercase tracking-widest text-white/35">
+                                    Duration
+                                </p>
+                                <p id="summaryDuration" class="font-bold text-sm mt-1 truncate">
+                                    —
+                                </p>
+                            </div>
+
+                        </div>
+
                     </div>
 
                 </div>
 
 
-                <div class="border-t border-white/10 mt-6 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+                <div class="mt-5 grid lg:grid-cols-[1fr_auto] gap-4 items-stretch">
 
-                    <div>
+                    <div class="rsa-summary-price-panel flex flex-col justify-center">
 
-                        <p class="text-[10px] uppercase tracking-widest text-white/35">
-                            Estimated Booking Amount
+                        <p class="text-[10px] uppercase tracking-[0.20em] text-white/35 font-bold">
+                            Total Session Price
                         </p>
 
                         <p
@@ -1096,18 +1433,31 @@
                             ₹0.00
                         </p>
 
+                        <div class="rsa-summary-ready mt-3">
+                            <span class="rsa-summary-ready-dot"></span>
+                            <span>Selected table and time are checked for availability before booking.</span>
+                        </div>
+
                     </div>
 
 
-                    <button
-                        type="submit"
-                        id="confirmBookingButton"
-                        disabled
-                        class="rsa-primary-button w-full sm:w-auto px-7 py-4 rounded-xl font-extrabold text-sm"
-                    >
-                        <i class="fa-solid fa-calendar-check mr-2"></i>
-                        Confirm & Book Table
-                    </button>
+                    <div class="flex flex-col justify-center lg:min-w-[280px]">
+
+                        <button
+                            type="submit"
+                            id="confirmBookingButton"
+                            disabled
+                            class="rsa-primary-button w-full px-7 py-4 rounded-xl font-extrabold text-sm"
+                        >
+                            <i class="fa-solid fa-calendar-check mr-2"></i>
+                            Confirm & Book Table
+                        </button>
+
+                        <p class="text-[10px] text-white/35 text-center mt-2.5 leading-5">
+                            By confirming, your selected session will be submitted to Royal Snooker Academy.
+                        </p>
+
+                    </div>
 
                 </div>
 
@@ -1206,6 +1556,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("emailError");
 
 
+    const progressSteps =
+        document.querySelectorAll("[data-progress-step]");
+
+
     /*
      * ============================================================
      * HEADER-AWARE SCROLLING
@@ -1290,6 +1644,66 @@ document.addEventListener("DOMContentLoaded", function () {
             hour % 12 || 12;
 
         return `${hour}:${minute} ${suffix}`;
+
+    }
+
+
+    /*
+     * ============================================================
+     * UPDATE BOOKING PROGRESS
+     * ============================================================
+     */
+
+    function updateBookingProgress() {
+
+        if (!progressSteps.length) {
+            return;
+        }
+
+        let currentStep = 1;
+
+        if (dateInput.value && durationInput.value) {
+            currentStep = 2;
+        }
+
+        if (selectedStartTimeInput.value) {
+            currentStep = 3;
+        }
+
+        if (selectedTableInput.value) {
+            currentStep = 4;
+        }
+
+        if (
+            selectedTableInput.value &&
+            customerName &&
+            customerPhone &&
+            customerEmail &&
+            customerName.validity.valid &&
+            customerPhone.validity.valid &&
+            customerEmail.validity.valid
+        ) {
+            currentStep = 5;
+        }
+
+        progressSteps.forEach(function (step) {
+
+            const stepNumber =
+                parseInt(step.dataset.progressStep, 10);
+
+            step.classList.remove(
+                "active",
+                "completed"
+            );
+
+            if (stepNumber < currentStep) {
+                step.classList.add("completed");
+            }
+            else if (stepNumber === currentStep) {
+                step.classList.add("active");
+            }
+
+        });
 
     }
 
@@ -1381,7 +1795,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Select date, duration and time";
 
                 status.className =
-                    "table-status mt-4 text-[10px] font-extrabold uppercase tracking-wide text-[#89938E]";
+                    "table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase";
 
             }
 
@@ -1393,6 +1807,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         summaryAmount.textContent =
             "₹0.00";
+
+        updateBookingProgress();
 
         updateConfirmButton();
 
@@ -1667,10 +2083,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (status) {
 
                         status.textContent =
-                            "Available";
+                            "Available • Tap to select";
 
                         status.className =
-                            "table-status mt-4 text-[10px] font-extrabold uppercase tracking-wide text-green-600";
+                            "table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase";
 
                     }
 
@@ -1713,7 +2129,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             "Booked";
 
                         status.className =
-                            "table-status mt-4 text-[10px] font-extrabold uppercase tracking-wide text-red-600";
+                            "table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase";
 
                     }
 
@@ -1819,6 +2235,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     "selected"
                 );
 
+                const itemStatus =
+                    item.querySelector(".table-status");
+
+                if (itemStatus) {
+
+                    itemStatus.textContent =
+                        "Available • Tap to select";
+
+                    itemStatus.className =
+                        "table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase";
+
+                }
+
             }
 
         });
@@ -1829,8 +2258,24 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+        const selectedStatus =
+            card.querySelector(".table-status");
+
+        if (selectedStatus) {
+
+            selectedStatus.textContent =
+                "Selected";
+
+            selectedStatus.className =
+                "table-status rsa-table-status mt-4 text-[10px] font-extrabold uppercase";
+
+        }
+
+
         selectedTableInput.value =
             card.dataset.tableId;
+
+        updateBookingProgress();
 
         summaryTable.textContent =
             card.dataset.tableName;
@@ -1971,6 +2416,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     dateInput.value
                 );
 
+            updateBookingProgress();
+
             summaryTime.textContent =
                 "—";
 
@@ -2006,6 +2453,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             updateSummaryDuration();
+
+            updateBookingProgress();
 
             summaryTime.textContent =
                 "—";
@@ -2141,6 +2590,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             cleanNameInput();
 
+            updateBookingProgress();
+
             if (customerName.validity.valid) {
 
                 customerName.classList.remove(
@@ -2213,6 +2664,8 @@ document.addEventListener("DOMContentLoaded", function () {
         function () {
 
             cleanPhoneInput();
+
+            updateBookingProgress();
 
             if (customerPhone.validity.valid) {
 
@@ -2295,6 +2748,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const emailPattern =
                 /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+            updateBookingProgress();
 
             if (
                 emailPattern.test(
@@ -2457,6 +2911,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateSummaryDuration();
 
+    updateBookingProgress();
+
     updateTimeButtons();
 
     resetTables();
@@ -2521,21 +2977,65 @@ document.addEventListener("DOMContentLoaded", function () {
         loadAvailability();
 
         /*
-         * All booking choices are already made when the customer
-         * arrives from Tables & Slots. Therefore the next useful
-         * location is Customer Details.
+         * When arriving from the Home page with a preselected table,
+         * keep the customer at the Time step first. The requested
+         * table is restored after availability is loaded.
+         *
+         * When a full date + duration + time selection is already
+         * supplied without a requested table, continue to the table
+         * selection step.
          */
+
+        const requestedTableFromUrl =
+            new URLSearchParams(window.location.search).get("table");
 
         setTimeout(function () {
 
-            scrollToSection(
-                customerSection
-            );
+            if (requestedTableFromUrl) {
+
+                scrollToSection(
+                    timeSection
+                );
+
+            }
+            else {
+
+                scrollToSection(
+                    tableSection
+                );
+
+            }
 
         }, 500);
 
     }
 
+
+    /* Home page entry handling */
+
+    const pageParams = new URLSearchParams(window.location.search);
+    const bookingSource = pageParams.get("source");
+    const homeTableId = pageParams.get("table");
+
+    /*
+     * Home-page booking links must always begin with Step 01.
+     * The page sets today's date as a convenience, but the customer
+     * must still explicitly choose/confirm the date and duration
+     * before moving to Start Time.
+     */
+
+    if (
+        (bookingSource === "home-hero" ||
+         bookingSource === "home-table" ||
+         bookingSource === "home-booking") &&
+        !initialStartTime
+    ) {
+
+        setTimeout(function () {
+            scrollToSection(dateDurationSection);
+        }, 180);
+
+    }
 
     /*
      * ============================================================

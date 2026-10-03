@@ -199,6 +199,58 @@
         filter: brightness(1.035);
     }
 
+    /* ==================================================
+       CONTACT PAGE INTERACTION POLISH
+       ================================================== */
+
+    .rsa-contact-card a:focus-visible,
+    .rsa-contact-hero a:focus-visible,
+    .rsa-contact-dark-card a:focus-visible,
+    .rsa-contact-cta a:focus-visible {
+        outline: 3px solid rgba(231, 203, 112, 0.95);
+        outline-offset: 4px;
+        border-radius: 10px;
+    }
+
+    .rsa-contact-card .rsa-contact-icon {
+        transition:
+            transform 0.22s ease,
+            background-color 0.22s ease,
+            color 0.22s ease;
+    }
+
+    .rsa-contact-card:hover .rsa-contact-icon {
+        transform: translateY(-2px);
+        background: #18322B;
+        color: #F2DFA0;
+    }
+
+    .rsa-contact-detail .w-10 {
+        transition:
+            transform 0.22s ease,
+            box-shadow 0.22s ease;
+    }
+
+    .rsa-contact-detail:hover .w-10 {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 16px rgba(212, 175, 55, 0.16);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rsa-contact-card,
+        .rsa-contact-card .rsa-contact-icon,
+        .rsa-contact-detail .w-10,
+        .rsa-gold-button {
+            transition: none !important;
+        }
+
+        .rsa-contact-card:hover,
+        .rsa-gold-button:hover {
+            transform: none;
+        }
+    }
+
+
     @media (max-width: 768px) {
         .rsa-contact-hero::before {
             width: 340px;
@@ -286,6 +338,7 @@
                             <a
                                 href="https://wa.me/{{ site_settings.whatsapp_number }}"
                                 target="_blank"
+                                aria-label="Contact Royal Snooker Academy on WhatsApp"
                                 rel="noopener noreferrer"
                                 class="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 sm:px-7 py-3.5 font-bold text-sm text-white/90 hover:bg-white/[0.07] transition"
                             >
@@ -295,6 +348,18 @@
 
                         {% endif %}
 
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-6">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                            <i class="fa-solid fa-calendar-check text-[#E7CB70]"></i>
+                            Online Booking
+                        </span>
+
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                            <i class="fa-solid fa-message text-[#E7CB70]"></i>
+                            Quick Enquiries
+                        </span>
                     </div>
 
                 </div>
@@ -346,7 +411,15 @@
 
 
 
-            <div class="grid md:grid-cols-2 gap-6 lg:gap-7 mt-12">
+            <div class="flex items-center justify-center gap-3 mt-10">
+                <span class="h-px w-10 bg-[#D4AF37]/50"></span>
+                <span class="text-[9px] font-bold uppercase tracking-[0.22em] text-[#8A938F]">
+                    Choose How To Reach Us
+                </span>
+                <span class="h-px w-10 bg-[#D4AF37]/50"></span>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 lg:gap-7 mt-7">
 
 
                 <!-- PHONE -->
@@ -375,6 +448,7 @@
 
                                 <a
                                     href="tel:{{ site_settings.phone }}"
+                                    aria-label="Call Royal Snooker Academy"
                                     class="inline-block text-[#66746F] font-semibold mt-2 hover:text-[#B38B20] transition"
                                 >
                                     {{ site_settings.phone }}
@@ -416,6 +490,7 @@
 
                                 <a
                                     href="mailto:{{ site_settings.email }}"
+                                    aria-label="Email Royal Snooker Academy"
                                     class="inline-block text-[#66746F] font-semibold mt-2 break-all hover:text-[#B38B20] transition"
                                 >
                                     {{ site_settings.email }}
@@ -596,7 +671,7 @@
                         <div class="grid sm:grid-cols-2 lg:grid-cols-1 gap-4 w-full">
 
 
-                            <div class="rsa-contact-detail rounded-xl p-5">
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
 
                                 <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
                                     <i class="fa-solid fa-table-cells"></i>
@@ -614,7 +689,7 @@
                             </div>
 
 
-                            <div class="rsa-contact-detail rounded-xl p-5">
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
 
                                 <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
                                     <i class="fa-solid fa-graduation-cap"></i>
@@ -632,7 +707,7 @@
                             </div>
 
 
-                            <div class="rsa-contact-detail rounded-xl p-5">
+                            <div class="rsa-contact-detail rounded-xl p-5 sm:p-6">
 
                                 <div class="w-10 h-10 rounded-lg bg-[#D4AF37] text-[#07100D] flex items-center justify-center">
                                     <i class="fa-solid fa-calendar-check"></i>
