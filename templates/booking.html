@@ -2977,21 +2977,65 @@ document.addEventListener("DOMContentLoaded", function () {
         loadAvailability();
 
         /*
-         * All booking choices are already made when the customer
-         * arrives from Tables & Slots. Therefore the next useful
-         * location is Customer Details.
+         * When arriving from the Home page with a preselected table,
+         * keep the customer at the Time step first. The requested
+         * table is restored after availability is loaded.
+         *
+         * When a full date + duration + time selection is already
+         * supplied without a requested table, continue to the table
+         * selection step.
          */
+
+        const requestedTableFromUrl =
+            new URLSearchParams(window.location.search).get("table");
 
         setTimeout(function () {
 
-            scrollToSection(
-                customerSection
-            );
+            if (requestedTableFromUrl) {
+
+                scrollToSection(
+                    timeSection
+                );
+
+            }
+            else {
+
+                scrollToSection(
+                    tableSection
+                );
+
+            }
 
         }, 500);
 
     }
 
+
+    /* Home page entry handling */
+
+    const pageParams = new URLSearchParams(window.location.search);
+    const bookingSource = pageParams.get("source");
+    const homeTableId = pageParams.get("table");
+
+    /*
+     * Home-page booking links must always begin with Step 01.
+     * The page sets today's date as a convenience, but the customer
+     * must still explicitly choose/confirm the date and duration
+     * before moving to Start Time.
+     */
+
+    if (
+        (bookingSource === "home-hero" ||
+         bookingSource === "home-table" ||
+         bookingSource === "home-booking") &&
+        !initialStartTime
+    ) {
+
+        setTimeout(function () {
+            scrollToSection(dateDurationSection);
+        }, 180);
+
+    }
 
     /*
      * ============================================================

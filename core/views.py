@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 from functools import wraps
 import logging
 import re
+
+import requests
+
 from email.mime.image import MIMEImage
 from pathlib import Path
 
@@ -165,11 +168,104 @@ def send_rsa_html_email(
     logo_path=None,
 ):
     """
-    Send a Royal Snooker Academy email with:
-    - HTML version
-    - Plain-text fallback
-    - Optional inline RSA logo
+    Send a Royal Snooker Academy transactional email.
+
+    Delivery is selected with RSA_EMAIL_PROVIDER:
+    - "brevo" uses Brevo's HTTPS transactional email API.
+    - "smtp" keeps the existing Django SMTP delivery for local use.
+
+    The existing RSA HTML/plain-text email content is preserved.
     """
+
+    provider = getattr(
+        settings,
+        "RSA_EMAIL_PROVIDER",
+        "smtp",
+    ).strip().lower()
+
+    if provider == "brevo":
+
+        api_key = getattr(
+            settings,
+            "RSA_BREVO_API_KEY",
+            "",
+        ).strip()
+
+        sender_email = getattr(
+            settings,
+            "RSA_BREVO_SENDER_EMAIL",
+            "",
+        ).strip()
+
+        sender_name = getattr(
+            settings,
+            "RSA_BREVO_SENDER_NAME",
+            "Royal Snooker Academy",
+        ).strip()
+
+        logo_url = getattr(
+            settings,
+            "RSA_EMAIL_LOGO_URL",
+            "",
+        ).strip()
+
+        if not api_key:
+            raise RuntimeError(
+                "RSA_BREVO_API_KEY is not configured."
+            )
+
+        if not sender_email:
+            raise RuntimeError(
+                "RSA_BREVO_SENDER_EMAIL is not configured."
+            )
+
+        brevo_html_message = html_message
+
+        if "cid:rsa-logo" in brevo_html_message:
+
+            if not logo_url:
+                raise RuntimeError(
+                    "RSA_EMAIL_LOGO_URL is required for Brevo "
+                    "because the RSA email contains an inline logo."
+                )
+
+            brevo_html_message = brevo_html_message.replace(
+                'src="cid:rsa-logo"',
+                f'src="{logo_url}"',
+            )
+
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "accept": "application/json",
+                "api-key": api_key,
+                "content-type": "application/json",
+            },
+            json={
+                "sender": {
+                    "name": sender_name,
+                    "email": sender_email,
+                },
+                "to": [
+                    {
+                        "email": recipient,
+                    },
+                ],
+                "subject": subject,
+                "htmlContent": brevo_html_message,
+                "textContent": plain_message,
+            },
+            timeout=20,
+        )
+
+        response.raise_for_status()
+        return
+
+    if provider != "smtp":
+        raise RuntimeError(
+            "Unsupported RSA_EMAIL_PROVIDER. "
+            "Use 'brevo' or 'smtp'."
+        )
 
     email_connection = get_connection(
         fail_silently=False,

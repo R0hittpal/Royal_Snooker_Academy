@@ -258,6 +258,36 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # EMAIL CONFIGURATION
 # ============================================================
 
+# Delivery provider used by send_rsa_html_email().
+# Keep "smtp" for local development; use "brevo" on Render.
+RSA_EMAIL_PROVIDER = os.getenv(
+    "RSA_EMAIL_PROVIDER",
+    "smtp",
+).strip().lower()
+
+# Brevo transactional email API settings.
+RSA_BREVO_API_KEY = os.getenv(
+    "RSA_BREVO_API_KEY",
+    "",
+)
+
+RSA_BREVO_SENDER_EMAIL = os.getenv(
+    "RSA_BREVO_SENDER_EMAIL",
+    "",
+)
+
+RSA_BREVO_SENDER_NAME = os.getenv(
+    "RSA_BREVO_SENDER_NAME",
+    "Royal Snooker Academy",
+)
+
+# Public URL of the RSA email logo used by Brevo.
+RSA_EMAIL_LOGO_URL = os.getenv(
+    "RSA_EMAIL_LOGO_URL",
+    "",
+)
+
+# Existing SMTP settings retained for local development.
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.gmail.com"
