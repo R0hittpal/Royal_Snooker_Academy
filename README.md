@@ -1,283 +1,743 @@
-# Royal_Snooker_Academy
-Royal Snooker Academy
-Project Overview
-Royal Snooker Academy is a modern web application developed to provide a professional online presence for the academy and make it easier for customers to interact with its services.
-The website is designed to present the academy, provide customer booking functionality, and provide an administration system for managing academy activities.
-The project is built using Django (Python) and is structured so that additional features such as online memberships and online payments can be added in the future.
-Main Features
-🏆 Academy Website
-The website provides customers with information about Royal Snooker Academy in a clear and professional format.
-Customers can explore:
-- Academy information
-- Available services
-- Snooker-related activities
-- Contact information
-- Academy branding and images
-📅 Booking System
-The project includes a dedicated Bookings application.
-The booking system is intended to allow customers to:
-- View available booking options
-- Submit booking requests
-- Provide customer details
-- Select a suitable date/time
-- Manage their booking information
-The booking functionality is connected to the Django backend so that booking information can be stored and managed centrally.
-🔐 Admin Management
-The project uses Django's administrative system to provide management functionality for the academy.
-Administrators can manage website data through the admin panel without directly modifying the database.
-The admin area can be used for:
+<div align="center">
+
+# 🎱 Royal Snooker Academy
+
+### Premium Snooker Academy Website & Online Table Booking Platform
+
+<p>
+  <strong>A production Django application for table reservations, academy operations, customer communication, and content management.</strong>
+</p>
+
+<p>
+  <a href="https://royal-snooker-academy.onrender.com/">🌐 Live Website</a>
+  &nbsp;•&nbsp;
+  <a href="https://github.com/R0hittpal/Royal_Snooker_Academy">📦 GitHub Repository</a>
+</p>
+
+<br>
+
+<img src="https://img.shields.io/badge/Django-6.1.1-0C4A3A?style=for-the-badge&logo=django&logoColor=white" alt="Django">
+<img src="https://img.shields.io/badge/Python-3.14.5-0B1512?style=for-the-badge&logo=python&logoColor=E7CB70" alt="Python">
+<img src="https://img.shields.io/badge/PostgreSQL-Production-D4AF37?style=for-the-badge&logo=postgresql&logoColor=07100D" alt="PostgreSQL">
+<img src="https://img.shields.io/badge/Render-Deployed-06382D?style=for-the-badge&logo=render&logoColor=white" alt="Render">
+<img src="https://img.shields.io/badge/Brevo-Transactional_Email-07513F?style=for-the-badge&logo=brevo&logoColor=white" alt="Brevo">
+
+</div>
+
+---
+
+## ✨ At a Glance
+
+| Area | What RSA Provides |
+|---|---|
+| 🎱 **Customer Booking** | Date, time, table, duration, customer details and confirmation |
+| 🟢 **Availability** | Live table availability and booking-overlap protection |
+| 📧 **Email** | Transactional booking and completion emails through Brevo |
+| 🧑‍💼 **Manager Operations** | Dedicated RSA Manager Login and Operations Center |
+| 🔐 **Owner Administration** | Django Admin + Jazzmin |
+| 📱 **Responsive UX** | Premium desktop and mobile experience |
+| 🖼️ **Academy Content** | Gallery, coaching, membership, tournaments and contact |
+| ☁️ **Production** | Render + PostgreSQL + Gunicorn + WhiteNoise |
+
+---
+
+## 🎯 Project Overview
+
+**Royal Snooker Academy (RSA)** is a Django-based website and online snooker table slot-booking system built for a real academy environment.
+
+The platform combines the public customer experience with operational tools for academy staff.
+
+```text
+                         ROYAL SNOOKER ACADEMY
+                                  │
+                 ┌────────────────┴────────────────┐
+                 │                                 │
+              CUSTOMER                            STAFF
+                 │                                 │
+                 ▼                                 ▼
+         Public RSA Website                Authentication Layer
+                 │                                 │
+       ┌─────────┼─────────┐               ┌───────┴────────┐
+       │         │         │               │                │
+    Booking   Content   Contact        Manager            Owner
+       │                              Login               Login
+       ▼                                 │                  │
+ Django Booking Engine                  ▼                  ▼
+       │                          Operations Center   Django Admin
+       │
+       ├── Availability
+       ├── Validation
+       ├── Booking Lifecycle
+       └── Email Notifications
+                         │
+                         ▼
+                  Brevo Transactional API
+                         │
+                         ▼
+                    Customer Inbox
+```
+
+---
+
+## 🚀 Core Features
+
+### 🎱 Online Table Booking
+
+Customers follow a clear five-step journey:
+
+```text
+01 Date  →  02 Time  →  03 Table  →  04 Details  →  05 Confirm
+```
+
+The booking system handles:
+
+- Booking date
+- Start time
+- Session duration
+- Table selection
+- Customer name
+- Phone number
+- Email address
+- Amount
+- Booking reference
+- Booking status
+- Table availability
+- Academy operating hours
+
+### 📅 Booking Integrity
+
+Server-side booking validation protects the reservation workflow:
+
+- Prevents overlapping bookings
+- Checks table availability
+- Validates academy operating hours
+- Validates customer information
+- Calculates session duration and amount
+- Generates booking references
+- Supports cancellation
+- Prevents premature completion
+- Uses POST → Redirect → GET where appropriate
+
+A booking can only be completed after its scheduled session has ended.
+
+---
+
+## 🧑‍💼 RSA Operations Center
+
+The project includes a dedicated interface for academy managers.
+
+```text
+RSA Manager Login
+       │
+       ▼
+RSA Operations Center
+       │
+       ├── Today's KPIs
+       ├── Today's Revenue
+       ├── Today's Schedule
+       ├── Live Table Floor
+       ├── Upcoming Reservations
+       ├── Booking Management
+       ├── Search & Filters
+       ├── Date Filtering
+       ├── Pagination
+       ├── Cancel Booking
+       └── Complete Booking
+```
+
+The manager does **not** need Django Admin credentials for normal daily operations.
+
+The Operations Center includes completion protection and a current-session / **NOW** indicator for active sessions.
+
+---
+
+## 🔐 Owner Administration
+
+Owner-level administration remains separate from daily manager operations.
+
+```text
+Owner
+  │
+  ▼
+Django Admin / Jazzmin
+  │
+  ├── Tables
+  ├── Bookings
+  ├── Academy Settings
+  ├── Site Settings
+  ├── Home Page Settings
+  ├── Coaching
+  ├── Membership
+  ├── Tournaments
+  ├── Gallery
+  ├── Users
+  └── Groups
+```
+
+This separation keeps operational tasks and system administration distinct.
+
+---
+
+## 📧 Transactional Email
+
+Production email delivery uses the **Brevo Transactional Email API** over HTTPS.
+
+```text
+Customer confirms booking
+          │
+          ▼
+   Django booking logic
+          │
+          ▼
+      PostgreSQL
+          │
+          ▼
+    RSA email builder
+          │
+          ▼
+      Brevo API
+          │
+          ▼
+    Customer inbox
+```
+
+Supported transactional emails:
+
+- Booking confirmation
+- Booking completion / thank-you
+
+The email design includes:
+
+- RSA branding
+- Royal Snooker Academy logo
+- Booking reference
 - Customer information
-- Bookings
-- Academy content
-- User accounts
-- Future membership records
-- Future payment records
-💳 Online Payment / Membership — Planned Extension
-An online purchase system can be integrated into the project using a payment gateway such as Razorpay.
-The planned customer flow is:
-1. Customer selects a membership/package.
-2. Customer clicks Buy Now.
-3. Payment checkout opens.
-4. Customer pays using an available online payment method.
-5. Payment is verified by the Django backend.
-6. The purchase is recorded.
-7. The customer's membership can be activated.
-This feature can be enabled after the membership packages, pricing, and payment account configuration are finalized.
-Technology Stack
-Technology	Purpose
-Python	Backend programming
-Django	Web application framework
-HTML	Website structure
-CSS	Website styling
-JavaScript	Frontend interactions
-SQLite / Database	Data storage during development
-Django Admin	Administrative management
-Razorpay	Online payments (planned)
-Git / GitHub	Version control
+- Session details
+- Table information
+- Duration
+- Amount
+- Booking status
 
+### Production Email Configuration
 
-Project Structure
+```env
+RSA_EMAIL_PROVIDER=brevo
+RSA_BREVO_API_KEY=<secret>
+RSA_BREVO_SENDER_EMAIL=<verified sender>
+RSA_BREVO_SENDER_NAME=Royal Snooker Academy
+RSA_EMAIL_LOGO_URL=<public RSA logo URL>
+```
+
+> **Security:** Never commit API keys, SMTP passwords, database URLs, Django secrets, or `.env` files to GitHub.
+
+---
+
+## 🌐 Public Website
+
+The customer-facing website includes:
+
+| Page | Purpose |
+|---|---|
+| 🏠 **Home** | Academy introduction, highlights and primary booking CTAs |
+| 🎱 **Tables & Slots** | Table information and availability |
+| 📅 **Booking** | Complete reservation workflow |
+| 🏆 **Coaching** | Coaching programs and pricing |
+| 💳 **Membership** | Membership plans |
+| 🏅 **Tournaments** | Tournament information |
+| 🖼️ **Gallery** | Academy gallery with fullscreen lightbox |
+| 📞 **Contact** | Contact and communication options |
+
+The public website uses a consistent premium RSA visual identity across all major pages.
+
+---
+
+## 🎨 Design System
+
+The project follows a premium, modern snooker-club aesthetic.
+
+### Brand Palette
+
+| Color | Hex |
+|---|---|
+| Deep Black | `#07100D` |
+| Emerald | `#06382D` |
+| Green | `#07513F` |
+| Gold | `#D4AF37` |
+| Light Gold | `#E7CB70` |
+| Ivory | `#F7F5EF` |
+| Dark Text | `#18322B` |
+| Muted Text | `#66746F` |
+
+### Design Direction
+
+- Premium
+- Modern
+- Elegant
+- Sporty
+- Professional
+- High-end snooker club
+- Strong call-to-action hierarchy
+- Responsive mobile experience
+- Consistent RSA branding
+
+**Typography:** Inter + Playfair Display
+
+---
+
+## ♿ UX & Accessibility
+
+The application includes:
+
+- Responsive desktop and mobile layouts
+- Visible keyboard focus states
+- Reduced-motion support
+- Clear available / selected / booked states
+- Strong CTA hierarchy
+- Mobile navigation
+- Accessible contact-action labels
+- Gallery lightbox keyboard navigation
+- Escape-key support for overlays
+- Scroll-lock behavior for modal interfaces
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+
+- Python 3.14.5
+- Django 6.1.1
+- Django Authentication
+- Django Sessions
+- Django Admin
+- django-jazzmin
+
+### Database
+
+**Development**
+
+- SQLite
+
+**Production**
+
+- PostgreSQL
+- `dj-database-url`
+- `psycopg2-binary`
+
+### Frontend
+
+- Django Templates
+- HTML
+- CSS
+- JavaScript
+- Responsive UI
+- Utility-class-based styling in the existing templates
+
+### Email
+
+- Brevo Transactional Email API
+- Python `requests`
+
+### Deployment
+
+- Render Web Service
+- Gunicorn
+- WhiteNoise
+- PostgreSQL
+
+---
+
+## 📁 Project Structure
+
+```text
 Royal_Snooker_Academy/
-│
-├── bookings/
-│   └── Booking functionality
-│
-├── core/
-│   ├── admin.py
-│   ├── apps.py
-│   ├── context_processors.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
 │
 ├── config/
 │   ├── settings.py
 │   ├── urls.py
-│   ├── asgi.py
 │   └── wsgi.py
+│
+├── core/
+│   ├── views.py
+│   ├── urls.py
+│   └── ...
+│
+├── bookings/
+│   ├── models.py
+│   ├── admin.py
+│   └── ...
+│
+├── templates/
+│   ├── home.html
+│   ├── booking.html
+│   ├── tables.html
+│   ├── coaching.html
+│   ├── membership.html
+│   ├── tournaments.html
+│   ├── gallery.html
+│   ├── contact.html
+│   ├── manager_login.html
+│   ├── admin_dashboard.html
+│   └── ...
 │
 ├── static/
 │   └── images/
-│       └── Academy images and branding assets
+│       ├── RSA_logo.png
+│       ├── Royal_Snooker_Academy_Email_Logo.jpg
+│       └── RSA_Banner.png
 │
-├── templates/
-│   └── Website templates
-│
+├── build.sh
 ├── manage.py
 ├── requirements.txt
+├── .python-version
+├── .env.example
 └── README.md
-Application Architecture
-The project is divided into separate Django applications so that the system can be maintained and expanded easily.
-core
-The core application contains the main website functionality, including:
-- Views
-- Models
-- URL configuration
-- Admin configuration
-- Context processors
-bookings
-The bookings application is responsible for customer booking functionality.
-config
-The config directory contains the main Django project configuration:
-- Database configuration
-- Installed applications
-- Static files configuration
-- Middleware
-- Main URL configuration
-- Deployment configuration
-Local Setup
-1. Requirements
-Before running the project, install:
-- Python 3.x
-- Git
-- VS Code or another code editor
-It is recommended to use a Python virtual environment.
-2. Clone the Project
-git clone <repository-url>
+```
+
+---
+
+## 💻 Local Development
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/R0hittpal/Royal_Snooker_Academy.git
 cd Royal_Snooker_Academy
-3. Create Virtual Environment
-Windows:
+```
+
+### 2. Create a virtual environment
+
+Windows PowerShell:
+
+```powershell
 python -m venv .venv
-Activate it:
+```
+
+Activate:
+
+```powershell
 .venv\Scripts\Activate.ps1
-4. Install Dependencies
-pip install -r requirements.txt
-5. Apply Database Migrations
+```
+
+### 3. Install dependencies
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a local `.env` file:
+
+```env
+DJANGO_SECRET_KEY=change-this-for-local-development
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+
+RSA_EMAIL_PROVIDER=smtp
+
+RSA_EMAIL_HOST_USER=
+RSA_EMAIL_HOST_PASSWORD=
+RSA_DEFAULT_FROM_EMAIL=
+```
+
+For local Brevo testing, configure the Brevo variables instead.
+
+**Never commit `.env` or production credentials.**
+
+### 5. Apply migrations
+
+```powershell
 python manage.py migrate
-6. Create Administrator Account
-If an administrator account is required:
+```
+
+### 6. Create an owner/admin user
+
+```powershell
 python manage.py createsuperuser
-Follow the prompts to create the admin login.
-7. Run the Website
+```
+
+### 7. Start Django
+
+```powershell
 python manage.py runserver
-The website will normally be available at:
+```
+
+Open:
+
+```text
 http://127.0.0.1:8000/
-The Django admin panel is normally available at:
-http://127.0.0.1:8000/admin/
-Client Management
-The client/admin can manage the application through the Django administration panel.
-The admin panel provides a centralized place to manage backend information.
-For example:
-Admin Panel
-│
-├── Users
-├── Bookings
-├── Website Data
-├── Academy Information
-├── Memberships (when implemented)
-└── Payments (when implemented)
-This reduces the need for the client to directly interact with the database or source code for normal administrative tasks.
-Booking Workflow
-The expected booking workflow is:
-Customer
-   ↓
-Website
-   ↓
-Booking Form
-   ↓
-Booking Details
-   ↓
-Submit Booking
-   ↓
-Django Backend
-   ↓
-Database
-   ↓
-Admin can view/manage booking
-Future Payment Workflow
-The recommended online purchase architecture is:
-Customer
-   ↓
-Select Membership / Package
-   ↓
-Buy Now
-   ↓
-Payment Gateway
-   ↓
-Online Payment
-   ↓
-Payment Verification
-   ↓
-Django Backend
-   ↓
-Purchase Recorded
-   ↓
-Membership Activated
-The payment system should initially be tested using the payment gateway's test environment before accepting real customer payments.
-Security
-The project should follow standard Django security practices.
-Important points:
-- Keep secret keys outside the source code.
-- Do not commit .env files to GitHub.
-- Use environment variables for API credentials.
-- Use HTTPS in production.
-- Keep Django and dependencies updated.
-- Use strong administrator passwords.
-- Do not expose payment gateway secret keys.
-- Verify payment responses on the server before activating a purchase.
-Example .gitignore entries:
-.env
-.venv/
-__pycache__/
-*.pyc
-db.sqlite3
-Development and Production
-The current project can be developed and tested locally before deployment.
-Development
-Developer Computer
+```
+
+---
+
+## ☁️ Production Deployment
+
+The application is deployed using **Render**.
+
+### Build Command
+
+```bash
+bash build.sh
+```
+
+The build process:
+
+```text
+Install requirements
        ↓
-Django Development Server
+collectstatic
        ↓
-Local Database
+migrate
+```
+
+### Start Command
+
+```bash
+gunicorn config.wsgi:application
+```
+
+### Database Behavior
+
+```text
+Local Development
+       │
+       ▼
+     SQLite
+
 Production
-A production deployment can use:
-Customer
-   ↓
-Domain Name
-   ↓
-Production Server
-   ↓
-Django Application
-   ↓
-Production Database
-A production deployment should use HTTPS and production-ready database/server configuration.
-Maintenance
-Future maintenance may include:
-- Updating academy information
-- Adding new membership packages
-- Updating prices
-- Managing bookings
-- Managing customers
-- Adding payment functionality
-- Adding notifications
-- Improving the admin dashboard
-- Website design updates
-- Security and dependency updates
-Client Handover
-For final handover, the following should be provided to the client:
-- Website/domain access
-- Hosting/server access
-- Django admin credentials
-- Source code repository
-- Database backup
-- Environment variable configuration
-- Payment gateway account access, if payment functionality is enabled
-- Basic admin usage instructions
-Passwords and API secrets should be shared securely and should not be stored inside the README or GitHub repository.
-Project Status
-Currently Available
-- Django-based website
-- Core application
-- Booking application
-- Django admin management
-- Static assets and academy branding
-- Local development setup
-Planned / Optional
-- Membership packages
-- Online payments
-- Customer accounts
-- Payment history
-- Membership activation
-- Automated email/SMS notifications
-- Advanced admin dashboard
-- Production deployment
-Support and Future Development
-The project architecture is designed to allow additional features to be integrated without rebuilding the website from scratch.
-Possible future modules include:
-Royal Snooker Academy
-│
-├── Website
-├── Bookings
-├── Customer Accounts
-├── Memberships
-├── Payments
-├── Notifications
-├── Admin Dashboard
-└── Reports
-Conclusion
-Royal Snooker Academy is built as a modular Django web application that can serve as the foundation for the academy's online operations.
-The current system provides the core website and booking functionality, while the architecture allows additional features such as memberships, online payments, customer accounts, notifications, and reporting to be integrated as the academy's requirements grow.
-Project: Royal Snooker Academy
-Technology: Django + Python
-Purpose: Academy Website, Booking & Future Membership/Payment Management
+       │
+       ▼
+   DATABASE_URL
+       │
+       ▼
+   PostgreSQL
+```
+
+### Production Security
+
+With `DEBUG=False`, the application enables:
+
+- HTTPS redirect
+- Secure session cookies
+- Secure CSRF cookies
+- HSTS
+- Content-type sniffing protection
+- Referrer policy
+- Clickjacking protection
+- Render proxy HTTPS handling
+
+---
+
+## 🔑 Environment Variables
+
+The application uses environment-based configuration for secrets and deployment-specific settings.
+
+```text
+DJANGO_SECRET_KEY
+DJANGO_DEBUG
+DJANGO_ALLOWED_HOSTS
+DJANGO_CSRF_TRUSTED_ORIGINS
+DATABASE_URL
+RENDER_EXTERNAL_HOSTNAME
+
+RSA_EMAIL_PROVIDER
+RSA_BREVO_API_KEY
+RSA_BREVO_SENDER_EMAIL
+RSA_BREVO_SENDER_NAME
+RSA_EMAIL_LOGO_URL
+
+RSA_EMAIL_HOST_USER
+RSA_EMAIL_HOST_PASSWORD
+RSA_DEFAULT_FROM_EMAIL
+```
+
+### Never Commit
+
+```text
+.env
+API keys
+SMTP passwords
+Django SECRET_KEY
+DATABASE_URL
+Other credentials
+```
+
+Production secrets should be configured through Render Environment Variables.
+
+---
+
+## 📦 Static Files
+
+Production static assets use:
+
+```text
+Django collectstatic
+        ↓
+staticfiles/
+        ↓
+WhiteNoise
+        ↓
+Render Web Service
+```
+
+WhiteNoise provides production static-file serving without requiring a separate static-file server.
+
+---
+
+## 📝 Content Management
+
+Database-backed academy content can be updated through Django Admin.
+
+Examples include:
+
+- Academy settings
+- Site settings
+- Home page settings
+- Tables
+- Coaching
+- Membership
+- Tournaments
+- Gallery/content
+- Bookings
+- Users and groups
+
+Database content changes do **not** require a GitHub deployment.
+
+Code and functionality changes follow the Git → GitHub → Render deployment workflow.
+
+---
+
+## 🔄 Git Workflow
+
+The project uses feature branches for development.
+
+### Start a feature
+
+```bash
+git checkout main
+git pull origin main
+
+git checkout -b feature-name
+```
+
+### Test and commit
+
+```bash
+git status
+git diff --check
+git add .
+git commit -m "Describe the change"
+git push origin feature-name
+```
+
+### Deployment flow
+
+```text
+Feature Branch
+      │
+      ▼
+Pull Request
+      │
+      ▼
+main
+      │
+      ▼
+Render Deployment
+      │
+      ▼
+Production
+```
+
+The `main` branch represents the production codebase.
+
+---
+
+## 📊 Current Production Status
+
+| Component | Status |
+|---|:---:|
+| Public RSA Website | ✅ |
+| Responsive Navigation | ✅ |
+| Tables & Slots | ✅ |
+| Online Booking | ✅ |
+| Availability Checking | ✅ |
+| Booking Validation | ✅ |
+| Booking Confirmation | ✅ |
+| Booking Cancellation | ✅ |
+| Booking Completion | ✅ |
+| Confirmation Emails | ✅ |
+| Completion Emails | ✅ |
+| Brevo Production Delivery | ✅ |
+| Gallery + Lightbox | ✅ |
+| Coaching | ✅ |
+| Membership | ✅ |
+| Tournaments | ✅ |
+| Contact | ✅ |
+| Django Admin / Jazzmin | ✅ |
+| RSA Manager Login | ✅ |
+| RSA Operations Center | ✅ |
+| PostgreSQL Production Database | ✅ |
+| Render Deployment | ✅ |
+| WhiteNoise Static Files | ✅ |
+| Git/GitHub Workflow | ✅ |
+
+---
+
+## 🗺️ Roadmap
+
+Potential future enhancements:
+
+- [ ] Custom RSA email domain
+- [ ] SPF / DKIM / DMARC authentication
+- [ ] Persistent production media storage
+- [ ] Online payment integration
+- [ ] Customer booking history
+- [ ] Automated booking reminders
+- [ ] Membership management
+- [ ] Advanced reporting
+- [ ] Revenue analytics
+- [ ] Additional customer notification channels
+- [ ] Granular manager permissions
+- [ ] Production monitoring and error tracking
+
+These should be implemented incrementally without disrupting the existing booking and operations workflow.
+
+---
+
+## 🧭 Development Principles
+
+When extending the project:
+
+1. **Preserve working functionality.**
+2. **Inspect the current implementation before modifying it.**
+3. **Avoid unnecessary rewrites.**
+4. **Keep Owner and Manager permissions separated.**
+5. **Do not change database models unless genuinely required.**
+6. **Never commit secrets.**
+7. **Test locally before production deployment.**
+8. **Use feature branches for significant changes.**
+9. **Keep the RSA visual identity consistent.**
+10. **Make incremental changes and test each meaningful change.**
+11. **Treat the application as a real production business system.**
+
+---
+
+## 🌐 Project Links
+
+| Resource | Link |
+|---|---|
+| 🌐 **Live Website** | https://royal-snooker-academy.onrender.com/ |
+| 📦 **GitHub Repository** | https://github.com/R0hittpal/Royal_Snooker_Academy |
+
+---
+
+<div align="center">
+
+### 🎱 Royal Snooker Academy
+
+**PLAY. PRACTICE. PERFORM.**
+
+Built with Django · Designed for RSA · Deployed for production
+
+</div>
